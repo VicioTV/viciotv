@@ -697,16 +697,16 @@ window.addEventListener("popstate", e => {
    HOME
 ══════════════════════════════════════════ */
 function showHome() {
-  document.getElementById("main").style.display = "";
+  document.getElementById("main").style.display = "block";
   document.getElementById("catalog-view").style.display = "none";
-  document.getElementById("hero").style.display = "";
+  document.getElementById("hero").style.display = "block";
   document.getElementById("sec-canales").style.display = "none";
   setActiveTab("inicio");
 }
 
 function showCatalogView() {
   document.getElementById("main").style.display = "none";
-  document.getElementById("catalog-view").style.display = "";
+  document.getElementById("catalog-view").style.display = "block";
   document.getElementById("hero").style.display = "none";
 }
 
@@ -723,8 +723,10 @@ async function openCatalog(route) {
   if (!cfg) return;
 
   if (cfg.type === "live") {
-    showHome();
-    document.getElementById("sec-canales").style.display = "";
+    document.getElementById("main").style.display = "block";
+    document.getElementById("catalog-view").style.display = "none";
+    document.getElementById("hero").style.display = "none";
+    document.getElementById("sec-canales").style.display = "block";
     renderLiveChannels();
     setActiveTab("canales");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1533,16 +1535,17 @@ function getHashRoute(){
 /* ─── Mostrar app y procesar ruta ─── */
 function launchApp(profile){
   document.getElementById("profiles-screen").style.display="none";
-  document.getElementById("nav").style.display="";
-  document.getElementById("main").style.display="";
-  document.getElementById("hero").style.display="";
+  document.getElementById("nav").style.display="flex";
+  document.getElementById("main").style.display="block";
+  document.getElementById("catalog-view").style.display="none";
+  document.getElementById("hero").style.display="block";
   if(profile) updateNavProfile(profile);
   renderFavs();
   renderCW();
   initContent();
   const route = getHashRoute();
   if(route && route !== "home"){
-    setTimeout(()=>_doRouteInternal(route), 100);
+    _doRouteInternal(route);
   } else {
     showHome();
   }
