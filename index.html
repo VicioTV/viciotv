@@ -537,84 +537,60 @@ const FAV_KEY  = "viciotv_favs";
    PROVEEDORES DE STREAMING
    Orden: mejor calidad / más latino primero
 ══════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   PROVEEDORES — solo los confirmados funcionales en iframe
+   sandbox: cada provider necesita permisos distintos
+══════════════════════════════════════════ */
 const PROVIDERS = [
   {
     id: "streamimdb",
     name: "StreamIMDb",
     flag: "🎬",
     note: "Principal",
-    movie: id => `https://streamimdb.ru/embed/movie/${id}/`,
-    tv:    (id,s,e) => `https://streamimdb.ru/embed/tv/${id}/${s}/${e}`,
-    usesImdb: true,  // necesita IMDb ID
-  },
-  {
-    id: "vidsrc",
-    name: "VidSrc",
-    flag: "📡",
-    note: "Multi-servidor",
-    movie: id => `https://vidsrc.xyz/embed/movie?tmdb=${id}`,
-    tv:    (id,s,e) => `https://vidsrc.xyz/embed/tv?tmdb=${id}&season=${s}&episode=${e}`,
-    usesImdb: false,
+    movie: (tmdb, imdb) => imdb ? `https://streamimdb.ru/embed/movie/${imdb}/` : null,
+    tv:    (tmdb, imdb, s, e) => imdb ? `https://streamimdb.ru/embed/tv/${imdb}/${s}/${e}` : null,
+    usesImdb: true,
+    // Sandbox estricto — bloquea popups, funciona bien
+    sandbox: "allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation",
   },
   {
     id: "superembed",
     name: "SuperEmbed",
     flag: "⚡",
-    note: "10+ servidores · subtítulos",
-    movie: id => `https://multiembed.mov/?video_id=${id}&tmdb=1`,
-    tv:    (id,s,e) => `https://multiembed.mov/?video_id=${id}&tmdb=1&s=${s}&e=${e}`,
+    note: "10+ servidores",
+    movie: (tmdb) => `https://multiembed.mov/?video_id=${tmdb}&tmdb=1`,
+    tv:    (tmdb, imdb, s, e) => `https://multiembed.mov/?video_id=${tmdb}&tmdb=1&s=${s}&e=${e}`,
     usesImdb: false,
-  },
-  {
-    id: "embedsu",
-    name: "Embed.su",
-    flag: "🌐",
-    note: "Rápido · Latino disponible",
-    movie: id => `https://embed.su/embed/movie/${id}`,
-    tv:    (id,s,e) => `https://embed.su/embed/tv/${id}/${s}/${e}`,
-    usesImdb: false,
+    // Necesita allow-popups para cambiar de servidor interno
+    sandbox: "allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
   },
   {
     id: "vidlink",
     name: "VidLink",
     flag: "🔗",
-    note: "Latino · autoplay",
-    movie: id => `https://vidlink.pro/movie/${id}?autoplay=true&primaryColor=e50914`,
-    tv:    (id,s,e) => `https://vidlink.pro/tv/${id}/${s}/${e}?autoplay=true&primaryColor=e50914`,
+    note: "Latino disponible",
+    movie: (tmdb) => `https://vidlink.pro/movie/${tmdb}?autoplay=true&primaryColor=e50914`,
+    tv:    (tmdb, imdb, s, e) => `https://vidlink.pro/tv/${tmdb}/${s}/${e}?autoplay=true&primaryColor=e50914`,
     usesImdb: false,
+    // VidLink requiere sin sandbox (pide deshabilitarlo explícitamente)
+    sandbox: null,
   },
   {
     id: "2embed",
     name: "2Embed",
     flag: "🎥",
     note: "Anime · Latino",
-    movie: id => `https://www.2embed.stream/embed/movie/${id}`,
-    tv:    (id,s,e) => `https://www.2embed.stream/embed/tv/${id}/${s}/${e}`,
+    movie: (tmdb) => `https://www.2embed.stream/embed/movie/${tmdb}`,
+    tv:    (tmdb, imdb, s, e) => `https://www.2embed.stream/embed/tv/${tmdb}/${s}/${e}`,
     usesImdb: false,
-  },
-  {
-    id: "moviesapi",
-    name: "MoviesAPI",
-    flag: "🍿",
-    note: "HD · múltiples calidades",
-    movie: id => `https://moviesapi.club/movie/${id}`,
-    tv:    (id,s,e) => `https://moviesapi.club/tv/${id}-${s}-${e}`,
-    usesImdb: false,
-  },
-  {
-    id: "autoembed",
-    name: "AutoEmbed",
-    flag: "🤖",
-    note: "Agrega múltiples fuentes",
-    movie: id => `https://autoembed.cc/movie/tmdb/${id}`,
-    tv:    (id,s,e) => `https://autoembed.cc/tv/tmdb/${id}-${s}-${e}`,
-    usesImdb: false,
+    // Necesita allow-popups para el selector de servidor
+    sandbox: "allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
   },
 ];
 
-let activeProvider = localStorage.getItem("viciotv_provider") || "vidsrc";
+let activeProvider = localStorage.getItem("viciotv_provider") || "streamimdb";
 function getProvider() {
-  return PROVIDERS.find(p => p.id === activeProvider) || PROVIDERS[1];
+  return PROVIDERS.find(p => p.id === activeProvider) || PROVIDERS[0];
 }
 function setProvider(id) {
   activeProvider = id;
@@ -622,9 +598,23 @@ function setProvider(id) {
 }
 function buildPlayerUrl(type, tmdbId, imdbId, season=1, episode=1) {
   const p = getProvider();
-  const id = (p.usesImdb && imdbId) ? imdbId : tmdbId;
-  if (!id) return "";
-  return type === "movie" ? p.movie(id) : p.tv(id, season, episode);
+  if(!tmdbId) return "";
+  return type === "movie"
+    ? p.movie(tmdbId, imdbId)
+    : p.tv(tmdbId, imdbId, season, episode);
+}
+
+/* Aplica el sandbox correcto al iframe según el provider activo */
+function applyProviderSandbox() {
+  const frame = document.getElementById("movie-frame");
+  if (!frame) return;
+  const p = getProvider();
+  if (p.sandbox === null) {
+    // Sin sandbox — VidLink lo requiere
+    frame.removeAttribute("sandbox");
+  } else {
+    frame.setAttribute("sandbox", p.sandbox);
+  }
 }
 
 /* ══════════════════════════════════════════
@@ -1195,9 +1185,11 @@ async function openModal(item) {
     }
     // Construir barra de proveedores y cargar player
     buildProviderBar();
+    applyProviderSandbox();
     if(currentType==="movie"){
       const url=buildPlayerUrl("movie", item.id, currentImdbId);
       if(url) movieFrame.src=url;
+      else movieFrame.src="";
     } else {
       loadTVEpisode();
     }
@@ -1251,6 +1243,7 @@ function loadTVEpisode(forceS,forceE){
   const s=Number(forceS??document.getElementById("sel-season").value??1)||1;
   const e=Number(forceE??document.getElementById("sel-episode").value??1)||1;
   const url=buildPlayerUrl("tv", currentItem?.id, currentImdbId, s, e);
+  applyProviderSandbox();
   movieFrame.src="about:blank";
   setTimeout(()=>{ if(url) movieFrame.src=url; if(currentItem) saveProgress(currentItem,s,e,0); },120);
   clearTimeout(nextEpTimer); nextEpTimer=setTimeout(()=>{ document.getElementById("next-episode-overlay").style.display="flex"; },1000*60*40);
@@ -1272,14 +1265,14 @@ function buildProviderBar(){
       bar.querySelectorAll(".provider-btn").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
       btn.classList.add("loading");
+      applyProviderSandbox();
+      movieFrame.src="about:blank";
       // Reload player with new provider
       if(currentType==="movie"){
         const url=buildPlayerUrl("movie",currentItem?.id,currentImdbId);
-        movieFrame.src="about:blank";
-        setTimeout(()=>{ movieFrame.src=url; btn.classList.remove("loading"); },120);
+        setTimeout(()=>{ if(url) movieFrame.src=url; btn.classList.remove("loading"); },150);
       } else {
-        loadTVEpisode();
-        setTimeout(()=>btn.classList.remove("loading"),300);
+        setTimeout(()=>{ loadTVEpisode(); btn.classList.remove("loading"); },150);
       }
     });
     bar.appendChild(btn);
