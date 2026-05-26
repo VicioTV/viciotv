@@ -961,6 +961,9 @@ async function openModal(item) {
 
   const modalAlreadyOpen = document.getElementById("modal-overlay").classList.contains("open");
   document.getElementById("modal-overlay").classList.add("open");
+  // Scroll al top del overlay al abrir/cambiar contenido
+  const _ov = document.getElementById("modal-overlay");
+  if (_ov) _ov.scrollTop = 0;
   // Mostrar tip de subtítulos si no fue cerrado antes
   const subTipBar = document.getElementById("sub-tip-bar");
   if(subTipBar){
@@ -1024,7 +1027,10 @@ async function openModal(item) {
           ${sPoster ? `<img src="${sPoster}" alt="${sTitle}" loading="lazy">` : `<div style="background:#222;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;color:#555;font-size:.7rem">Sin imagen</div>`}
           <div class="similar-card-rating">★ ${sRating}</div>
           <div class="similar-card-title">${sTitle}</div>`;
-        card.addEventListener("click", () => openModal({ ...s, _type: currentType }));
+        card.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openModal({ ...s, _type: currentType });
+        });
         grid.appendChild(card);
       });
     }
@@ -1258,12 +1264,25 @@ document.getElementById("modal-overlay").addEventListener("click", e => {
   if (!modal.contains(e.target)) closeModal();
 });
 window.addEventListener("popstate", e => {
+  const actorOverlay = document.getElementById("actor-overlay");
+  // 1. Cerrar overlay de actor
+  if (actorOverlay && actorOverlay.classList.contains("open")) {
+    closeActorOverlay();
+    return;
+  }
+  // 2. Salir de fullscreen forzado
   if (document.getElementById("modal").classList.contains("forced-fullscreen")) {
     document.getElementById("modal").classList.remove("forced-fullscreen");
     document.getElementById("fs-btn").textContent = "⛶";
     try { screen.orientation?.unlock?.(); } catch {}
-  } else if (document.getElementById("modal-overlay").classList.contains("open")) {
-    _doCloseModal();
+    return;
+  }
+  // 3. Cerrar modal solo si el estado anterior NO tenía modal
+  // (si venimos de un pushState de modal, no cerrar)
+  if (document.getElementById("modal-overlay").classList.contains("open")) {
+    if (!e.state?.modal) {
+      _doCloseModal();
+    }
   }
 });
 
