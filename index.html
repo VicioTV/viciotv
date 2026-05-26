@@ -1362,6 +1362,7 @@ function openCatalogTab(tabKey){
   document.getElementById("load-spinner").style.display="none";
   buildFiltersBar(cfg);
   // requestAnimationFrame garantiza que el DOM esté visible antes de cargar y observar
+  _catalogSession++;  // Nueva sesión, cancela fetches anteriores
   requestAnimationFrame(()=>{
     loadCatalogPage();
     setupInfiniteScroll();
@@ -1410,6 +1411,7 @@ function buildFiltersBar(cfg){
 }
 
 function _resetCatalog(){
+  _catalogSession++;  // Invalida cualquier fetch en vuelo
   catalogState.page=1; catalogState.totalPages=1; catalogState.ended=false; catalogState.loading=false;
   document.getElementById("catalog-grid").innerHTML="";
   document.getElementById("catalog-end-msg").style.display="none";
@@ -1418,67 +1420,87 @@ function _resetCatalog(){
   setupInfiniteScroll();
 }
 
+let _catalogSession = 0; // Cancela fetches de sesiones anteriores
+
 async function loadCatalogPage(){
-  if(catalogState.loading||catalogState.ended) return;
-  catalogState.loading=true;
-  const spinner=document.getElementById("load-spinner"); spinner.style.display="block";
-  const grid=document.getElementById("catalog-grid");
-  const cfg=CATALOG_TABS[catalogState.tab];
+  if(catalogState.loading || catalogState.ended) return;
+  catalogState.loading = true;
+
+  const mySession = _catalogSession; // Capturar sesión actual
+  const spinner = document.getElementById("load-spinner");
+  const grid    = document.getElementById("catalog-grid");
+  spinner.style.display = "block";
+
+  const cfg = CATALOG_TABS[catalogState.tab];
   if(!cfg){ catalogState.loading=false; spinner.style.display="none"; return; }
 
   // Skeletons solo en página 1
-  if(catalogState.page===1){
-    grid.innerHTML="";
-    for(let i=0;i<20;i++){
-      const sk=document.createElement("div");
-      sk.className="skeleton skeleton-card";
-      sk.style.cssText="height:calc(var(--card-h) + 56px)";
+  if(catalogState.page === 1){
+    grid.innerHTML = "";
+    for(let i=0; i<20; i++){
+      const sk = document.createElement("div");
+      sk.className = "skeleton skeleton-card";
+      sk.style.cssText = "height:calc(var(--card-h) + 56px);border-radius:var(--radius)";
       grid.appendChild(sk);
     }
   }
 
   try{
-    // Construir URL sin cachedFetch para páginas > 1 (evitar cache por paginación)
-    const params=new URLSearchParams({
-      api_key:API_KEY, language:"es-MX", page:catalogState.page,
-      sort_by:catalogState.filters.sort||cfg.defaultSort||"popularity.desc",
-      ...(cfg.extraParams||{})
+    const params = new URLSearchParams({
+      api_key: API_KEY,
+      language: "es-MX",
+      page: catalogState.page,
+      sort_by: catalogState.filters.sort || cfg.defaultSort || "popularity.desc",
+      ...(cfg.extraParams || {})
     });
+
     if(catalogState.filters.genre){
-      const ex=params.get("with_genres");
+      const ex = params.get("with_genres");
       params.set("with_genres", ex ? `${ex},${catalogState.filters.genre}` : catalogState.filters.genre);
     }
     if(catalogState.filters.platform){
       params.set("with_watch_providers", catalogState.filters.platform);
-      params.set("watch_region","AR");
+      params.set("watch_region", "AR");
     }
     if(catalogState.filters.year){
-      if(cfg.type==="movie") params.set("primary_release_year", catalogState.filters.year);
+      if(cfg.type === "movie") params.set("primary_release_year", catalogState.filters.year);
       else params.set("first_air_date_year", catalogState.filters.year);
     }
-    if(!catalogState.filters.platform) params.set("vote_count.gte","30");
+    if(!catalogState.filters.platform) params.set("vote_count.gte", "30");
 
-    const url = `${API_BASE}${cfg.endpoint}?${params}`;
-    // Usar cache solo en página 1, fetch directo en siguientes para no mezclar páginas
-    const data = catalogState.page===1 ? await cachedFetch(url) : await fetch(url).then(r=>r.json());
+    const url  = `${API_BASE}${cfg.endpoint}?${params}`;
+    const res  = await fetch(url);
+    const data = await res.json();
 
-    if(catalogState.page===1) grid.innerHTML="";
-    (data.results||[]).forEach((m,i)=>{ m._type=cfg.type; grid.appendChild(buildCard(m,i)); });
+    // Si el usuario cambió filtros mientras esperábamos, descartar resultado
+    if(mySession !== _catalogSession){
+      catalogState.loading = false;
+      return;
+    }
 
-    catalogState.totalPages = Math.min(data.total_pages||1, 500); // TMDB max 500
+    if(catalogState.page === 1) grid.innerHTML = "";
+    (data.results || []).forEach((m, i) => { m._type = cfg.type; grid.appendChild(buildCard(m, i)); });
+
+    catalogState.totalPages = Math.min(data.total_pages || 1, 500);
+
     if(catalogState.page >= catalogState.totalPages){
-      catalogState.ended=true;
-      document.getElementById("catalog-end-msg").style.display="block";
+      catalogState.ended = true;
+      document.getElementById("catalog-end-msg").style.display = "block";
     } else {
       catalogState.page++;
     }
+
   } catch(e){
     console.error("loadCatalogPage error:", e);
-    if(catalogState.page===1) grid.innerHTML=`<div style="color:var(--text3);padding:40px;grid-column:1/-1">Error al cargar. Revisá tu conexión.</div>`;
+    if(catalogState.page === 1 && mySession === _catalogSession){
+      grid.innerHTML = `<div style="color:var(--text3);padding:40px;grid-column:1/-1">Error al cargar. Revisá tu conexión.</div>`;
+    }
   }
 
-  spinner.style.display="none";
-  catalogState.loading=false;
+  if(mySession === _catalogSession){
+    spinner.style.display = "none";
+    catalogState.loading  = false;
+  }
 }
 
 function setupInfiniteScroll(){
