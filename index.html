@@ -538,42 +538,38 @@ const FAV_KEY  = "viciotv_favs";
    Orden: mejor calidad / más latino primero
 ══════════════════════════════════════════ */
 /* ══════════════════════════════════════════
-   PROVEEDORES — solo los confirmados funcionales en iframe
-   sandbox: cada provider necesita permisos distintos
+   PROVEEDORES — iframes públicos confirmados funcionales
+   Cada uno con su sandbox correcto.
+   sandbox:null = sin sandbox (VidLink lo requiere)
+   sandbox:"..." = restringido con popups donde hace falta
 ══════════════════════════════════════════ */
 const PROVIDERS = [
   {
     id: "streamimdb",
     name: "StreamIMDb",
     flag: "🎬",
-    note: "Principal",
+    note: "Principal · Rápido",
     movie: (tmdb, imdb) => imdb ? `https://streamimdb.ru/embed/movie/${imdb}/` : null,
     tv:    (tmdb, imdb, s, e) => imdb ? `https://streamimdb.ru/embed/tv/${imdb}/${s}/${e}` : null,
-    usesImdb: true,
-    // Sandbox estricto — bloquea popups, funciona bien
     sandbox: "allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation",
   },
   {
     id: "superembed",
     name: "SuperEmbed",
     flag: "⚡",
-    note: "10+ servidores",
+    note: "10+ servidores · Latino",
     movie: (tmdb) => `https://multiembed.mov/?video_id=${tmdb}&tmdb=1`,
     tv:    (tmdb, imdb, s, e) => `https://multiembed.mov/?video_id=${tmdb}&tmdb=1&s=${s}&e=${e}`,
-    usesImdb: false,
-    // Necesita allow-popups para cambiar de servidor interno
     sandbox: "allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
   },
   {
     id: "vidlink",
     name: "VidLink",
     flag: "🔗",
-    note: "Latino disponible",
+    note: "Latino · Subtítulos",
     movie: (tmdb) => `https://vidlink.pro/movie/${tmdb}?autoplay=true&primaryColor=e50914`,
     tv:    (tmdb, imdb, s, e) => `https://vidlink.pro/tv/${tmdb}/${s}/${e}?autoplay=true&primaryColor=e50914`,
-    usesImdb: false,
-    // VidLink requiere sin sandbox (pide deshabilitarlo explícitamente)
-    sandbox: null,
+    sandbox: null, // VidLink requiere sin sandbox
   },
   {
     id: "2embed",
@@ -582,8 +578,24 @@ const PROVIDERS = [
     note: "Anime · Latino",
     movie: (tmdb) => `https://www.2embed.stream/embed/movie/${tmdb}`,
     tv:    (tmdb, imdb, s, e) => `https://www.2embed.stream/embed/tv/${tmdb}/${s}/${e}`,
-    usesImdb: false,
-    // Necesita allow-popups para el selector de servidor
+    sandbox: "allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
+  },
+  {
+    id: "vidsrcfyi",
+    name: "VidSrc",
+    flag: "📡",
+    note: "Multi-servidor · HD",
+    movie: (tmdb) => `https://vidsrc.fyi/embed/movie/${tmdb}`,
+    tv:    (tmdb, imdb, s, e) => `https://vidsrc.fyi/embed/tv/${tmdb}/${s}/${e}`,
+    sandbox: "allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation",
+  },
+  {
+    id: "autoembed",
+    name: "AutoEmbed",
+    flag: "🤖",
+    note: "Multi-fuente · Latino",
+    movie: (tmdb, imdb) => `https://autoembed.co/movie/tmdb/${tmdb}`,
+    tv:    (tmdb, imdb, s, e) => `https://autoembed.co/tv/tmdb/${tmdb}-${s}-${e}`,
     sandbox: "allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation",
   },
 ];
