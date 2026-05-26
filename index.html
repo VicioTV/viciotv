@@ -1176,6 +1176,7 @@ function _doCloseModal() {
   document.getElementById("modal-overlay").classList.remove("open");
   document.getElementById("modal").classList.remove("forced-fullscreen");
   document.getElementById("fs-btn").textContent = "⛶";
+  iframeShield.style.display = "none";
   // Destruir el iframe del DOM — para el audio al instante
   _destroyMovieFrame();
   document.body.style.overflow = "";
@@ -1229,14 +1230,32 @@ document.getElementById("modal-overlay").addEventListener("click", e => {
   if (!modal.contains(e.target)) closeModal();
 });
 
-// Cerrar modal al hacer scroll en el overlay (el modal "sube" y queda oculto)
-document.getElementById("modal-overlay").addEventListener("scroll", () => {
+// Cuando el foco va al iframe (usuario interactúa con el player),
+// poner un escudo invisible sobre el overlay para capturar el próximo click afuera
+const iframeShield = document.createElement("div");
+iframeShield.style.cssText = "position:fixed;inset:0;z-index:1999;display:none";
+iframeShield.addEventListener("click", () => {
+  iframeShield.style.display = "none";
+  closeModal();
+});
+document.body.appendChild(iframeShield);
+
+// Detectar cuando el foco entra al iframe
+window.addEventListener("blur", () => {
   const overlay = document.getElementById("modal-overlay");
-  const modal   = document.getElementById("modal");
   if (!overlay.classList.contains("open")) return;
-  const rect = modal.getBoundingClientRect();
-  // Si el modal está completamente fuera de la pantalla hacia arriba → cerrar
-  if (rect.bottom < 0) closeModal();
+  // El foco fue al iframe — mostrar el escudo para capturar el próximo click fuera
+  setTimeout(() => {
+    if (document.getElementById("modal-overlay").classList.contains("open")) {
+      iframeShield.style.display = "block";
+    }
+  }, 100);
+});
+
+// Cuando el foco vuelve a la ventana (sin haber clickeado el escudo),
+// ocultar el escudo
+window.addEventListener("focus", () => {
+  iframeShield.style.display = "none";
 });
 window.addEventListener("popstate", e => {
   if (document.getElementById("modal").classList.contains("forced-fullscreen")) {
