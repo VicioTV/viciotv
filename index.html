@@ -93,16 +93,16 @@
   /* ── CREATOR BADGE ── */
   .creator-wrap{position:relative}
   .creator-badge{
-    display:flex;align-items:center;gap:8px;
+    display:flex;align-items:center;justify-content:center;
     border:1px solid rgba(255,255,255,.1);border-radius:8px;
-    padding:5px 12px;cursor:pointer;
+    padding:5px 16px;cursor:pointer;
     background:rgba(255,255,255,.03);
     transition:border-color .2s,background .2s;
     white-space:nowrap;
   }
   .creator-badge:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.06)}
   .creator-label{
-    font-family:'Bebas Neue',cursive;font-size:18px;letter-spacing:3px;
+    font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:6px;
     background:linear-gradient(90deg,
       #ff0080,#ff4500,#ffd700,#00ff88,#00cfff,#a855f7,#ff0080
     );
@@ -112,7 +112,7 @@
     filter:drop-shadow(0 0 6px rgba(168,85,247,.5));
   }
   @keyframes chroma-flow{to{background-position:300% center}}
-  .creator-sub{font-size:9px;color:var(--text3);letter-spacing:.5px;display:block;line-height:1;margin-top:1px}
+  .creator-sub{font-size:10px;color:var(--text3);letter-spacing:3px;text-transform:uppercase;display:block;line-height:1;margin-bottom:3px;text-align:center}
 
   /* Panel del creador (mismo estilo que theme-picker-panel) */
   .creator-panel{
@@ -423,9 +423,9 @@
   <!-- Creator Badge + Theme Picker integrado -->
   <div class="creator-wrap">
     <div class="creator-badge" onclick="toggleCreatorPanel(event)" title="Personalizar tema">
-      <div>
-        <span class="creator-label">boch4maN</span>
-        <span class="creator-sub"> · CREADO POR · </span>
+      <div style="text-align:center">
+        <span class="creator-sub">· Creado por ·</span>
+        <span class="creator-label" style="display:block">boch4maN</span>
       </div>
     </div>
     <div class="creator-panel" id="creator-panel">
