@@ -543,6 +543,7 @@
     <div id="modal-similar-section" style="display:none">
       <div class="modal-section-title">Contenido similar</div>
       <div class="similar-grid" id="similar-grid"></div>
+      <button id="similar-more-btn" onclick="loadMoreSimilar()" style="display:none;margin:16px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 28px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;width:100%">Ver más</button>
     </div>
 
   </div>
@@ -583,7 +584,7 @@ const PROVIDERS = [
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
   { id:"embedmaster",
-    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD", hidden:true,
+    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD",
     movie:(t,i)=>i?`https://embedmaster.link/movie/${i}`:null,
     tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
     sandbox:null },
@@ -952,6 +953,9 @@ async function openModal(item) {
   document.getElementById("episodes-panel").classList.remove("visible");
   document.getElementById("cast-scroll").innerHTML   = "";
   document.getElementById("similar-grid").innerHTML  = "";
+  document.getElementById("similar-more-btn").style.display = "none";
+  window._similarPage = 1;
+  window._similarMorePage = 1;
   document.getElementById("movie-frame").src = "";
   document.getElementById("tv-selectors").classList.remove("visible");
   clearTimeout(nextEpisodeTimer);
@@ -1013,26 +1017,19 @@ async function openModal(item) {
 
     // Similar
     const similar = detail.recommendations?.results?.slice(0, 12) || [];
+    const totalSimilar = detail.recommendations?.total_pages || 1;
     if (similar.length) {
       const sec = document.getElementById("modal-similar-section");
       sec.style.display = "block";
       const grid = document.getElementById("similar-grid");
-      similar.forEach(s => {
-        const sTitle = s.title || s.name || "";
-        const sPoster = s.poster_path ? `${IMG_BASE}${s.poster_path}` : null;
-        const sRating = s.vote_average ? s.vote_average.toFixed(1) : "?";
-        const card = document.createElement("div");
-        card.className = "similar-card";
-        card.innerHTML = `
-          ${sPoster ? `<img src="${sPoster}" alt="${sTitle}" loading="lazy">` : `<div style="background:#222;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;color:#555;font-size:.7rem">Sin imagen</div>`}
-          <div class="similar-card-rating">★ ${sRating}</div>
-          <div class="similar-card-title">${sTitle}</div>`;
-        card.addEventListener("click", (e) => {
-          e.stopPropagation();
-          openModal({ ...s, _type: currentType });
-        });
-        grid.appendChild(card);
-      });
+      _appendSimilarCards(similar, grid);
+      // Guardar estado para paginación
+      window._similarItemId   = currentItem?.id;
+      window._similarType     = currentType;
+      window._similarPage     = 1;
+      window._similarTotalPgs = totalSimilar;
+      const moreBtn = document.getElementById("similar-more-btn");
+      moreBtn.style.display = totalSimilar > 1 ? "block" : "none";
     }
 
     if (currentType === "movie") {
@@ -1866,6 +1863,57 @@ async function loadMoreHome(key){
     if(btn){ btn.disabled=false; btn.textContent="Ver más"; }
   }
   _homeLoading[key] = false;
+}
+
+/* ── SIMILAR / RECOMENDACIONES PAGINADAS ── */
+function _appendSimilarCards(items, grid) {
+  if (!grid) grid = document.getElementById("similar-grid");
+  items.forEach(s => {
+    const sTitle  = s.title || s.name || "";
+    const sPoster = s.poster_path ? `${IMG_BASE}${s.poster_path}` : null;
+    const sRating = s.vote_average ? s.vote_average.toFixed(1) : "?";
+    const card = document.createElement("div");
+    card.className = "similar-card";
+    card.innerHTML = `
+      ${sPoster
+        ? `<img src="${sPoster}" alt="${sTitle}" loading="lazy">`
+        : `<div style="background:#222;aspect-ratio:2/3;display:flex;align-items:center;justify-content:center;color:#555;font-size:.7rem">Sin imagen</div>`}
+      <div class="similar-card-rating">★ ${sRating}</div>
+      <div class="similar-card-title">${sTitle}</div>`;
+    card.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openModal({ ...s, _type: window._similarType || currentType });
+    });
+    grid.appendChild(card);
+  });
+}
+
+async function loadMoreSimilar() {
+  const btn = document.getElementById("similar-more-btn");
+  if (!btn || !window._similarItemId) return;
+  // Primera vez que se aprieta "Ver más" → cargar /similar página 1
+  // Siguientes veces → /similar página 2, 3, etc.
+  const page = window._similarMorePage || 1;
+  btn.textContent = "Cargando...";
+  btn.disabled = true;
+  try {
+    const res  = await fetch(`${API_BASE}/${window._similarType}/${window._similarItemId}/similar?api_key=${API_KEY}&language=es-MX&page=${page}`);
+    const data = await res.json();
+    const items = (data.results || []).filter(s => s.poster_path);
+    if (items.length) {
+      _appendSimilarCards(items, document.getElementById("similar-grid"));
+      window._similarMorePage = page + 1;
+    }
+    if (page >= (data.total_pages || 1) || !items.length) {
+      btn.style.display = "none";
+    } else {
+      btn.textContent = "Ver más";
+      btn.disabled = false;
+    }
+  } catch(e) {
+    btn.textContent = "Ver más";
+    btn.disabled = false;
+  }
 }
 
 /* ── FILMOGRAFÍA DE ACTOR ── */
