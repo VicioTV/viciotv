@@ -474,7 +474,7 @@
       </div>
     </div>
     <div id="sub-tip-bar" style="background:rgba(229,9,20,.12);border:1px solid rgba(229,9,20,.25);border-radius:8px;margin:4px 24px 8px;padding:10px 16px;align-items:center;gap:10px;font-size:13px;color:var(--text2);display:none">
-      <span>💬 <strong style="color:var(--text)">Subtítulos en español:</strong> apretá el ícono de<strong style="color:var(--text)">Subtitulos</strong> dentro del reproductor → Search → elegí <strong style="color:var(--text)">Spanish</strong>. Se guarda para siempre.</span>
+      <span>💬 <strong style="color:var(--text)">Subtítulos en español:</strong> apretá el ícono <strong style="color:var(--text)">CC</strong> dentro del reproductor → elegí <strong style="color:var(--text)">Spanish</strong>. Se guarda para siempre.</span>
       <button onclick="closeSubTip()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0">Entendido ✓</button>
     </div>
     <div class="provider-bar" id="provider-bar"><span class="provider-label">🖥️ Servidor:</span></div>
@@ -541,58 +541,21 @@ const IMG_LG       = "https://image.tmdb.org/t/p/w1280";
 const FAV_KEY      = "viciotv_favs";
 
 /* ── PROVIDERS ── */
-/* ══════════════════════════════════════════
-   PROVIDERS
-   hidden:true → no aparecen en la barra por defecto
-   lang:"es"   → tienen audio latino/español
-══════════════════════════════════════════ */
 const PROVIDERS = [
-  // ── PRINCIPALES (visibles) ──
   { id:"streamimdb",
-    name:"StreamIMDb", flag:"🎬", note:"Principal · HD",
+    name:"StreamIMDb", flag:"🎬", note:"Principal · HD · Sin ads",
     movie:(t,i)=>i?`https://streamimdb.ru/embed/movie/${i}/`:null,
     tv:(t,i,s,e)=>i?`https://streamimdb.ru/embed/tv/${i}/${s}/${e}`:null,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
-  { id:"autoembed",
-    name:"AutoEmbed", flag:"🌎", note:"Latino disponible", lang:"es",
-    movie:(t)=>`https://autoembed.co/movie/tmdb/${t}`,
-    tv:(t,i,s,e)=>`https://autoembed.co/tv/tmdb/${t}-${s}-${e}`,
-    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
-
-  { id:"imdbembed",
-    name:"IMDbEmbed", flag:"🎭", note:"Latino · Multi-servidor", lang:"es",
-    movie:(t,i)=>`https://imdbembed.xyz/movie/tmdb/${t}`,
-    tv:(t,i,s,e)=>`https://imdbembed.xyz/tv/tmdb/${t}-${s}-${e}`,
-    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
-
   { id:"embedmaster",
-    name:"EmbedMaster", flag:"⭐", note:"HD · Multi-servidor",
+    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD",
     movie:(t,i)=>i?`https://embedmaster.link/movie/${i}`:null,
     tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
     sandbox:null },
 
-  // ── RESERVA (ocultos por defecto, accesibles via botón "+" ) ──
-  { id:"superembed",
-    name:"SuperEmbed", flag:"⚡", note:"10+ servidores", hidden:true,
-    movie:(t)=>`https://multiembed.mov/?video_id=${t}&tmdb=1`,
-    tv:(t,i,s,e)=>`https://multiembed.mov/?video_id=${t}&tmdb=1&s=${s}&e=${e}`,
-    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
-
-  { id:"vidlink",
-    name:"VidLink", flag:"🔗", note:"Subtítulos", hidden:true,
-    movie:(t)=>`https://vidlink.pro/movie/${t}?autoplay=true&primaryColor=e50914`,
-    tv:(t,i,s,e)=>`https://vidlink.pro/tv/${t}/${s}/${e}?autoplay=true&primaryColor=e50914`,
-    sandbox:null },
-
-  { id:"2embed",
-    name:"2Embed", flag:"🎥", note:"Anime", hidden:true,
-    movie:(t)=>`https://www.2embed.stream/embed/movie/${t}`,
-    tv:(t,i,s,e)=>`https://www.2embed.stream/embed/tv/${t}/${s}/${e}`,
-    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
-
   { id:"vidsrc",
-    name:"VidSrc", flag:"📡", note:"Multi-servidor", hidden:true,
+    name:"VidSrc", flag:"📡", note:"Multi-servidor · Reserva", hidden:true,
     movie:(t)=>`https://vidsrc.fyi/embed/movie/${t}`,
     tv:(t,i,s,e)=>`https://vidsrc.fyi/embed/tv/${t}/${s}/${e}`,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
