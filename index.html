@@ -1354,18 +1354,25 @@ async function cachedFetch(url){
 /* ── OPEN CATALOG TAB ── */
 function openCatalogTab(tabKey){
   const cfg=CATALOG_TABS[tabKey]; if(!cfg) return;
+
+  // Siempre reset completo, aunque sea el mismo tab
+  _catalogSession++;
+  catalogState={tab:tabKey,page:1,totalPages:1,loading:false,ended:false,filters:{genre:null,year:null,sort:null,platform:null}};
+
   document.getElementById("catalog-title").textContent=cfg.title;
   document.getElementById("sec-catalog").style.display="";
-  catalogState={tab:tabKey,page:1,totalPages:1,loading:false,ended:false,filters:{genre:null,year:null,sort:null,platform:null}};
   document.getElementById("catalog-grid").innerHTML="";
   document.getElementById("catalog-end-msg").style.display="none";
   document.getElementById("load-spinner").style.display="none";
   buildFiltersBar(cfg);
-  // requestAnimationFrame garantiza que el DOM esté visible antes de cargar y observar
-  _catalogSession++;  // Nueva sesión, cancela fetches anteriores
-  requestAnimationFrame(()=>{
-    loadCatalogPage();
-    setupInfiniteScroll();
+
+  // Desconectar observer viejo antes de cargar
+  if(catalogObserver){ catalogObserver.disconnect(); catalogObserver=null; }
+
+  // requestAnimationFrame: esperar que el DOM sea visible
+  requestAnimationFrame(async ()=>{
+    await loadCatalogPage();  // Esperar que termine la primera página
+    setupInfiniteScroll();    // Luego activar el observer
   });
 }
 
@@ -1411,13 +1418,16 @@ function buildFiltersBar(cfg){
 }
 
 function _resetCatalog(){
-  _catalogSession++;  // Invalida cualquier fetch en vuelo
+  _catalogSession++;
   catalogState.page=1; catalogState.totalPages=1; catalogState.ended=false; catalogState.loading=false;
   document.getElementById("catalog-grid").innerHTML="";
   document.getElementById("catalog-end-msg").style.display="none";
   document.getElementById("load-spinner").style.display="none";
-  loadCatalogPage();
-  setupInfiniteScroll();
+  if(catalogObserver){ catalogObserver.disconnect(); catalogObserver=null; }
+  requestAnimationFrame(async ()=>{
+    await loadCatalogPage();
+    setupInfiniteScroll();
+  });
 }
 
 let _catalogSession = 0; // Cancela fetches de sesiones anteriores
