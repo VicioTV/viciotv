@@ -1385,10 +1385,10 @@ document.addEventListener("click", e => {
 
 /* ─── TABS ─── */
 function switchTab(tab) {
-  // Siempre destruir el iframe al cambiar de tab — para el audio sin importar el estado del modal
-  _destroyMovieFrame();
-  document.getElementById("modal-overlay").classList.remove("open");
-  document.body.style.overflow = "";
+  // Si hay un modal abierto, cerrarlo primero (mata el audio)
+  if (document.getElementById("modal-overlay").classList.contains("open")) {
+    _doCloseModal();
+  }
   activeTab = tab;
   document.querySelectorAll(".nav-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
 
