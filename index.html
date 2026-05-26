@@ -474,7 +474,7 @@
       </div>
     </div>
     <p class="player-note" id="player-note-base">🎬 StreamIMDb · Usá ⛶ para pantalla completa</p>
-    <div id="sub-tip-bar" style="display:none;background:rgba(229,9,20,.12);border:1px solid rgba(229,9,20,.25);border-radius:8px;margin:4px 24px 8px;padding:10px 16px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text2)">
+    <div id="sub-tip-bar" style="background:rgba(229,9,20,.12);border:1px solid rgba(229,9,20,.25);border-radius:8px;margin:4px 24px 8px;padding:10px 16px;align-items:center;gap:10px;font-size:13px;color:var(--text2);display:none">
       <span>💬 <strong style="color:var(--text)">Subtítulos en español:</strong> apretá el ícono <strong style="color:var(--text)">CC</strong> dentro del reproductor → elegí <strong style="color:var(--text)">Spanish</strong>. Se guarda para siempre.</span>
       <button onclick="closeSubTip()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0">Entendido ✓</button>
     </div>
@@ -1183,7 +1183,11 @@ function _doCloseModal() {
   try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch {}
 }
 document.getElementById("close-btn").addEventListener("click", closeModal);
-document.getElementById("modal-overlay").addEventListener("click", e => { if (e.target === document.getElementById("modal-overlay")) closeModal(); });
+document.getElementById("modal-overlay").addEventListener("click", e => {
+  // Cerrar si el click es en el overlay o en el padding (fuera del modal blanco)
+  const modal = document.getElementById("modal");
+  if (!modal.contains(e.target)) closeModal();
+});
 window.addEventListener("popstate", e => {
   if (document.getElementById("modal").classList.contains("forced-fullscreen")) {
     document.getElementById("modal").classList.remove("forced-fullscreen");
