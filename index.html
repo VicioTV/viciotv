@@ -97,11 +97,18 @@
 
   /* ===== MAIN ===== */
   #main{padding:0 0 80px}
-  .row-section{margin-bottom:40px}
+  .row-section{margin-bottom:48px}
   .row-header{display:flex;align-items:center;justify-content:space-between;padding:0 32px;margin-bottom:16px}
   .row-title{font-size:20px;font-weight:600}
+  /* Carruseles horizontales — usados solo en Mi Lista, tabs de películas/series, etc */
   .cards-scroll{display:flex;gap:12px;padding:4px 32px 16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
   .cards-scroll::-webkit-scrollbar{display:none}
+  /* Grilla para secciones del home */
+  .home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:16px;padding:0 32px}
+  .home-grid .card{width:auto;flex-shrink:unset}
+  .load-more-btn{display:block;margin:20px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 32px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;transition:all .2s}
+  .load-more-btn:hover{background:rgba(229,9,20,.12);color:var(--accent);border-color:rgba(229,9,20,.3)}
+  .load-more-btn:disabled{opacity:.4;pointer-events:none}
 
   /* ===== CARDS ===== */
   .card{flex-shrink:0;width:var(--card-w);border-radius:var(--radius);overflow:hidden;cursor:pointer;position:relative;background:var(--bg3);transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;scroll-snap-align:start}
@@ -365,15 +372,18 @@
   <!-- Inicio -->
   <div id="sec-popular" class="row-section">
     <div class="row-header"><span class="row-title">🔥 Populares</span></div>
-    <div class="cards-scroll" id="carousel-popular"></div>
+    <div class="home-grid" id="carousel-popular"></div>
+    <button class="load-more-btn" id="btn-more-popular" onclick="loadMoreHome('popular')">Ver más</button>
   </div>
   <div id="sec-nowplaying" class="row-section">
     <div class="row-header"><span class="row-title">🎬 En Cines</span></div>
-    <div class="cards-scroll" id="carousel-nowplaying"></div>
+    <div class="home-grid" id="carousel-nowplaying"></div>
+    <button class="load-more-btn" id="btn-more-nowplaying" onclick="loadMoreHome('nowplaying')">Ver más</button>
   </div>
   <div id="sec-tvtrending" class="row-section">
     <div class="row-header"><span class="row-title">📺 Series Trending</span></div>
-    <div class="cards-scroll" id="carousel-tvtrending"></div>
+    <div class="home-grid" id="carousel-tvtrending"></div>
+    <button class="load-more-btn" id="btn-more-tvtrending" onclick="loadMoreHome('tvtrending')">Ver más</button>
   </div>
 
   <!-- Películas -->
@@ -1713,6 +1723,42 @@ async function handleDeepLink() {
 }
 
 /* ─── INIT ─── */
+/* ── HOME GRID STATE ── */
+const _homePages = { popular:1, nowplaying:1, tvtrending:1 };
+const _homeEnded = { popular:false, nowplaying:false, tvtrending:false };
+const _homeLoading = { popular:false, nowplaying:false, tvtrending:false };
+const _homeConfig = {
+  popular:    { endpoint:"/movie/popular",    type:"movie" },
+  nowplaying: { endpoint:"/movie/now_playing", type:"movie" },
+  tvtrending: { endpoint:"/trending/tv/week", type:"tv"    },
+};
+
+async function loadMoreHome(key){
+  if(_homeLoading[key] || _homeEnded[key]) return;
+  _homeLoading[key] = true;
+  const btn = document.getElementById(`btn-more-${key}`);
+  if(btn){ btn.disabled=true; btn.textContent="Cargando..."; }
+
+  const cfg = _homeConfig[key];
+  const page = _homePages[key];
+  try{
+    const sep = cfg.endpoint.includes("?") ? "&" : "?";
+    const data = await fetch(`${API_BASE}${cfg.endpoint}${sep}api_key=${API_KEY}&language=es-MX&page=${page}`).then(r=>r.json());
+    const grid = document.getElementById(`carousel-${key}`);
+    (data.results||[]).slice(0,20).forEach((m,i)=>{ m._type=cfg.type; grid.appendChild(buildCard(m,i)); });
+    _homePages[key]++;
+    if(page >= (data.total_pages||1)){
+      _homeEnded[key] = true;
+      if(btn) btn.style.display="none";
+    } else {
+      if(btn){ btn.disabled=false; btn.textContent="Ver más"; }
+    }
+  } catch(e){
+    if(btn){ btn.disabled=false; btn.textContent="Ver más"; }
+  }
+  _homeLoading[key] = false;
+}
+
 /* ── PROVIDER BAR ── */
 function buildProviderBar(){
   const bar=document.getElementById("provider-bar"); if(!bar) return;
@@ -1762,9 +1808,9 @@ let _contentInited = false;
 function initContent() {
   if (_contentInited) return;
   _contentInited = true;
-  loadCarousel("carousel-popular",    "/movie/popular",     "movie");
-  loadCarousel("carousel-nowplaying", "/movie/now_playing", "movie");
-  loadCarousel("carousel-tvtrending", "/trending/tv/week",  "tv");
+  loadMoreHome("popular");
+  loadMoreHome("nowplaying");
+  loadMoreHome("tvtrending");
   loadHeroFeatured();
   setInterval(loadHeroFeatured, 25000);
   handleDeepLink();
