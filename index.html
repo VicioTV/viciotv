@@ -1356,13 +1356,16 @@ function openCatalogTab(tabKey){
   const cfg=CATALOG_TABS[tabKey]; if(!cfg) return;
   document.getElementById("catalog-title").textContent=cfg.title;
   document.getElementById("sec-catalog").style.display="";
-  catalogState={tab:tabKey,page:1,totalPages:1,loading:false,ended:false,filters:{genre:null,year:null,sort:null}};
+  catalogState={tab:tabKey,page:1,totalPages:1,loading:false,ended:false,filters:{genre:null,year:null,sort:null,platform:null}};
   document.getElementById("catalog-grid").innerHTML="";
   document.getElementById("catalog-end-msg").style.display="none";
   document.getElementById("load-spinner").style.display="none";
   buildFiltersBar(cfg);
-  loadCatalogPage();
-  setupInfiniteScroll();
+  // requestAnimationFrame garantiza que el DOM esté visible antes de cargar y observar
+  requestAnimationFrame(()=>{
+    loadCatalogPage();
+    setupInfiniteScroll();
+  });
 }
 
 function buildFiltersBar(cfg){
@@ -1384,7 +1387,7 @@ function buildFiltersBar(cfg){
 
   // Año
   const ys=document.createElement("select"); ys.style.cssText=selStyle;
-  ys.innerHTML=`<option value="">📅 Año</option>`+Array.from({length:35},(_,i)=>2025-i).map(y=>`<option value="${y}">${y}</option>`).join("");
+  ys.innerHTML=`<option value="">📅 Año</option>`+Array.from({length:36},(_,i)=>2026-i).map(y=>`<option value="${y}">${y}</option>`).join("");
   ys.addEventListener("change",()=>{catalogState.filters.year=ys.value||null;_resetCatalog();});
   bar.appendChild(ys);
 
@@ -1407,10 +1410,12 @@ function buildFiltersBar(cfg){
 }
 
 function _resetCatalog(){
-  catalogState.page=1; catalogState.totalPages=1; catalogState.ended=false;
+  catalogState.page=1; catalogState.totalPages=1; catalogState.ended=false; catalogState.loading=false;
   document.getElementById("catalog-grid").innerHTML="";
   document.getElementById("catalog-end-msg").style.display="none";
+  document.getElementById("load-spinner").style.display="none";
   loadCatalogPage();
+  setupInfiniteScroll();
 }
 
 async function loadCatalogPage(){
@@ -1418,35 +1423,60 @@ async function loadCatalogPage(){
   catalogState.loading=true;
   const spinner=document.getElementById("load-spinner"); spinner.style.display="block";
   const grid=document.getElementById("catalog-grid");
-  const cfg=CATALOG_TABS[catalogState.tab]; if(!cfg){catalogState.loading=false;return;}
-  // Skeletons on page 1
+  const cfg=CATALOG_TABS[catalogState.tab];
+  if(!cfg){ catalogState.loading=false; spinner.style.display="none"; return; }
+
+  // Skeletons solo en página 1
   if(catalogState.page===1){
-    for(let i=0;i<20;i++){const sk=document.createElement("div");sk.className="skeleton skeleton-card";sk.style.cssText="height:calc(var(--card-h) + 56px)";grid.appendChild(sk);}
+    grid.innerHTML="";
+    for(let i=0;i<20;i++){
+      const sk=document.createElement("div");
+      sk.className="skeleton skeleton-card";
+      sk.style.cssText="height:calc(var(--card-h) + 56px)";
+      grid.appendChild(sk);
+    }
   }
+
   try{
-    const params=new URLSearchParams({api_key:API_KEY,language:"es-MX",page:catalogState.page,sort_by:catalogState.filters.sort||cfg.defaultSort||"popularity.desc",...(cfg.extraParams||{})});
+    // Construir URL sin cachedFetch para páginas > 1 (evitar cache por paginación)
+    const params=new URLSearchParams({
+      api_key:API_KEY, language:"es-MX", page:catalogState.page,
+      sort_by:catalogState.filters.sort||cfg.defaultSort||"popularity.desc",
+      ...(cfg.extraParams||{})
+    });
     if(catalogState.filters.genre){
       const ex=params.get("with_genres");
-      params.set("with_genres",ex?`${ex},${catalogState.filters.genre}`:catalogState.filters.genre);
+      params.set("with_genres", ex ? `${ex},${catalogState.filters.genre}` : catalogState.filters.genre);
     }
     if(catalogState.filters.platform){
       params.set("with_watch_providers", catalogState.filters.platform);
-      params.set("watch_region", "AR");
+      params.set("watch_region","AR");
     }
     if(catalogState.filters.year){
-      if(cfg.type==="movie") params.set("primary_release_year",catalogState.filters.year);
-      else params.set("first_air_date_year",catalogState.filters.year);
+      if(cfg.type==="movie") params.set("primary_release_year", catalogState.filters.year);
+      else params.set("first_air_date_year", catalogState.filters.year);
     }
-    params.set("vote_count.gte","30");
-    const data=await cachedFetch(`${API_BASE}${cfg.endpoint}?${params}`);
+    if(!catalogState.filters.platform) params.set("vote_count.gte","30");
+
+    const url = `${API_BASE}${cfg.endpoint}?${params}`;
+    // Usar cache solo en página 1, fetch directo en siguientes para no mezclar páginas
+    const data = catalogState.page===1 ? await cachedFetch(url) : await fetch(url).then(r=>r.json());
+
     if(catalogState.page===1) grid.innerHTML="";
-    (data.results||[]).forEach((m,i)=>{m._type=cfg.type;grid.appendChild(buildCard(m,i));});
-    catalogState.totalPages=data.total_pages||1;
-    if(catalogState.page>=catalogState.totalPages){
+    (data.results||[]).forEach((m,i)=>{ m._type=cfg.type; grid.appendChild(buildCard(m,i)); });
+
+    catalogState.totalPages = Math.min(data.total_pages||1, 500); // TMDB max 500
+    if(catalogState.page >= catalogState.totalPages){
       catalogState.ended=true;
       document.getElementById("catalog-end-msg").style.display="block";
-    } else { catalogState.page++; }
-  } catch(e){ console.error(e); if(catalogState.page===1) grid.innerHTML=`<div style="color:var(--text3);padding:40px">Error al cargar. Revisá tu conexión.</div>`; }
+    } else {
+      catalogState.page++;
+    }
+  } catch(e){
+    console.error("loadCatalogPage error:", e);
+    if(catalogState.page===1) grid.innerHTML=`<div style="color:var(--text3);padding:40px;grid-column:1/-1">Error al cargar. Revisá tu conexión.</div>`;
+  }
+
   spinner.style.display="none";
   catalogState.loading=false;
 }
@@ -1454,9 +1484,14 @@ async function loadCatalogPage(){
 function setupInfiniteScroll(){
   if(catalogObserver) catalogObserver.disconnect();
   const trigger=document.getElementById("load-more-trigger");
+  if(!trigger) return;
+
   catalogObserver=new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting&&!catalogState.loading&&!catalogState.ended) loadCatalogPage();
-  },{rootMargin:"300px"});
+    if(entries[0].isIntersecting && !catalogState.loading && !catalogState.ended){
+      loadCatalogPage();
+    }
+  },{ rootMargin:"400px", threshold:0 });
+
   catalogObserver.observe(trigger);
 }
 
