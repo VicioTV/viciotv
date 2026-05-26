@@ -71,17 +71,66 @@
   /* ── THEME PICKER ── */
   .theme-picker-btn{width:28px;height:28px;border-radius:6px;border:2px solid rgba(255,255,255,.15);cursor:pointer;position:relative;flex-shrink:0;background:conic-gradient(var(--accent) 0deg 180deg,var(--bg) 180deg 360deg);transition:border-color .2s}
   .theme-picker-btn:hover{border-color:rgba(255,255,255,.4)}
-  .theme-picker-panel{position:absolute;top:calc(100% + 10px);right:0;background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;width:220px;z-index:2000;display:none;flex-direction:column;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+  .theme-picker-panel{position:absolute;top:calc(100% + 10px);right:0;background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;width:236px;z-index:2000;display:none;flex-direction:column;gap:10px;box-shadow:0 8px 32px rgba(0,0,0,.6)}
   .theme-picker-panel.open{display:flex}
-  .theme-picker-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .theme-picker-label{font-size:12px;color:var(--text2);white-space:nowrap}
-  .theme-picker-panel input[type=color]{width:36px;height:28px;border:none;border-radius:6px;cursor:pointer;background:none;padding:0}
-  .theme-presets{display:flex;gap:6px;flex-wrap:wrap}
-  .theme-preset{width:24px;height:24px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .2s;flex-shrink:0}
-  .theme-preset:hover{transform:scale(1.15);border-color:rgba(255,255,255,.5)}
-  .theme-reset{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:5px;font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;text-align:center;transition:all .2s}
+  .tp-selector{display:flex;flex-direction:column;gap:6px}
+  .tp-option{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 8px;border-radius:8px;transition:background .15s}
+  .tp-option:hover{background:rgba(255,255,255,.05)}
+  .tp-radio{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s}
+  .tp-radio.selected{border-color:var(--accent)}
+  .tp-radio.selected::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);display:block}
+  .tp-swatch{width:18px;height:18px;border-radius:4px;flex-shrink:0}
+  .tp-label{font-size:12px;color:var(--text2)}
+  .tp-divider{font-size:11px;color:var(--text3);padding:2px 0;letter-spacing:.5px}
+  .theme-colors{display:flex;gap:5px;flex-wrap:wrap}
+  .theme-color{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .18s;flex-shrink:0}
+  .theme-color:hover{transform:scale(1.18);border-color:rgba(255,255,255,.6)}
+  .theme-color.active-color{border-color:#fff;transform:scale(1.12)}
+  .theme-reset{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px;font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;text-align:center;transition:all .2s;margin-top:2px}
   .theme-reset:hover{color:var(--text);border-color:rgba(255,255,255,.3)}
   .theme-picker-wrap{position:relative}
+
+  /* ── CREATOR BADGE ── */
+  .creator-wrap{position:relative}
+  .creator-badge{
+    display:flex;align-items:center;gap:8px;
+    border:1px solid rgba(255,255,255,.1);border-radius:8px;
+    padding:5px 12px;cursor:pointer;
+    background:rgba(255,255,255,.03);
+    transition:border-color .2s,background .2s;
+    white-space:nowrap;
+  }
+  .creator-badge:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.06)}
+  .creator-label{
+    font-family:'Bebas Neue',cursive;font-size:13px;letter-spacing:1.5px;
+    background:linear-gradient(90deg,
+      #ff0080,#ff4500,#ffd700,#00ff88,#00cfff,#a855f7,#ff0080
+    );
+    background-size:300% auto;
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:chroma-flow 4s linear infinite;
+    filter:drop-shadow(0 0 6px rgba(168,85,247,.5));
+  }
+  @keyframes chroma-flow{to{background-position:300% center}}
+  .creator-sub{font-size:9px;color:var(--text3);letter-spacing:.5px;display:block;line-height:1;margin-top:1px}
+
+  /* Panel del creador (mismo estilo que theme-picker-panel) */
+  .creator-panel{
+    position:absolute;top:calc(100% + 10px);right:0;
+    background:var(--bg2);border:1px solid rgba(255,255,255,.1);
+    border-radius:14px;padding:16px;width:236px;z-index:2000;
+    display:none;flex-direction:column;gap:10px;
+    box-shadow:0 8px 32px rgba(0,0,0,.6);
+  }
+  .creator-panel.open{display:flex}
+  .creator-panel-title{
+    font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1.5px;
+    background:linear-gradient(90deg,#ff0080,#ff4500,#ffd700,#00ff88,#00cfff,#a855f7,#ff0080);
+    background-size:300% auto;
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:chroma-flow 4s linear infinite;
+    text-align:center;
+  }
   .nav-tabs{display:flex;gap:4px;flex:1}
   .nav-tab{padding:8px 16px;border-radius:8px;border:none;background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all var(--transition);white-space:nowrap}
   .nav-tab:hover{color:var(--text);background:var(--bg3)}
@@ -371,20 +420,30 @@
     <button class="nav-tab focusable" data-tab="anime" onclick="switchTab('anime')">Anime</button>
     <button class="nav-tab focusable" data-tab="canales" onclick="switchTab('canales')">En Vivo</button>
   </div>
-  <!-- Theme Picker -->
-  <div class="theme-picker-wrap">
-    <div class="theme-picker-btn" id="theme-picker-btn" title="Personalizar colores" onclick="toggleThemePicker(event)"></div>
-    <div class="theme-picker-panel" id="theme-picker-panel">
-      <div class="theme-picker-row">
-        <span class="theme-picker-label">🎨 Color principal</span>
-        <input type="color" id="color-accent" value="#e50914" oninput="applyThemeColor('accent',this.value)">
+  <!-- Creator Badge + Theme Picker integrado -->
+  <div class="creator-wrap">
+    <div class="creator-badge" onclick="toggleCreatorPanel(event)" title="Personalizar tema">
+      <div>
+        <span class="creator-label">boch4maN</span>
+        <span class="creator-sub">Creado por · Editar tema</span>
       </div>
-      <div class="theme-picker-row">
-        <span class="theme-picker-label">🌑 Fondo</span>
-        <input type="color" id="color-bg" value="#0a0a0f" oninput="applyThemeColor('bg',this.value)">
+    </div>
+    <div class="creator-panel" id="creator-panel">
+      <div class="creator-panel-title">boch4maN</div>
+      <div class="tp-selector">
+        <div class="tp-option" onclick="selectThemeTarget('accent')" id="tp-opt-accent">
+          <div class="tp-radio selected" id="tp-radio-accent"></div>
+          <div class="tp-swatch" id="tp-swatch-accent" style="background:var(--accent)"></div>
+          <span class="tp-label">Color principal</span>
+        </div>
+        <div class="tp-option" onclick="selectThemeTarget('bg')" id="tp-opt-bg">
+          <div class="tp-radio" id="tp-radio-bg"></div>
+          <div class="tp-swatch" id="tp-swatch-bg" style="background:var(--bg);border:1px solid rgba(255,255,255,.15)"></div>
+          <span class="tp-label">Fondo</span>
+        </div>
       </div>
-      <div style="font-size:11px;color:var(--text3);margin-top:2px">Presets rápidos:</div>
-      <div class="theme-presets" id="theme-presets"></div>
+      <div class="tp-divider">Colores</div>
+      <div class="theme-colors" id="theme-colors"></div>
       <button class="theme-reset" onclick="resetTheme()">↺ Restaurar por defecto</button>
     </div>
   </div>
@@ -2353,104 +2412,114 @@ localStorage.removeItem("viciotv_sub_tip_seen_old");
 /* ══════════════════════════════════════════
    THEME PICKER
 ══════════════════════════════════════════ */
-const THEME_PRESETS = [
-  { label:"Rojo (default)", accent:"#e50914", bg:"#0a0a0f" },
-  { label:"Azul",           accent:"#0ea5e9", bg:"#0a0f1a" },
-  { label:"Verde",          accent:"#22c55e", bg:"#0a0f0d" },
-  { label:"Violeta",        accent:"#8b5cf6", bg:"#0d0a1a" },
-  { label:"Naranja",        accent:"#f97316", bg:"#0f0a08" },
-  { label:"Rosa",           accent:"#ec4899", bg:"#150a12" },
-  { label:"Dorado",         accent:"#f59e0b", bg:"#100e04" },
-  { label:"Cian",           accent:"#06b6d4", bg:"#040f12" },
+const THEME_COLORS = [
+  // Rojos / Cálidos
+  "#e50914","#ff4444","#ff6b35","#f97316",
+  // Amarillos / Dorados
+  "#f59e0b","#eab308","#facc15","#84cc16",
+  // Verdes
+  "#22c55e","#10b981","#14b8a6","#06b6d4",
+  // Azules
+  "#0ea5e9","#3b82f6","#6366f1","#8b5cf6",
+  // Violetas / Rosas
+  "#a855f7","#d946ef","#ec4899","#f43f5e",
+  // Fondos oscuros
+  "#0a0a0f","#0a0f1a","#0a0f0d","#0d0a1a",
+  "#0f0a08","#150a12","#100e04","#040f12",
 ];
 
-function hexToRgb(hex) {
-  const r = parseInt(hex.slice(1,3),16);
-  const g = parseInt(hex.slice(3,5),16);
-  const b = parseInt(hex.slice(5,7),16);
-  return `${r},${g},${b}`;
+let _themeTarget = "accent"; // "accent" o "bg"
+
+function selectThemeTarget(target) {
+  _themeTarget = target;
+  // Radio buttons
+  document.getElementById("tp-radio-accent").classList.toggle("selected", target === "accent");
+  document.getElementById("tp-radio-bg").classList.toggle("selected", target === "bg");
+  // Resaltar el color activo en la grilla
+  highlightActiveColor();
+}
+
+function highlightActiveColor() {
+  const current = _themeTarget === "accent"
+    ? getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()
+    : getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
+  document.querySelectorAll(".theme-color").forEach(el => {
+    el.classList.toggle("active-color", el.dataset.color === current);
+  });
 }
 
 function applyThemeColor(type, value) {
   const root = document.documentElement;
-  if (type === 'accent') {
-    // Derivar accent2 como versión más clara/cálida
-    const r = parseInt(value.slice(1,3),16);
-    const g = parseInt(value.slice(3,5),16);
-    const b = parseInt(value.slice(5,7),16);
-    const accent2 = `rgb(${Math.min(r+40,255)},${Math.min(g+50,255)},${Math.min(b+40,255)})`;
-    root.style.setProperty('--accent', value);
-    root.style.setProperty('--accent2', accent2);
-    // Actualizar botón
-    updateThemeBtn(value, null);
-    localStorage.setItem('viciotv_accent', value);
+  if (type === "accent") {
+    const r=parseInt(value.slice(1,3),16), g=parseInt(value.slice(3,5),16), b=parseInt(value.slice(5,7),16);
+    root.style.setProperty("--accent", value);
+    root.style.setProperty("--accent2", `rgb(${Math.min(r+40,255)},${Math.min(g+50,255)},${Math.min(b+40,255)})`);
+    localStorage.setItem("viciotv_accent", value);
+    // Actualizar swatch
+    const sw = document.getElementById("tp-swatch-accent");
+    if (sw) sw.style.background = value;
   } else {
-    // Derivar bg2 y bg3 del bg base
-    const r = parseInt(value.slice(1,3),16);
-    const g = parseInt(value.slice(3,5),16);
-    const b = parseInt(value.slice(5,7),16);
-    const bg2 = `rgb(${Math.min(r+8,255)},${Math.min(g+8,255)},${Math.min(b+8,255)})`;
-    const bg3 = `rgb(${Math.min(r+16,255)},${Math.min(g+16,255)},${Math.min(b+16,255)})`;
-    root.style.setProperty('--bg', value);
-    root.style.setProperty('--bg2', bg2);
-    root.style.setProperty('--bg3', bg3);
-    updateThemeBtn(null, value);
-    localStorage.setItem('viciotv_bg', value);
+    const r=parseInt(value.slice(1,3),16), g=parseInt(value.slice(3,5),16), b=parseInt(value.slice(5,7),16);
+    root.style.setProperty("--bg",  value);
+    root.style.setProperty("--bg2", `rgb(${Math.min(r+8,255)},${Math.min(g+8,255)},${Math.min(b+8,255)})`);
+    root.style.setProperty("--bg3", `rgb(${Math.min(r+16,255)},${Math.min(g+16,255)},${Math.min(b+16,255)})`);
+    localStorage.setItem("viciotv_bg", value);
+    const sw = document.getElementById("tp-swatch-bg");
+    if (sw) { sw.style.background = value; }
   }
+  updateThemeBtn();
+  highlightActiveColor();
 }
 
-function updateThemeBtn(accent, bg) {
-  const btn = document.getElementById('theme-picker-btn');
+function updateThemeBtn() {
+  const btn = document.getElementById("theme-picker-btn");
   if (!btn) return;
-  const a = accent || getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
-  const b = bg || getComputedStyle(document.documentElement).getPropertyValue('--bg').trim();
+  const a = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+  const b = getComputedStyle(document.documentElement).getPropertyValue("--bg").trim();
   btn.style.background = `conic-gradient(${a} 0deg 180deg, ${b} 180deg 360deg)`;
 }
 
-function applyPreset(preset) {
-  applyThemeColor('accent', preset.accent);
-  applyThemeColor('bg', preset.bg);
-  document.getElementById('color-accent').value = preset.accent;
-  document.getElementById('color-bg').value = preset.bg;
-}
-
 function resetTheme() {
-  applyPreset(THEME_PRESETS[0]);
-  localStorage.removeItem('viciotv_accent');
-  localStorage.removeItem('viciotv_bg');
+  applyThemeColor("accent", "#e50914");
+  applyThemeColor("bg",     "#0a0a0f");
+  localStorage.removeItem("viciotv_accent");
+  localStorage.removeItem("viciotv_bg");
 }
 
-function toggleThemePicker(e) {
+function toggleCreatorPanel(e) {
   e.stopPropagation();
-  document.getElementById('theme-picker-panel').classList.toggle('open');
+  document.getElementById("creator-panel").classList.toggle("open");
+  highlightActiveColor();
 }
 
 function initThemePicker() {
-  // Renderizar presets
-  const container = document.getElementById('theme-presets');
+  // Renderizar 24 colores
+  const container = document.getElementById("theme-colors");
   if (container) {
-    THEME_PRESETS.forEach(p => {
-      const dot = document.createElement('div');
-      dot.className = 'theme-preset';
-      dot.title = p.label;
-      dot.style.background = `linear-gradient(135deg, ${p.accent}, ${p.bg})`;
-      dot.style.border = '2px solid rgba(255,255,255,.15)';
-      dot.addEventListener('click', () => applyPreset(p));
+    THEME_COLORS.forEach(color => {
+      const dot = document.createElement("div");
+      dot.className = "theme-color";
+      dot.dataset.color = color;
+      dot.title = color;
+      dot.style.background = color;
+      if (color.startsWith("#0") || color.startsWith("#1") || color.startsWith("#04") || color.startsWith("#15")) {
+        dot.style.border = "2px solid rgba(255,255,255,.2)";
+      }
+      dot.addEventListener("click", () => applyThemeColor(_themeTarget, color));
       container.appendChild(dot);
     });
   }
   // Restaurar tema guardado
-  const savedAccent = localStorage.getItem('viciotv_accent');
-  const savedBg     = localStorage.getItem('viciotv_bg');
-  if (savedAccent) { applyThemeColor('accent', savedAccent); document.getElementById('color-accent').value = savedAccent; }
-  if (savedBg)     { applyThemeColor('bg', savedBg);         document.getElementById('color-bg').value = savedBg; }
-  updateThemeBtn(savedAccent || '#e50914', savedBg || '#0a0a0f');
+  const savedAccent = localStorage.getItem("viciotv_accent");
+  const savedBg     = localStorage.getItem("viciotv_bg");
+  if (savedAccent) applyThemeColor("accent", savedAccent);
+  if (savedBg)     applyThemeColor("bg",     savedBg);
+  updateThemeBtn();
   // Cerrar al clickear fuera
-  document.addEventListener('click', e => {
-    const panel = document.getElementById('theme-picker-panel');
-    const btn   = document.getElementById('theme-picker-btn');
-    if (panel?.classList.contains('open') && !panel.contains(e.target) && e.target !== btn) {
-      panel.classList.remove('open');
+  document.addEventListener("click", e => {
+    const panel = document.getElementById("creator-panel");
+    if (panel?.classList.contains("open") && !panel.contains(e.target) && !e.target.closest(".creator-badge")) {
+      panel.classList.remove("open");
     }
   });
 }
