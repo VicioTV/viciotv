@@ -601,11 +601,6 @@ const PROVIDERS = [
     tv:(t,i,s,e)=>`https://vidsrc.fyi/embed/tv/${t}/${s}/${e}`,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
-  { id:"embedapi",
-    name:"EmbedAPI", flag:"🌐", note:"10+ fuentes · Latino · Probar", hidden:true,
-    movie:(t)=>`https://player.embed-api.stream/?id=${t}`,
-    tv:(t,i,s,e)=>`https://player.embed-api.stream/?id=${t}&s=${s}&e=${e}&type=tv`,
-    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
 ];
 let activeProvider = localStorage.getItem("viciotv_provider") || "streamimdb";
 function getProvider(){ return PROVIDERS.find(p=>p.id===activeProvider)||PROVIDERS[0]; }
@@ -1728,24 +1723,64 @@ function showHome() {
 
 /* ─── CANALES EN VIVO ─── */
 const LIVE_CHANNELS = [
-  { name: "C5N", url: "https://www.youtube.com/embed/rSVANtbwPGc?autoplay=1", badge: "NOTICIA" },
-  { name: "TN", url: "https://www.youtube.com/embed/LHwlAXgoxeM?autoplay=1", badge: "NOTICIA" },
-  { name: "América TV", url: "https://www.youtube.com/embed/hJxoqRhCHFQ?autoplay=1", badge: "GENERAL" },
-  { name: "El Trece", url: "https://www.youtube.com/embed/rV10gIPWf_k?autoplay=1", badge: "GENERAL" },
-  { name: "A24", url: "https://www.youtube.com/embed/dkKveHmUiaA?autoplay=1", badge: "NOTICIA" },
-  { name: "LN+", url: "https://www.youtube.com/embed/p4lBsdpQG3A?autoplay=1", badge: "NOTICIA" },
-  { name: "TV Pública", url: "https://www.youtube.com/embed/JoaoPpRWp8o?autoplay=1", badge: "GENERAL" },
-  { name: "Canal 26", url: "https://www.youtube.com/embed/V3Y5TiPHx9s?autoplay=1", badge: "NOTICIA" },
-  { name: "NASA TV", url: "https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1", badge: "NASA" },
-  { name: "Al Jazeera", url: "https://www.youtube.com/embed/F-POzaABmSE?autoplay=1", badge: "INTER." },
-  { name: "BBC News", url: "https://www.youtube.com/embed/w_Ma8oQLmSM?autoplay=1", badge: "INTER." },
-  { name: "euronews", url: "https://www.youtube.com/embed/l-KNaCiTiJM?autoplay=1", badge: "INTER." },
+  /* ── ARGENTINA · NOTICIAS ── */
+  { name:"TN",           url:"https://www.youtube.com/embed/cb12KmMMDJA?autoplay=1", badge:"NOTICIA", cat:"AR" },
+  { name:"C5N",          url:"https://www.youtube.com/embed/VWhQ6xspnSc?autoplay=1", badge:"NOTICIA", cat:"AR" },
+  { name:"A24",          url:"https://www.youtube.com/embed/ArKbAx1K-2U?autoplay=1", badge:"NOTICIA", cat:"AR" },
+  { name:"LN+",          url:"https://www.youtube.com/embed/DVZ2rJQb_0g?autoplay=1", badge:"NOTICIA", cat:"AR" },
+  { name:"Crónica",      url:"https://www.youtube.com/embed/JC7f3EUDaqw?autoplay=1", badge:"NOTICIA", cat:"AR" },
+  { name:"Canal 26",     url:"https://www.youtube.com/embed/JrmCaXL5GZs?autoplay=1", badge:"NOTICIA", cat:"AR" },
+  /* ── ARGENTINA · GENERAL ── */
+  { name:"Canal 9",      url:"https://www.youtube.com/embed/mCvoIRBgMU0?autoplay=1", badge:"GENERAL", cat:"AR" },
+  { name:"TV Pública",   url:"https://www.youtube.com/embed/JoaoPpRWp8o?autoplay=1", badge:"GENERAL", cat:"AR" },
+  { name:"América TV",   url:"https://www.youtube.com/embed/hJxoqRhCHFQ?autoplay=1", badge:"GENERAL", cat:"AR" },
+  { name:"El Trece",     url:"https://www.youtube.com/embed/rV10gIPWf_k?autoplay=1", badge:"GENERAL", cat:"AR" },
+  { name:"Telefe",       url:"https://www.youtube.com/embed/J3LBDoRNVp0?autoplay=1", badge:"GENERAL", cat:"AR" },
+  { name:"Luzu TV",      url:"https://www.youtube.com/embed/GtWNthI-BBY?autoplay=1", badge:"ENTRET.", cat:"AR" },
+  /* ── LATINOAMÉRICA ── */
+  { name:"CNN Español",  url:"https://www.youtube.com/embed/C8r9BPRNhiU?autoplay=1", badge:"NOTICIA", cat:"LAT" },
+  { name:"Milenio TV",   url:"https://www.youtube.com/embed/N_-oBq5NV7I?autoplay=1", badge:"NOTICIA", cat:"LAT" },
+  { name:"NTN24",        url:"https://www.youtube.com/embed/QuQvl9f3PH0?autoplay=1", badge:"NOTICIA", cat:"LAT" },
+  { name:"DW Español",   url:"https://www.youtube.com/embed/rp0-m6MNR0A?autoplay=1", badge:"NOTICIA", cat:"LAT" },
+  { name:"RT Español",   url:"https://www.youtube.com/embed/IFAcqaNQiQ8?autoplay=1", badge:"NOTICIA", cat:"LAT" },
+  /* ── INTERNACIONAL ── */
+  { name:"BBC News",     url:"https://www.youtube.com/embed/w_Ma8oQLmSM?autoplay=1", badge:"INTER.",  cat:"INT" },
+  { name:"Al Jazeera",   url:"https://www.youtube.com/embed/F-POzaABmSE?autoplay=1", badge:"INTER.",  cat:"INT" },
+  { name:"euronews",     url:"https://www.youtube.com/embed/l-KNaCiTiJM?autoplay=1", badge:"INTER.",  cat:"INT" },
+  { name:"NASA TV",      url:"https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1", badge:"NASA",    cat:"INT" },
 ];
-function renderLiveChannels() {
+function renderLiveChannels(filter) {
+  filter = filter || "ALL";
   const grid = document.getElementById("live-grid");
   if (!grid) return;
   grid.innerHTML = "";
-  LIVE_CHANNELS.forEach(ch => {
+
+  // Barra de filtros por categoría
+  const cats = [
+    { id:"ALL", label:"Todos"             },
+    { id:"AR",  label:"🇦🇷 Argentina"    },
+    { id:"LAT", label:"🌎 Latinoamérica" },
+    { id:"INT", label:"🌐 Internacional"  },
+  ];
+  let filterBar = document.getElementById("live-filter-bar");
+  if (!filterBar) {
+    filterBar = document.createElement("div");
+    filterBar.id = "live-filter-bar";
+    filterBar.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;padding:0 32px 16px";
+    grid.parentElement.insertBefore(filterBar, grid);
+  }
+  filterBar.innerHTML = "";
+  cats.forEach(cat => {
+    const btn = document.createElement("button");
+    btn.className = "filter-chip" + (filter === cat.id ? " active" : "");
+    btn.textContent = cat.label;
+    btn.addEventListener("click", () => renderLiveChannels(cat.id));
+    filterBar.appendChild(btn);
+  });
+
+  // Canales filtrados
+  const filtered = LIVE_CHANNELS.filter(ch => filter === "ALL" || ch.cat === filter);
+  filtered.forEach(ch => {
     const card = document.createElement("div");
     card.className = "live-card focusable";
     card.tabIndex = 0;
