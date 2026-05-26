@@ -590,15 +590,40 @@ const PROVIDERS = [
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
   { id:"embedmaster",
-    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD", hidden:true,
+    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD",
     movie:(t,i)=>i?`https://embedmaster.link/movie/${i}`:null,
     tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
     sandbox:null },
 
-  { id:"vidsrc",
-    name:"VidSrc", flag:"📡", note:"Multi-servidor · Reserva", hidden:true,
+  // ── A PROBAR (extraídos de Streamflix source) ──
+  { id:"vidsrcnet",
+    name:"VidSrc.net", flag:"📡", note:"Probar · TMDB directo", hidden:true,
+    movie:(t)=>`https://vidsrc-embed.ru/embed/movie?tmdb=${t}`,
+    tv:(t,i,s,e)=>`https://vidsrc-embed.ru/embed/tv?tmdb=${t}&season=${s}&episode=${e}`,
+    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
+
+  { id:"vidsrcto",
+    name:"VidSrc.to", flag:"🔵", note:"Probar · TMDB directo", hidden:true,
+    movie:(t)=>`https://vidsrc.to/embed/movie/${t}`,
+    tv:(t,i,s,e)=>`https://vidsrc.to/embed/tv/${t}/${s}/${e}`,
+    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
+
+  { id:"vidsrcfyi",
+    name:"VidSrc.fyi", flag:"🟢", note:"Probar · TMDB directo", hidden:true,
     movie:(t)=>`https://vidsrc.fyi/embed/movie/${t}`,
     tv:(t,i,s,e)=>`https://vidsrc.fyi/embed/tv/${t}/${s}/${e}`,
+    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
+
+  { id:"vidflix",
+    name:"VidFlix", flag:"🎭", note:"Probar · multi-servidor", hidden:true,
+    movie:(t,i)=>i?`https://vidflix.club/movie/${i}`:null,
+    tv:(t,i,s,e)=>i?`https://vidflix.club/tv/${i}/${s}/${e}`:null,
+    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
+
+  { id:"vixsrc",
+    name:"VixSrc", flag:"🟠", note:"Probar · TMDB directo", hidden:true,
+    movie:(t)=>`https://vixsrc.to/movie/${t}`,
+    tv:(t,i,s,e)=>`https://vixsrc.to/tv/${t}/${s}/${e}`,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
 ];
@@ -1733,10 +1758,19 @@ const LIVE_CHANNELS = [
   { name:"Canal 26",   id:"JrmCaXL5GZs", badge:"NOTICIA", cat:"AR" },
   /* ── ARGENTINA · GENERAL ── */
   { name:"Canal 9",    id:"mCvoIRBgMU0", badge:"GENERAL", cat:"AR" },
-  { name:"TV Pública", id:"gMLNuP13zDA", badge:"GENERAL", cat:"AR" },
-  { name:"América TV", id:"YVaoqbhD7cw", badge:"GENERAL", cat:"AR" },
-  { name:"El Trece",   id:"Q7Hbjnzi7_E", badge:"GENERAL", cat:"AR" },
+  { name:"TV Pública", id:"JoaoPpRWp8o", badge:"GENERAL", cat:"AR" },
+  { name:"América TV", id:"hJxoqRhCHFQ", badge:"GENERAL", cat:"AR" },
+  { name:"El Trece",   id:"rV10gIPWf_k", badge:"GENERAL", cat:"AR" },
   { name:"Luzu TV",    id:"GtWNthI-BBY", badge:"ENTRET.", cat:"AR" },
+  /* ── LATINOAMÉRICA ── */
+  { name:"CNN Español",id:"C8r9BPRNhiU", badge:"NOTICIA", cat:"LAT" },
+  { name:"NTN24",      id:"QuQvl9f3PH0", badge:"NOTICIA", cat:"LAT" },
+  { name:"DW Español", id:"rp0-m6MNR0A", badge:"NOTICIA", cat:"LAT" },
+  /* ── INTERNACIONAL ── */
+  { name:"Al Jazeera", id:"F-POzaABmSE", badge:"INTER.",  cat:"INT" },
+  { name:"BBC News",   id:"w_Ma8oQLmSM", badge:"INTER.",  cat:"INT" },
+  { name:"euronews",   id:"l-KNaCiTiJM", badge:"INTER.",  cat:"INT" },
+  { name:"NASA TV",    id:"21X5lGlDOfg", badge:"NASA",    cat:"INT" },
 ];
 function renderLiveChannels(filter) {
   filter = filter || "ALL";
