@@ -628,7 +628,7 @@ const PROVIDERS = [
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
 ];
-let activeProvider = localStorage.getItem("viciotv_provider") || "streamimdb";
+let activeProvider = "streamimdb";
 function getProvider(){ return PROVIDERS.find(p=>p.id===activeProvider)||PROVIDERS[0]; }
 function setProvider(id){ activeProvider=id; localStorage.setItem("viciotv_provider",id); }
 function buildPlayerUrl(type, tmdbId, imdbId, s=1, e=1){
