@@ -1031,7 +1031,7 @@ async function openModal(item) {
       applyProviderSandbox();
       buildProviderBar();
       const movieUrl = buildPlayerUrl("movie", item.id, currentImdbId);
-      if (movieUrl) movieFrame.src = movieUrl;
+      if (movieUrl && getFrame()) getFrame().src = movieUrl;
     } else {
       currentSeasons = detail.number_of_seasons || 1;
       const extRes  = await fetch(`${API_BASE}/tv/${item.id}/external_ids?api_key=${API_KEY}`);
@@ -1161,12 +1161,11 @@ document.getElementById("tv-load-btn").addEventListener("click", () => { if (cur
 function loadTVEpisode(forceSeason, forceEpisode) {
   const s = Number(forceSeason ?? document.getElementById("sel-season").value ?? 1) || 1;
   const e = Number(forceEpisode ?? document.getElementById("sel-episode").value ?? 1) || 1;
-  window.movieFrame = document.getElementById("movie-frame");
   applyProviderSandbox();
-  movieFrame.src = "about:blank";
+  if(getFrame()) getFrame().src = "about:blank";
   setTimeout(() => {
     const url = buildPlayerUrl("tv", currentItem?.id, currentImdbId, s, e);
-    if (url) movieFrame.src = url;
+    if (url && getFrame()) getFrame().src = url;
     if (currentItem) saveProgress(currentItem, s, e, 0);
   }, 120);
   startNextEpisodeCountdown();
@@ -1216,6 +1215,16 @@ function _doCloseModal() {
   clearTimeout(nextEpisodeTimer);
   history.replaceState(null, "", window.location.pathname + window.location.search);
   try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch {}
+}
+
+function getFrame() {
+  return document.getElementById('movie-frame');
+}
+
+function _createMovieFrame() {
+  // En esta versión el iframe ya existe en el HTML — solo resetearlo
+  const frame = document.getElementById('movie-frame');
+  if (frame) { frame.src = ''; }
 }
 
 function _resetMovieFrame() {
@@ -1661,7 +1670,11 @@ function openLiveChannel(ch) {
   document.getElementById("modal-similar-section").style.display = "none";
   document.getElementById("episodes-panel").classList.remove("visible");
   document.getElementById("tv-selectors").classList.remove("visible");
-  movieFrame.src = ch.url;
+  if(getFrame()) getFrame().src = ch.url;
+  // Crear iframe fresco al abrir el modal
+  _createMovieFrame();
+  applyProviderSandbox();
+
   document.getElementById("modal-overlay").classList.add("open");
   document.body.style.overflow = "hidden";
   history.pushState({ modal: true }, "");
@@ -1856,7 +1869,8 @@ function buildProviderBar(){
       const latinoBadge = p.lang === "es" ? ' <span style="font-size:9px;background:rgba(255,255,255,.15);border-radius:3px;padding:1px 4px;vertical-align:middle">LAT</span>' : "";
       btn.innerHTML = `${p.flag} ${p.name}${latinoBadge}`;
       btn.title = p.note || "";
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         if (p.id === activeProvider) return;
         setProvider(p.id);
         applyProviderSandbox();
@@ -1881,7 +1895,7 @@ function buildProviderBar(){
       moreBtn.textContent = showHidden ? "▲ Menos" : "＋ Más";
       moreBtn.title = showHidden ? "Ocultar servidores de reserva" : "Ver servidores de reserva";
       moreBtn.style.opacity = "0.6";
-      moreBtn.addEventListener("click", () => { showHidden = !showHidden; renderButtons(); });
+      moreBtn.addEventListener("click", (e) => { e.stopPropagation(); showHidden = !showHidden; renderButtons(); });
       bar.appendChild(moreBtn);
     }
   }
