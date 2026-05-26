@@ -218,7 +218,7 @@
   .cast-role{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   /* ── FILMOGRAFÍA OVERLAY ── */
-  #actor-overlay{display:none;position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.95);backdrop-filter:blur(10px);overflow-y:auto;padding:24px 16px}
+  #actor-overlay{display:none;position:fixed;inset:0;z-index:1500;background:var(--bg);overflow-y:auto;padding:80px 16px 60px}
   #actor-overlay.open{display:block}
   .actor-header{max-width:960px;margin:0 auto 28px;display:flex;align-items:flex-start;gap:20px}
   .actor-header-back{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);border-radius:8px;padding:8px 16px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;white-space:nowrap;flex-shrink:0}
@@ -520,11 +520,14 @@
           <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
           Compartir
         </button>
-        <button class="modal-action-btn focusable" id="tmdb-btn">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          TMDB
-        </button>
+
       </div>
+    </div>
+
+    <!-- Cast — debajo de los botones, arriba de episodios -->
+    <div id="modal-cast-section">
+      <div class="modal-section-title">Reparto principal</div>
+      <div class="cast-scroll" id="cast-scroll"></div>
     </div>
 
     <!-- Episodes Panel -->
@@ -534,12 +537,6 @@
         <select class="season-dropdown" id="ep-panel-season"></select>
       </div>
       <div style="padding:0 24px 4px"><div class="episode-list" id="episode-list"></div></div>
-    </div>
-
-    <!-- Cast -->
-    <div id="modal-cast-section">
-      <div class="modal-section-title">Reparto y equipo</div>
-      <div class="cast-scroll" id="cast-scroll"></div>
     </div>
 
     <!-- Similar -->
@@ -586,7 +583,7 @@ const PROVIDERS = [
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
   { id:"embedmaster",
-    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD", hidden:true,
+    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD",
     movie:(t,i)=>i?`https://embedmaster.link/movie/${i}`:null,
     tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
     sandbox:null },
@@ -1285,10 +1282,6 @@ document.getElementById("share-btn").addEventListener("click", () => {
     navigator.clipboard?.writeText(url).then(() => showToast("¡Link copiado!")).catch(() => showToast(url));
   }
 });
-document.getElementById("tmdb-btn").addEventListener("click", () => {
-  if (!currentItem) return;
-  window.open(`https://www.themoviedb.org/${currentType}/${currentItem.id}`, "_blank", "noopener");
-});
 
 /* ─── FULLSCREEN ─── */
 document.getElementById("fs-btn").addEventListener("click", toggleCustomFullscreen);
@@ -1874,8 +1867,13 @@ async function openActorOverlay(personId, personName, imgSrc) {
     ? `<img class="actor-profile-img" src="${imgSrc}" alt="${personName}">`
     : `<div class="actor-profile-placeholder">👤</div>`;
 
+  // Cerrar el modal para que la filmografía ocupe toda la pantalla
+  document.getElementById("modal-overlay").classList.remove("open");
+  document.body.style.overflow = "";
+
   overlay.classList.add("open");
   document.body.style.overflow = "hidden";
+  overlay.scrollTop = 0;
   history.pushState({ actorOverlay: true }, "");
 
   try {
@@ -1953,19 +1951,16 @@ async function openActorOverlay(personId, personName, imgSrc) {
 function closeActorOverlay() {
   const overlay = document.getElementById("actor-overlay");
   overlay.classList.remove("open");
-  document.body.style.overflow = "hidden"; // El modal sigue abierto
+  // Reabrir el modal
+  if (currentItem) {
+    document.getElementById("modal-overlay").classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
   history.replaceState(null, "", window.location.pathname + window.location.search + window.location.hash);
 }
 
 // Cerrar con Escape o Back del browser
-window.addEventListener("popstate", e => {
-  const actorOverlay = document.getElementById("actor-overlay");
-  if (actorOverlay.classList.contains("open")) {
-    actorOverlay.classList.remove("open");
-    document.body.style.overflow = "hidden";
-    return;
-  }
-});
+// El popstate del actor overlay se maneja en el popstate general del modal
 
 /* ── PROVIDER BAR ── */
 function buildProviderBar(){
