@@ -1733,8 +1733,8 @@ const LIVE_CHANNELS = [
   { name:"Canal 26",   id:"JrmCaXL5GZs", badge:"NOTICIA", cat:"AR" },
   /* ── ARGENTINA · GENERAL ── */
   { name:"Canal 9",    id:"mCvoIRBgMU0", badge:"GENERAL", cat:"AR" },
-  { name:"TV Pública", id:"gMLNuP13zDA", badge:"GENERAL", cat:"AR" },
-  { name:"Telefe",     id:"2AX9MWGFrcU", badge:"GENERAL", cat:"AR" },
+  { name:"TV Pública", id:"JoaoPpRWp8o", badge:"GENERAL", cat:"AR" },
+  { name:"América TV", id:"hJxoqRhCHFQ", badge:"GENERAL", cat:"AR" },
   { name:"El Trece",   id:"rV10gIPWf_k", badge:"GENERAL", cat:"AR" },
   { name:"Luzu TV",    id:"GtWNthI-BBY", badge:"ENTRET.", cat:"AR" },
   /* ── LATINOAMÉRICA ── */
@@ -1753,24 +1753,23 @@ function renderLiveChannels(filter) {
   if (!grid) return;
   grid.innerHTML = "";
 
-  // Barra de filtros por categoría
+  // Tabs estilo nav-tab — solo Todos y Argentina
   const cats = [
-    { id:"ALL", label:"Todos"             },
-    { id:"AR",  label:"🇦🇷 Argentina"    },
-    { id:"LAT", label:"🌎 Latinoamérica" },
-    { id:"INT", label:"🌐 Internacional"  },
+    { id:"ALL", label:"Todos" },
+    { id:"AR",  label:"🇦🇷 Argentina" },
   ];
   let filterBar = document.getElementById("live-filter-bar");
   if (!filterBar) {
     filterBar = document.createElement("div");
     filterBar.id = "live-filter-bar";
-    filterBar.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;padding:0 32px 16px";
+    filterBar.style.cssText = "display:flex;gap:6px;padding:0 32px 20px";
     grid.parentElement.insertBefore(filterBar, grid);
   }
   filterBar.innerHTML = "";
   cats.forEach(cat => {
     const btn = document.createElement("button");
-    btn.className = "filter-chip" + (filter === cat.id ? " active" : "");
+    btn.className = "nav-tab" + (filter === cat.id ? " active" : "");
+    btn.style.cssText = "font-size:13px;padding:7px 18px";
     btn.textContent = cat.label;
     btn.addEventListener("click", () => renderLiveChannels(cat.id));
     filterBar.appendChild(btn);
@@ -2173,6 +2172,7 @@ function closeActorOverlay() {
 /* ── PROVIDER BAR ── */
 function buildProviderBar(){
   const bar = document.getElementById("provider-bar"); if(!bar) return;
+  bar.style.display = "flex"; // Asegurar que sea visible
   bar.innerHTML = '<span class="provider-label">🖥️ Servidor:</span>';
 
   let showHidden = false;
