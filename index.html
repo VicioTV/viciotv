@@ -583,7 +583,7 @@ const PROVIDERS = [
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
   { id:"embedmaster",
-    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD", hidden:true,
+    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD",
     movie:(t,i)=>i?`https://embedmaster.link/movie/${i}`:null,
     tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
     sandbox:null },
@@ -959,6 +959,7 @@ async function openModal(item) {
   currentImdbId = null; currentSeasons = 1;
   updateFavBtn(item);
 
+  const modalAlreadyOpen = document.getElementById("modal-overlay").classList.contains("open");
   document.getElementById("modal-overlay").classList.add("open");
   // Mostrar tip de subtítulos si no fue cerrado antes
   const subTipBar = document.getElementById("sub-tip-bar");
@@ -966,7 +967,9 @@ async function openModal(item) {
     subTipBar.style.display = localStorage.getItem("viciotv_sub_tip_seen") ? "none" : "flex";
   }
   document.body.style.overflow = "hidden";
-  history.pushState({ modal: true }, "");
+  // Solo pushear al historial si el modal no estaba abierto ya
+  // (evita que navegar entre similar/actores cierre el modal)
+  if (!modalAlreadyOpen) history.pushState({ modal: true }, "");
 
   try {
     const resDetail = await fetch(`${API_BASE}/${currentType}/${item.id}?api_key=${API_KEY}&language=es-MX&append_to_response=credits,recommendations`);
@@ -1912,7 +1915,7 @@ async function openActorOverlay(personId, personName, imgSrc) {
         c.poster_path &&
         c.vote_count > 20 &&
         (c.order == null || c.order < 20) &&
-        (c.episode_count == null || c.episode_count >= 1) // al menos 2 episodio
+        (c.episode_count == null || c.episode_count >= 2) // al menos 2 episodios
       )
       .sort((a,b) => b.popularity - a.popularity)
       .slice(0, 30)
