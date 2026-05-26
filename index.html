@@ -403,12 +403,12 @@
     <button class="load-more-btn" id="btn-more-popular" onclick="loadMoreHome('popular')">Ver más</button>
   </div>
   <div id="sec-nowplaying" class="row-section">
-    <div class="row-header"><span class="row-title">🎬 En Cines</span></div>
+    <div class="row-header"><span class="row-title">🎬 Lo mas Nuevo</span></div>
     <div class="home-grid" id="carousel-nowplaying"></div>
     <button class="load-more-btn" id="btn-more-nowplaying" onclick="loadMoreHome('nowplaying')">Ver más</button>
   </div>
   <div id="sec-tvtrending" class="row-section">
-    <div class="row-header"><span class="row-title">📺 Series Trending</span></div>
+    <div class="row-header"><span class="row-title">📺 Series Tendencia</span></div>
     <div class="home-grid" id="carousel-tvtrending"></div>
     <button class="load-more-btn" id="btn-more-tvtrending" onclick="loadMoreHome('tvtrending')">Ver más</button>
   </div>
@@ -532,7 +532,7 @@
 
     <!-- Cast — debajo de los botones, arriba de episodios -->
     <div id="modal-cast-section" style="display:none">
-      <div class="modal-section-title">Reparto principal</div>
+      <div class="modal-section-title">Actores Principales</div>
       <div class="cast-scroll" id="cast-scroll"></div>
     </div>
 
@@ -596,6 +596,19 @@ const PROVIDERS = [
     sandbox:null },
 
   // ── Servidores Directos extraídos ──
+  
+  { id:"vixsrc",
+    name:"VixSrc", flag:"🟠", note:"Servidor directo", hidden:true,
+    movie:(t)=>`https://vixsrc.to/movie/${t}`,
+    tv:(t,i,s,e)=>`https://vixsrc.to/tv/${t}/${s}/${e}`,
+    sandbox:null },
+  
+  { id:"vidflix",
+    name:"VidFlix", flag:"🎭", note:"Multi-servidor", hidden:true,
+    movie:(t,i)=>i?`https://vidflix.club/movie/${i}`:null,
+    tv:(t,i,s,e)=>i?`https://vidflix.club/tv/${i}/${s}/${e}`:null,
+    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
+
   { id:"vidsrcnet",
     name:"VidSrc.net", flag:"📡", note:"Probar · TMDB directo", hidden:true,
     movie:(t)=>`https://vidsrc-embed.ru/embed/movie?tmdb=${t}`,
@@ -613,18 +626,6 @@ const PROVIDERS = [
     movie:(t)=>`https://vidsrc.fyi/embed/movie/${t}`,
     tv:(t,i,s,e)=>`https://vidsrc.fyi/embed/tv/${t}/${s}/${e}`,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
-
-  { id:"vidflix",
-    name:"VidFlix", flag:"🎭", note:"Multi-servidor", hidden:true,
-    movie:(t,i)=>i?`https://vidflix.club/movie/${i}`:null,
-    tv:(t,i,s,e)=>i?`https://vidflix.club/tv/${i}/${s}/${e}`:null,
-    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
-
-  { id:"vixsrc",
-    name:"VixSrc", flag:"🟠", note:"Servidor directo", hidden:true,
-    movie:(t)=>`https://vixsrc.to/movie/${t}`,
-    tv:(t,i,s,e)=>`https://vixsrc.to/tv/${t}/${s}/${e}`,
-    sandbox:null },
 
 ];
 let activeProvider = localStorage.getItem("viciotv_provider") || "streamimdb";
