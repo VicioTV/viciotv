@@ -460,11 +460,9 @@
     </div>
 
     <div class="player-wrap">
-      <iframe id="movie-frame" src="" loading="lazy" frameborder="0"
-        allowfullscreen webkitallowfullscreen mozallowfullscreen
-        allow="autoplay; fullscreen *; encrypted-media; picture-in-picture"
-        sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation"
-        referrerpolicy="origin"></iframe>
+      <div id="player-placeholder" style="width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center">
+        <div style="color:#444;font-size:.85rem">Cargando reproductor...</div>
+      </div>
       <div id="next-episode-overlay">
         <div class="next-box">
           <h3>Siguiente episodio</h3>
@@ -926,6 +924,10 @@ async function openModal(item) {
   currentImdbId = null; currentSeasons = 1;
   updateFavBtn(item);
 
+  // Crear iframe fresco — destruye cualquier audio anterior
+  _createMovieFrame();
+  applyProviderSandbox();
+
   document.getElementById("modal-overlay").classList.add("open");
   // Mostrar tip de subtítulos si no fue cerrado antes
   const subTipBar = document.getElementById("sub-tip-bar");
@@ -995,7 +997,7 @@ async function openModal(item) {
       applyProviderSandbox();
       buildProviderBar();
       const movieUrl = buildPlayerUrl("movie", item.id, currentImdbId);
-      if (movieUrl) movieFrame.src = movieUrl;
+      if (movieUrl) if(getFrame()) getFrame().src = movieUrl;
     } else {
       currentSeasons = detail.number_of_seasons || 1;
       const extRes  = await fetch(`${API_BASE}/tv/${item.id}/external_ids?api_key=${API_KEY}`);
@@ -1125,12 +1127,12 @@ document.getElementById("tv-load-btn").addEventListener("click", () => { if (cur
 function loadTVEpisode(forceSeason, forceEpisode) {
   const s = Number(forceSeason ?? document.getElementById("sel-season").value ?? 1) || 1;
   const e = Number(forceEpisode ?? document.getElementById("sel-episode").value ?? 1) || 1;
-  window.movieFrame = document.getElementById("movie-frame");
+  // movieFrame se obtiene dinámicamente: document.getElementById('movie-frame')
   applyProviderSandbox();
-  movieFrame.src = "about:blank";
+  if(getFrame()) getFrame().src = "about:blank";
   setTimeout(() => {
     const url = buildPlayerUrl("tv", currentItem?.id, currentImdbId, s, e);
-    if (url) movieFrame.src = url;
+    if (url) if(getFrame()) getFrame().src = url;
     if (currentItem) saveProgress(currentItem, s, e, 0);
   }, 120);
   startNextEpisodeCountdown();
@@ -1174,34 +1176,52 @@ function _doCloseModal() {
   document.getElementById("modal-overlay").classList.remove("open");
   document.getElementById("modal").classList.remove("forced-fullscreen");
   document.getElementById("fs-btn").textContent = "⛶";
-  // Reemplazar el iframe por uno nuevo — única forma 100% segura de parar el audio
-  _resetMovieFrame();
+  // Destruir el iframe del DOM — para el audio al instante
+  _destroyMovieFrame();
   document.body.style.overflow = "";
   clearTimeout(nextEpisodeTimer);
   history.replaceState(null, "", window.location.pathname + window.location.search);
   try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch {}
 }
 
-function _resetMovieFrame() {
+function getFrame() {
+  return document.getElementById('movie-frame');
+}
+
+function _destroyMovieFrame() {
+  // Eliminar el iframe del DOM completamente — para el audio al instante
+  const frame = document.getElementById("movie-frame");
+  if (frame) frame.remove();
+  // Mostrar placeholder
+  const ph = document.getElementById("player-placeholder");
+  if (ph) ph.style.display = "flex";
+  window.movieFrame = null;
+}
+
+function _createMovieFrame() {
+  // Eliminar frame viejo si existe
   const old = document.getElementById("movie-frame");
-  if (!old) return;
-  const newFrame = document.createElement("iframe");
-  newFrame.id = "movie-frame";
-  newFrame.loading = "lazy";
-  newFrame.frameBorder = "0";
-  newFrame.setAttribute("allowfullscreen", "");
-  newFrame.setAttribute("webkitallowfullscreen", "");
-  newFrame.setAttribute("mozallowfullscreen", "");
-  newFrame.setAttribute("allow", "autoplay; fullscreen *; encrypted-media; picture-in-picture");
-  newFrame.setAttribute("referrerpolicy", "origin");
-  newFrame.style.width = "100%";
-  newFrame.style.height = "100%";
-  newFrame.style.border = "none";
-  newFrame.style.display = "block";
-  // Sandbox se aplica después via applyProviderSandbox()
-  old.replaceWith(newFrame);
-  // Actualizar la referencia global
-  window.movieFrame = newFrame;
+  if (old) old.remove();
+  // Ocultar placeholder
+  const ph = document.getElementById("player-placeholder");
+  if (ph) ph.style.display = "none";
+  // Crear iframe fresco
+  const frame = document.createElement("iframe");
+  frame.id = "movie-frame";
+  frame.loading = "lazy";
+  frame.frameBorder = "0";
+  frame.setAttribute("allowfullscreen", "");
+  frame.setAttribute("webkitallowfullscreen", "");
+  frame.setAttribute("mozallowfullscreen", "");
+  frame.setAttribute("allow", "autoplay; fullscreen *; encrypted-media; picture-in-picture");
+  frame.setAttribute("referrerpolicy", "origin");
+  frame.style.cssText = "width:100%;height:100%;border:none;display:block";
+  // Insertar antes del next-episode-overlay
+  const wrap = document.querySelector(".player-wrap");
+  const nextOverlay = document.getElementById("next-episode-overlay");
+  wrap.insertBefore(frame, nextOverlay);
+  window.movieFrame = frame;
+  return frame;
 }
 document.getElementById("close-btn").addEventListener("click", closeModal);
 document.getElementById("modal-overlay").addEventListener("click", e => {
@@ -1641,7 +1661,7 @@ function openLiveChannel(ch) {
   document.getElementById("modal-similar-section").style.display = "none";
   document.getElementById("episodes-panel").classList.remove("visible");
   document.getElementById("tv-selectors").classList.remove("visible");
-  movieFrame.src = ch.url;
+  if(getFrame()) getFrame().src = ch.url;
   document.getElementById("modal-overlay").classList.add("open");
   document.body.style.overflow = "hidden";
   history.pushState({ modal: true }, "");
@@ -1832,10 +1852,10 @@ function buildProviderBar(){
       bar.querySelectorAll(".provider-btn").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
       applyProviderSandbox();
-      movieFrame.src="about:blank";
+      if(getFrame()) getFrame().src="about:blank";
       if(currentType==="movie"){
         const url=buildPlayerUrl("movie",currentItem?.id,currentImdbId);
-        setTimeout(()=>{ if(url) movieFrame.src=url; },150);
+        setTimeout(()=>{ if(url && getFrame()) getFrame().src=url; },150);
       } else {
         setTimeout(()=>loadTVEpisode(),150);
       }
