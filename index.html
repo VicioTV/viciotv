@@ -460,9 +460,11 @@
     </div>
 
     <div class="player-wrap">
-      <div id="player-placeholder" style="width:100%;height:100%;background:#000;display:flex;align-items:center;justify-content:center">
-        <div style="color:#444;font-size:.85rem">Cargando reproductor...</div>
-      </div>
+      <iframe id="movie-frame" src="" loading="lazy" frameborder="0"
+        allowfullscreen webkitallowfullscreen mozallowfullscreen
+        allow="autoplay; fullscreen *; encrypted-media; picture-in-picture"
+        sandbox="allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation"
+        referrerpolicy="origin"></iframe>
       <div id="next-episode-overlay">
         <div class="next-box">
           <h3>Siguiente episodio</h3>
@@ -924,10 +926,6 @@ async function openModal(item) {
   currentImdbId = null; currentSeasons = 1;
   updateFavBtn(item);
 
-  // Crear iframe fresco — destruye cualquier audio anterior
-  _createMovieFrame();
-  applyProviderSandbox();
-
   document.getElementById("modal-overlay").classList.add("open");
   // Mostrar tip de subtítulos si no fue cerrado antes
   const subTipBar = document.getElementById("sub-tip-bar");
@@ -997,7 +995,7 @@ async function openModal(item) {
       applyProviderSandbox();
       buildProviderBar();
       const movieUrl = buildPlayerUrl("movie", item.id, currentImdbId);
-      if (movieUrl) if(getFrame()) getFrame().src = movieUrl;
+      if (movieUrl) movieFrame.src = movieUrl;
     } else {
       currentSeasons = detail.number_of_seasons || 1;
       const extRes  = await fetch(`${API_BASE}/tv/${item.id}/external_ids?api_key=${API_KEY}`);
@@ -1127,12 +1125,12 @@ document.getElementById("tv-load-btn").addEventListener("click", () => { if (cur
 function loadTVEpisode(forceSeason, forceEpisode) {
   const s = Number(forceSeason ?? document.getElementById("sel-season").value ?? 1) || 1;
   const e = Number(forceEpisode ?? document.getElementById("sel-episode").value ?? 1) || 1;
-  // movieFrame se obtiene dinámicamente: document.getElementById('movie-frame')
+  window.movieFrame = document.getElementById("movie-frame");
   applyProviderSandbox();
-  if(getFrame()) getFrame().src = "about:blank";
+  movieFrame.src = "about:blank";
   setTimeout(() => {
     const url = buildPlayerUrl("tv", currentItem?.id, currentImdbId, s, e);
-    if (url) if(getFrame()) getFrame().src = url;
+    if (url) movieFrame.src = url;
     if (currentItem) saveProgress(currentItem, s, e, 0);
   }, 120);
   startNextEpisodeCountdown();
@@ -1176,67 +1174,40 @@ function _doCloseModal() {
   document.getElementById("modal-overlay").classList.remove("open");
   document.getElementById("modal").classList.remove("forced-fullscreen");
   document.getElementById("fs-btn").textContent = "⛶";
-  // Destruir el iframe del DOM — para el audio al instante
-  _destroyMovieFrame();
+  // Reemplazar el iframe por uno nuevo — única forma 100% segura de parar el audio
+  _resetMovieFrame();
   document.body.style.overflow = "";
   clearTimeout(nextEpisodeTimer);
   history.replaceState(null, "", window.location.pathname + window.location.search);
   try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch {}
 }
 
-function getFrame() {
-  return document.getElementById('movie-frame');
-}
-
-function _destroyMovieFrame() {
-  // Eliminar el iframe del DOM completamente — para el audio al instante
-  const frame = document.getElementById("movie-frame");
-  if (frame) frame.remove();
-  // Mostrar placeholder
-  const ph = document.getElementById("player-placeholder");
-  if (ph) ph.style.display = "flex";
-  window.movieFrame = null;
-}
-
-function _createMovieFrame() {
-  // Eliminar frame viejo si existe
+function _resetMovieFrame() {
   const old = document.getElementById("movie-frame");
-  if (old) old.remove();
-  // Ocultar placeholder
-  const ph = document.getElementById("player-placeholder");
-  if (ph) ph.style.display = "none";
-  // Crear iframe fresco
-  const frame = document.createElement("iframe");
-  frame.id = "movie-frame";
-  frame.loading = "lazy";
-  frame.frameBorder = "0";
-  frame.setAttribute("allowfullscreen", "");
-  frame.setAttribute("webkitallowfullscreen", "");
-  frame.setAttribute("mozallowfullscreen", "");
-  frame.setAttribute("allow", "autoplay; fullscreen *; encrypted-media; picture-in-picture");
-  frame.setAttribute("referrerpolicy", "origin");
-  frame.style.cssText = "width:100%;height:100%;border:none;display:block";
-  // Insertar antes del next-episode-overlay
-  const wrap = document.querySelector(".player-wrap");
-  const nextOverlay = document.getElementById("next-episode-overlay");
-  wrap.insertBefore(frame, nextOverlay);
-  window.movieFrame = frame;
-  return frame;
+  if (!old) return;
+  const newFrame = document.createElement("iframe");
+  newFrame.id = "movie-frame";
+  newFrame.loading = "lazy";
+  newFrame.frameBorder = "0";
+  newFrame.setAttribute("allowfullscreen", "");
+  newFrame.setAttribute("webkitallowfullscreen", "");
+  newFrame.setAttribute("mozallowfullscreen", "");
+  newFrame.setAttribute("allow", "autoplay; fullscreen *; encrypted-media; picture-in-picture");
+  newFrame.setAttribute("referrerpolicy", "origin");
+  newFrame.style.width = "100%";
+  newFrame.style.height = "100%";
+  newFrame.style.border = "none";
+  newFrame.style.display = "block";
+  // Sandbox se aplica después via applyProviderSandbox()
+  old.replaceWith(newFrame);
+  // Actualizar la referencia global
+  window.movieFrame = newFrame;
 }
 document.getElementById("close-btn").addEventListener("click", closeModal);
 document.getElementById("modal-overlay").addEventListener("click", e => {
+  // Cerrar si el click es en el overlay o en el padding (fuera del modal blanco)
   const modal = document.getElementById("modal");
   if (!modal.contains(e.target)) closeModal();
-});
-
-// Cerrar modal al hacer scroll en el overlay (el modal "sube" y queda oculto)
-document.getElementById("modal-overlay").addEventListener("scroll", () => {
-  const overlay = document.getElementById("modal-overlay");
-  const modal   = document.getElementById("modal");
-  if (!overlay.classList.contains("open")) return;
-  const rect = modal.getBoundingClientRect();
-  // Si el modal está completamente fuera de la pantalla hacia arriba → cerrar
-  if (rect.bottom < 0) closeModal();
 });
 window.addEventListener("popstate", e => {
   if (document.getElementById("modal").classList.contains("forced-fullscreen")) {
@@ -1366,10 +1337,6 @@ document.addEventListener("click", e => {
 
 /* ─── TABS ─── */
 function switchTab(tab) {
-  // Si hay un modal abierto, cerrarlo primero (mata el audio)
-  if (document.getElementById("modal-overlay").classList.contains("open")) {
-    _doCloseModal();
-  }
   activeTab = tab;
   document.querySelectorAll(".nav-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
 
@@ -1613,9 +1580,6 @@ function setupInfiniteScroll(){
 }
 
 function showHome() {
-  if (document.getElementById("modal-overlay").classList.contains("open")) {
-    _doCloseModal();
-  }
   closeSearchResults();
   document.getElementById("search-input").value = "";
   switchTab("inicio");
@@ -1661,7 +1625,7 @@ function openLiveChannel(ch) {
   document.getElementById("modal-similar-section").style.display = "none";
   document.getElementById("episodes-panel").classList.remove("visible");
   document.getElementById("tv-selectors").classList.remove("visible");
-  if(getFrame()) getFrame().src = ch.url;
+  movieFrame.src = ch.url;
   document.getElementById("modal-overlay").classList.add("open");
   document.body.style.overflow = "hidden";
   history.pushState({ modal: true }, "");
@@ -1852,10 +1816,10 @@ function buildProviderBar(){
       bar.querySelectorAll(".provider-btn").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
       applyProviderSandbox();
-      if(getFrame()) getFrame().src="about:blank";
+      movieFrame.src="about:blank";
       if(currentType==="movie"){
         const url=buildPlayerUrl("movie",currentItem?.id,currentImdbId);
-        setTimeout(()=>{ if(url && getFrame()) getFrame().src=url; },150);
+        setTimeout(()=>{ if(url) movieFrame.src=url; },150);
       } else {
         setTimeout(()=>loadTVEpisode(),150);
       }
