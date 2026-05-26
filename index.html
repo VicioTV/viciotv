@@ -584,13 +584,13 @@ const FAV_KEY      = "viciotv_favs";
 /* ── PROVIDERS ── */
 const PROVIDERS = [
   { id:"streamimdb",
-    name:"StreamIMDb", flag:"🎬", note:"Principal · HD · Sin ads",
+    name:"Principal HD", flag:"🎬", note:"Server HD · Sin ads",
     movie:(t,i)=>i?`https://streamimdb.ru/embed/movie/${i}/`:null,
     tv:(t,i,s,e)=>i?`https://streamimdb.ru/embed/tv/${i}/${s}/${e}`:null,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
   { id:"embedmaster",
-    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD", hidden:true,
+    name:"Multi-Server", flag:"⭐", note:"Multi-calidad · HD", hidden:true,
     movie:(t,i)=>i?`https://embedmaster.link/movie/${i}`:null,
     tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
     sandbox:null },
@@ -598,31 +598,31 @@ const PROVIDERS = [
   // ── Servidores Directos extraídos ──
   
   { id:"vixsrc",
-    name:"VixSrc", flag:"🟠", note:"Servidor directo", hidden:true,
+    name:"Server Directo", flag:"🟠", note:"Servidor directo", hidden:true,
     movie:(t)=>`https://vixsrc.to/movie/${t}`,
     tv:(t,i,s,e)=>`https://vixsrc.to/tv/${t}/${s}/${e}`,
     sandbox:null },
   
   { id:"vidflix",
-    name:"VidFlix", flag:"🎭", note:"Multi-servidor", hidden:true,
+    name:"Multi-server #1", flag:"🎭", note:"Multi-servidor", hidden:true,
     movie:(t,i)=>i?`https://vidflix.club/movie/${i}`:null,
     tv:(t,i,s,e)=>i?`https://vidflix.club/tv/${i}/${s}/${e}`:null,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
 
   { id:"vidsrcnet",
-    name:"VidSrc.net", flag:"📡", note:"Probar · TMDB directo", hidden:true,
+    name:"Server Directo #2", flag:"📡", note:"Probar · TMDB directo", hidden:true,
     movie:(t)=>`https://vidsrc-embed.ru/embed/movie?tmdb=${t}`,
     tv:(t,i,s,e)=>`https://vidsrc-embed.ru/embed/tv?tmdb=${t}&season=${s}&episode=${e}`,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
   { id:"vidsrcto",
-    name:"VidSrc.to", flag:"🔵", note:"Servidor directo", hidden:true,
+    name:"Server Directo #3", flag:"🔵", note:"Servidor directo", hidden:true,
     movie:(t)=>`https://vidsrc.to/embed/movie/${t}`,
     tv:(t,i,s,e)=>`https://vidsrc.to/embed/tv/${t}/${s}/${e}`,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
   { id:"vidsrcfyi",
-    name:"VidSrc.fyi", flag:"🟢", note:"Servidor directo", hidden:true,
+    name:"VServer Directo #4", flag:"🟢", note:"Servidor directo", hidden:true,
     movie:(t)=>`https://vidsrc.fyi/embed/movie/${t}`,
     tv:(t,i,s,e)=>`https://vidsrc.fyi/embed/tv/${t}/${s}/${e}`,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
