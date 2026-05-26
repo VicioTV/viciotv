@@ -1722,32 +1722,33 @@ function showHome() {
 }
 
 /* ─── CANALES EN VIVO ─── */
+// Helper: URL de embed usando Channel ID — siempre apunta al live activo
+function ytLive(channelId){ return `https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=1`; }
+
 const LIVE_CHANNELS = [
   /* ── ARGENTINA · NOTICIAS ── */
-  { name:"TN",           url:"https://www.youtube.com/embed/cb12KmMMDJA?autoplay=1", badge:"NOTICIA", cat:"AR" },
-  { name:"C5N",          url:"https://www.youtube.com/embed/VWhQ6xspnSc?autoplay=1", badge:"NOTICIA", cat:"AR" },
-  { name:"A24",          url:"https://www.youtube.com/embed/ArKbAx1K-2U?autoplay=1", badge:"NOTICIA", cat:"AR" },
-  { name:"LN+",          url:"https://www.youtube.com/embed/DVZ2rJQb_0g?autoplay=1", badge:"NOTICIA", cat:"AR" },
-  { name:"Crónica",      url:"https://www.youtube.com/embed/JC7f3EUDaqw?autoplay=1", badge:"NOTICIA", cat:"AR" },
-  { name:"Canal 26",     url:"https://www.youtube.com/embed/JrmCaXL5GZs?autoplay=1", badge:"NOTICIA", cat:"AR" },
+  { name:"TN",          url:ytLive("UCj6PcyLvpnIRT_2W_mwa9Aw"), badge:"NOTICIA", cat:"AR" },
+  { name:"C5N",         url:ytLive("UCNGApGbVd2jrI_6cW4BPIGA"), badge:"NOTICIA", cat:"AR" },
+  { name:"A24",         url:ytLive("UC0RhatS1pyxInC00YKjjBqQ"), badge:"NOTICIA", cat:"AR" },
+  { name:"LN+",         url:ytLive("UCFUfP9bxGVVMpPSaGy5OSnA"), badge:"NOTICIA", cat:"AR" },
+  { name:"Crónica",     url:ytLive("UCjBHHEnuE-eXQYHHfMCWdUA"), badge:"NOTICIA", cat:"AR" },
+  { name:"Canal 26",    url:ytLive("UCRUhIMEXUfOF3KA2t0y39VQ"), badge:"NOTICIA", cat:"AR" },
   /* ── ARGENTINA · GENERAL ── */
-  { name:"Canal 9",      url:"https://www.youtube.com/embed/mCvoIRBgMU0?autoplay=1", badge:"GENERAL", cat:"AR" },
-  { name:"TV Pública",   url:"https://www.youtube.com/embed/JoaoPpRWp8o?autoplay=1", badge:"GENERAL", cat:"AR" },
-  { name:"América TV",   url:"https://www.youtube.com/embed/hJxoqRhCHFQ?autoplay=1", badge:"GENERAL", cat:"AR" },
-  { name:"El Trece",     url:"https://www.youtube.com/embed/rV10gIPWf_k?autoplay=1", badge:"GENERAL", cat:"AR" },
-  { name:"Telefe",       url:"https://www.youtube.com/embed/J3LBDoRNVp0?autoplay=1", badge:"GENERAL", cat:"AR" },
-  { name:"Luzu TV",      url:"https://www.youtube.com/embed/GtWNthI-BBY?autoplay=1", badge:"ENTRET.", cat:"AR" },
+  { name:"Canal 9",     url:ytLive("UCMuGXRv5VVON6XESVS3LVKQ"), badge:"GENERAL", cat:"AR" },
+  { name:"TV Pública",  url:ytLive("UCJ-MBOnbVqWHCtWE-5PeAqA"), badge:"GENERAL", cat:"AR" },
+  { name:"América TV",  url:ytLive("UCG3HYBoqpHYQIyq1k3eDPsQ"), badge:"GENERAL", cat:"AR" },
+  { name:"El Trece",    url:ytLive("UCJAJmjnUJEIaHAeHXf-fLHw"), badge:"GENERAL", cat:"AR" },
+  { name:"Luzu TV",     url:ytLive("UCnMhz9RVmPBiXV2MCmQs7-A"), badge:"ENTRET.", cat:"AR" },
   /* ── LATINOAMÉRICA ── */
-  { name:"CNN Español",  url:"https://www.youtube.com/embed/C8r9BPRNhiU?autoplay=1", badge:"NOTICIA", cat:"LAT" },
-  { name:"Milenio TV",   url:"https://www.youtube.com/embed/N_-oBq5NV7I?autoplay=1", badge:"NOTICIA", cat:"LAT" },
-  { name:"NTN24",        url:"https://www.youtube.com/embed/QuQvl9f3PH0?autoplay=1", badge:"NOTICIA", cat:"LAT" },
-  { name:"DW Español",   url:"https://www.youtube.com/embed/rp0-m6MNR0A?autoplay=1", badge:"NOTICIA", cat:"LAT" },
-  { name:"RT Español",   url:"https://www.youtube.com/embed/IFAcqaNQiQ8?autoplay=1", badge:"NOTICIA", cat:"LAT" },
+  { name:"CNN Español", url:ytLive("UCF9IOB2TExg3QIBupFtBDxg"), badge:"NOTICIA", cat:"LAT" },
+  { name:"NTN24",       url:ytLive("UCEJs1fTF3KszRJGxJY14VrA"), badge:"NOTICIA", cat:"LAT" },
+  { name:"Milenio TV",  url:ytLive("UCy4t-NzGJJbg0sLGGvCW3KA"), badge:"NOTICIA", cat:"LAT" },
+  { name:"DW Español",  url:ytLive("UCv-DcJHLHHZF07cGlqOuubA"), badge:"NOTICIA", cat:"LAT" },
   /* ── INTERNACIONAL ── */
-  { name:"BBC News",     url:"https://www.youtube.com/embed/w_Ma8oQLmSM?autoplay=1", badge:"INTER.",  cat:"INT" },
-  { name:"Al Jazeera",   url:"https://www.youtube.com/embed/F-POzaABmSE?autoplay=1", badge:"INTER.",  cat:"INT" },
-  { name:"euronews",     url:"https://www.youtube.com/embed/l-KNaCiTiJM?autoplay=1", badge:"INTER.",  cat:"INT" },
-  { name:"NASA TV",      url:"https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1", badge:"NASA",    cat:"INT" },
+  { name:"Al Jazeera",  url:ytLive("UCNye-wNBqNL5ZzHSJdrlvxA"), badge:"INTER.",  cat:"INT" },
+  { name:"BBC News",    url:ytLive("UC16niRr50-MSBwiO3YDb3RA"), badge:"INTER.",  cat:"INT" },
+  { name:"euronews",    url:ytLive("UCcKRPMGAl9KqITVdKb4yGHw"), badge:"INTER.",  cat:"INT" },
+  { name:"NASA TV",     url:ytLive("UCLA_DiR1FfKNvSAAaknsjbw"), badge:"NASA",    cat:"INT" },
 ];
 function renderLiveChannels(filter) {
   filter = filter || "ALL";
