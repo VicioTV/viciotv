@@ -90,7 +90,7 @@
   .hero-meta .rating{color:var(--gold);font-weight:600}
   .hero-overview{font-size:15px;line-height:1.7;color:var(--text2);margin-bottom:28px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .hero-btns{display:flex;gap:12px}
-  .hero-dots{position:absolute;bottom:24px;right:48px;display:flex;gap:8px;z-index:3;align-items:center}
+  .hero-dots{position:absolute;bottom:28px;left:48px;display:flex;gap:8px;z-index:3;align-items:center}
   .hero-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:all .3s;border:none;padding:0;flex-shrink:0}
   .hero-dot.active{background:#fff;width:24px;border-radius:4px}
   .hero-dot:hover{background:rgba(255,255,255,.7)}
@@ -392,7 +392,8 @@
   <!-- Mi Lista -->
   <div class="row-section" id="section-favs" style="display:none">
     <div class="row-header"><span class="row-title">❤️ Mi Lista</span></div>
-    <div class="cards-scroll" id="carousel-favs"></div>
+    <div class="home-grid" id="carousel-favs"></div>
+    <button id="favs-more-btn" onclick="loadMoreFavs()" style="display:none;margin:16px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 28px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;width:calc(100% - 64px);display:none;margin:16px 32px 0">Ver más</button>
   </div>
 
   <!-- Inicio -->
@@ -589,7 +590,7 @@ const PROVIDERS = [
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
   { id:"embedmaster",
-    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD", hidden:true,
+    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD",
     movie:(t,i)=>i?`https://embedmaster.link/movie/${i}`:null,
     tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
     sandbox:null },
@@ -828,14 +829,30 @@ function updateFavBtn(item) {
   const svg = btn.querySelector("svg");
   svg.innerHTML = active ? '<polyline points="20 6 9 17 4 12"/>' : '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
 }
+const FAVS_PAGE_SIZE = 12;
+let _favsShown = FAVS_PAGE_SIZE;
+
 function renderFavs() {
   const favs = getFavs();
-  const sec = document.getElementById("section-favs");
-  const car = document.getElementById("carousel-favs");
+  const sec  = document.getElementById("section-favs");
+  const car  = document.getElementById("carousel-favs");
+  const btn  = document.getElementById("favs-more-btn");
   if (!favs.length) { sec.style.display = "none"; return; }
+  _favsShown = FAVS_PAGE_SIZE;
   sec.style.display = "";
   car.innerHTML = "";
-  favs.forEach((m, i) => car.appendChild(buildCard(m, i)));
+  favs.slice(0, _favsShown).forEach((m, i) => car.appendChild(buildCard(m, i)));
+  if (btn) btn.style.display = favs.length > _favsShown ? "block" : "none";
+}
+
+function loadMoreFavs() {
+  const favs = getFavs();
+  const car  = document.getElementById("carousel-favs");
+  const btn  = document.getElementById("favs-more-btn");
+  const prev = _favsShown;
+  _favsShown = Math.min(_favsShown + FAVS_PAGE_SIZE, favs.length);
+  favs.slice(prev, _favsShown).forEach((m, i) => car.appendChild(buildCard(m, prev + i)));
+  if (btn) btn.style.display = _favsShown < favs.length ? "block" : "none";
 }
 
 /* ─── HELPERS ─── */
