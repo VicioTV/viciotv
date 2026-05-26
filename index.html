@@ -541,31 +541,61 @@ const IMG_LG       = "https://image.tmdb.org/t/p/w1280";
 const FAV_KEY      = "viciotv_favs";
 
 /* ── PROVIDERS ── */
+/* ══════════════════════════════════════════
+   PROVIDERS
+   hidden:true → no aparecen en la barra por defecto
+   lang:"es"   → tienen audio latino/español
+══════════════════════════════════════════ */
 const PROVIDERS = [
-  { id:"streamimdb", name:"StreamIMDb", flag:"🎬", note:"Principal",
+  // ── PRINCIPALES (visibles) ──
+  { id:"streamimdb",
+    name:"StreamIMDb", flag:"🎬", note:"Principal · HD",
     movie:(t,i)=>i?`https://streamimdb.ru/embed/movie/${i}/`:null,
     tv:(t,i,s,e)=>i?`https://streamimdb.ru/embed/tv/${i}/${s}/${e}`:null,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
-  { id:"superembed", name:"SuperEmbed", flag:"⚡", note:"10+ servidores · Latino",
-    movie:(t)=>`https://multiembed.mov/?video_id=${t}&tmdb=1`,
-    tv:(t,i,s,e)=>`https://multiembed.mov/?video_id=${t}&tmdb=1&s=${s}&e=${e}`,
-    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
-  { id:"vidlink", name:"VidLink", flag:"🔗", note:"Latino · Subtítulos",
-    movie:(t)=>`https://vidlink.pro/movie/${t}?autoplay=true&primaryColor=e50914`,
-    tv:(t,i,s,e)=>`https://vidlink.pro/tv/${t}/${s}/${e}?autoplay=true&primaryColor=e50914`,
-    sandbox:null },
-  { id:"2embed", name:"2Embed", flag:"🎥", note:"Anime · Latino",
-    movie:(t)=>`https://www.2embed.stream/embed/movie/${t}`,
-    tv:(t,i,s,e)=>`https://www.2embed.stream/embed/tv/${t}/${s}/${e}`,
-    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
-  { id:"vidsrc", name:"VidSrc", flag:"📡", note:"Multi-servidor · HD",
-    movie:(t)=>`https://vidsrc.fyi/embed/movie/${t}`,
-    tv:(t,i,s,e)=>`https://vidsrc.fyi/embed/tv/${t}/${s}/${e}`,
-    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
-  { id:"autoembed", name:"AutoEmbed", flag:"🤖", note:"Multi-fuente · Latino",
+
+  { id:"autoembed",
+    name:"AutoEmbed", flag:"🌎", note:"Latino disponible", lang:"es",
     movie:(t)=>`https://autoembed.co/movie/tmdb/${t}`,
     tv:(t,i,s,e)=>`https://autoembed.co/tv/tmdb/${t}-${s}-${e}`,
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
+
+  { id:"imdbembed",
+    name:"IMDbEmbed", flag:"🎭", note:"Latino · Multi-servidor", lang:"es",
+    movie:(t,i)=>`https://imdbembed.xyz/movie/tmdb/${t}`,
+    tv:(t,i,s,e)=>`https://imdbembed.xyz/tv/tmdb/${t}-${s}-${e}`,
+    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
+
+  { id:"embedmaster",
+    name:"EmbedMaster", flag:"⭐", note:"HD · Multi-servidor",
+    movie:(t,i)=>i?`https://embedmaster.link/movie/${i}`:null,
+    tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
+    sandbox:null },
+
+  // ── RESERVA (ocultos por defecto, accesibles via botón "+" ) ──
+  { id:"superembed",
+    name:"SuperEmbed", flag:"⚡", note:"10+ servidores", hidden:true,
+    movie:(t)=>`https://multiembed.mov/?video_id=${t}&tmdb=1`,
+    tv:(t,i,s,e)=>`https://multiembed.mov/?video_id=${t}&tmdb=1&s=${s}&e=${e}`,
+    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
+
+  { id:"vidlink",
+    name:"VidLink", flag:"🔗", note:"Subtítulos", hidden:true,
+    movie:(t)=>`https://vidlink.pro/movie/${t}?autoplay=true&primaryColor=e50914`,
+    tv:(t,i,s,e)=>`https://vidlink.pro/tv/${t}/${s}/${e}?autoplay=true&primaryColor=e50914`,
+    sandbox:null },
+
+  { id:"2embed",
+    name:"2Embed", flag:"🎥", note:"Anime", hidden:true,
+    movie:(t)=>`https://www.2embed.stream/embed/movie/${t}`,
+    tv:(t,i,s,e)=>`https://www.2embed.stream/embed/tv/${t}/${s}/${e}`,
+    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation" },
+
+  { id:"vidsrc",
+    name:"VidSrc", flag:"📡", note:"Multi-servidor", hidden:true,
+    movie:(t)=>`https://vidsrc.fyi/embed/movie/${t}`,
+    tv:(t,i,s,e)=>`https://vidsrc.fyi/embed/tv/${t}/${s}/${e}`,
+    sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 ];
 let activeProvider = localStorage.getItem("viciotv_provider") || "streamimdb";
 function getProvider(){ return PROVIDERS.find(p=>p.id===activeProvider)||PROVIDERS[0]; }
@@ -1809,29 +1839,54 @@ async function loadMoreHome(key){
 
 /* ── PROVIDER BAR ── */
 function buildProviderBar(){
-  const bar=document.getElementById("provider-bar"); if(!bar) return;
-  bar.innerHTML='<span class="provider-label">🖥️ Servidor:</span>';
-  PROVIDERS.forEach(p=>{
-    const btn=document.createElement("button");
-    btn.className="provider-btn"+(p.id===activeProvider?" active":"");
-    btn.textContent=`${p.flag} ${p.name}`;
-    btn.title=p.note||"";
-    btn.addEventListener("click",()=>{
-      if(p.id===activeProvider) return;
-      setProvider(p.id);
-      bar.querySelectorAll(".provider-btn").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      applyProviderSandbox();
-      movieFrame.src="about:blank";
-      if(currentType==="movie"){
-        const url=buildPlayerUrl("movie",currentItem?.id,currentImdbId);
-        setTimeout(()=>{ if(url) movieFrame.src=url; },150);
-      } else {
-        setTimeout(()=>loadTVEpisode(),150);
-      }
+  const bar = document.getElementById("provider-bar"); if(!bar) return;
+  bar.innerHTML = '<span class="provider-label">🖥️ Servidor:</span>';
+
+  let showHidden = false;
+
+  function renderButtons() {
+    // Quitar botones anteriores (no el label)
+    bar.querySelectorAll(".provider-btn, .provider-more-btn").forEach(b => b.remove());
+
+    const visible = PROVIDERS.filter(p => !p.hidden || showHidden);
+    visible.forEach(p => {
+      const btn = document.createElement("button");
+      btn.className = "provider-btn" + (p.id === activeProvider ? " active" : "");
+      // Badge latino
+      const latinoBadge = p.lang === "es" ? ' <span style="font-size:9px;background:rgba(255,255,255,.15);border-radius:3px;padding:1px 4px;vertical-align:middle">LAT</span>' : "";
+      btn.innerHTML = `${p.flag} ${p.name}${latinoBadge}`;
+      btn.title = p.note || "";
+      btn.addEventListener("click", () => {
+        if (p.id === activeProvider) return;
+        setProvider(p.id);
+        applyProviderSandbox();
+        bar.querySelectorAll(".provider-btn").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        if(getFrame()) getFrame().src = "about:blank";
+        if (currentType === "movie") {
+          const url = buildPlayerUrl("movie", currentItem?.id, currentImdbId);
+          setTimeout(() => { if (url && getFrame()) getFrame().src = url; }, 150);
+        } else {
+          setTimeout(() => loadTVEpisode(), 150);
+        }
+      });
+      bar.appendChild(btn);
     });
-    bar.appendChild(btn);
-  });
+
+    // Botón "más" para mostrar/ocultar reserva
+    const hasHidden = PROVIDERS.some(p => p.hidden);
+    if (hasHidden) {
+      const moreBtn = document.createElement("button");
+      moreBtn.className = "provider-more-btn provider-btn";
+      moreBtn.textContent = showHidden ? "▲ Menos" : "＋ Más";
+      moreBtn.title = showHidden ? "Ocultar servidores de reserva" : "Ver servidores de reserva";
+      moreBtn.style.opacity = "0.6";
+      moreBtn.addEventListener("click", () => { showHidden = !showHidden; renderButtons(); });
+      bar.appendChild(moreBtn);
+    }
+  }
+
+  renderButtons();
 }
 
 function initApp() {
