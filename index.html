@@ -131,7 +131,7 @@
     animation:chroma-flow 4s linear infinite;
     text-align:center;
   }
-  .nav-tabs{display:flex;gap:4px;flex:1}
+  .nav-tabs{display:flex;gap:4px}
   .nav-tab{padding:8px 16px;border-radius:8px;border:none;background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:all var(--transition);white-space:nowrap}
   .nav-tab:hover{color:var(--text);background:var(--bg3)}
   .nav-tab.active{color:var(--text);background:var(--accent)}
@@ -420,6 +420,8 @@
     <button class="nav-tab focusable" data-tab="anime" onclick="switchTab('anime')">Anime</button>
     <button class="nav-tab focusable" data-tab="canales" onclick="switchTab('canales')">En Vivo</button>
   </div>
+  <!-- Espacio flexible izquierdo -->
+  <div style="flex:1"></div>
   <!-- Creator Badge + Theme Picker integrado -->
   <div class="creator-wrap">
     <div class="creator-badge" onclick="toggleCreatorPanel(event)" title="Personalizar tema">
@@ -447,6 +449,8 @@
       <button class="theme-reset" onclick="resetTheme()">↺ Restaurar por defecto</button>
     </div>
   </div>
+  <!-- Espacio flexible derecho -->
+  <div style="flex:1"></div>
   <div class="nav-search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="search-input" type="text" placeholder="Buscar..." oninput="onSearch(this.value)" onfocus="openSearchOverlay()" />
