@@ -1125,7 +1125,7 @@ document.getElementById("tv-load-btn").addEventListener("click", () => { if (cur
 function loadTVEpisode(forceSeason, forceEpisode) {
   const s = Number(forceSeason ?? document.getElementById("sel-season").value ?? 1) || 1;
   const e = Number(forceEpisode ?? document.getElementById("sel-episode").value ?? 1) || 1;
-  const movieFrame = document.getElementById("movie-frame");
+  window.movieFrame = document.getElementById("movie-frame");
   applyProviderSandbox();
   movieFrame.src = "about:blank";
   setTimeout(() => {
@@ -1159,7 +1159,7 @@ document.getElementById("play-next-btn").addEventListener("click", () => {
 });
 
 /* ─── CERRAR MODAL ─── */
-const movieFrame = document.getElementById("movie-frame");
+// movieFrame se referencia via window.movieFrame (ver arriba)
 function closeSubTip() {
   localStorage.setItem("viciotv_sub_tip_seen", "1");
   const bar = document.getElementById("sub-tip-bar");
@@ -1174,13 +1174,34 @@ function _doCloseModal() {
   document.getElementById("modal-overlay").classList.remove("open");
   document.getElementById("modal").classList.remove("forced-fullscreen");
   document.getElementById("fs-btn").textContent = "⛶";
-  // about:blank detiene el audio/video inmediatamente
-  movieFrame.src = "about:blank";
-  setTimeout(() => { movieFrame.src = ""; }, 100);
+  // Reemplazar el iframe por uno nuevo — única forma 100% segura de parar el audio
+  _resetMovieFrame();
   document.body.style.overflow = "";
   clearTimeout(nextEpisodeTimer);
   history.replaceState(null, "", window.location.pathname + window.location.search);
   try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch {}
+}
+
+function _resetMovieFrame() {
+  const old = document.getElementById("movie-frame");
+  if (!old) return;
+  const newFrame = document.createElement("iframe");
+  newFrame.id = "movie-frame";
+  newFrame.loading = "lazy";
+  newFrame.frameBorder = "0";
+  newFrame.setAttribute("allowfullscreen", "");
+  newFrame.setAttribute("webkitallowfullscreen", "");
+  newFrame.setAttribute("mozallowfullscreen", "");
+  newFrame.setAttribute("allow", "autoplay; fullscreen *; encrypted-media; picture-in-picture");
+  newFrame.setAttribute("referrerpolicy", "origin");
+  newFrame.style.width = "100%";
+  newFrame.style.height = "100%";
+  newFrame.style.border = "none";
+  newFrame.style.display = "block";
+  // Sandbox se aplica después via applyProviderSandbox()
+  old.replaceWith(newFrame);
+  // Actualizar la referencia global
+  window.movieFrame = newFrame;
 }
 document.getElementById("close-btn").addEventListener("click", closeModal);
 document.getElementById("modal-overlay").addEventListener("click", e => {
@@ -1869,9 +1890,6 @@ document.addEventListener("keydown", e => {
 localStorage.removeItem("viciotv_sub_tip_seen_old");
 
 // ─── ARRANQUE ───
-// Limpiar flag viejo para que el tip de subtítulos vuelva a mostrarse
-// (quitar esta línea después de que todos los usuarios lo vean)
-localStorage.removeItem("viciotv_sub_tip_seen");
 initApp();
 </script>
 </body>
