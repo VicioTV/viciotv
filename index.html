@@ -572,8 +572,20 @@ function applyProviderSandbox(){
 const MOVIE_GENRES={28:"Acción",12:"Aventura",16:"Animación",35:"Comedia",80:"Crimen",18:"Drama",10751:"Familia",14:"Fantasía",27:"Terror",9648:"Misterio",10749:"Romance",878:"Ciencia Ficción",53:"Suspenso",37:"Western"};
 const TV_GENRES={10759:"Acción & Aventura",16:"Animación",35:"Comedia",80:"Crimen",18:"Drama",10751:"Familia",9648:"Misterio",10765:"Sci-Fi & Fantasy",37:"Western"};
 
+/* Plataformas — IDs de TMDB para Argentina (watch_region=AR) */
+const STREAMING_PLATFORMS=[
+  {id:"8",   name:"Netflix",       emoji:"🔴"},
+  {id:"119", name:"Prime Video",   emoji:"🔵"},
+  {id:"337", name:"Disney+",       emoji:"🔷"},
+  {id:"384", name:"Max",           emoji:"🟣"},
+  {id:"531", name:"Paramount+",    emoji:"🟡"},
+  {id:"350", name:"Apple TV+",     emoji:"⬛"},
+  {id:"283", name:"Crunchyroll",   emoji:"🟠"},
+  {id:"167", name:"Pluto TV",      emoji:"⚪"},
+];
+
 /* ── CATALOG STATE ── */
-let catalogState = { tab:null, page:1, totalPages:1, loading:false, ended:false, filters:{genre:null,year:null,sort:null} };
+let catalogState = { tab:null, page:1, totalPages:1, loading:false, ended:false, filters:{genre:null,year:null,sort:null,platform:null} };
 let catalogObserver = null;
 
 const CATALOG_TABS = {
@@ -1355,30 +1367,42 @@ function openCatalogTab(tabKey){
 
 function buildFiltersBar(cfg){
   const bar=document.getElementById("filters-bar"); bar.innerHTML="";
+  const selStyle="background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;outline:none;transition:border-color .2s";
+
+  // Género
   const genres=cfg.type==="movie"?MOVIE_GENRES:TV_GENRES;
-  // Genre
-  const gs=document.createElement("select"); gs.className="filter-select";
-  gs.style.cssText="background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;outline:none";
-  gs.innerHTML=`<option value="">Todos los géneros</option>`+Object.entries(genres).map(([id,n])=>`<option value="${id}">${n}</option>`).join("");
+  const gs=document.createElement("select"); gs.style.cssText=selStyle;
+  gs.innerHTML=`<option value="">🎭 Género</option>`+Object.entries(genres).map(([id,n])=>`<option value="${id}">${n}</option>`).join("");
   gs.addEventListener("change",()=>{catalogState.filters.genre=gs.value||null;_resetCatalog();});
   bar.appendChild(gs);
-  // Year
-  const ys=document.createElement("select"); ys.className="filter-select";
-  ys.style.cssText=gs.style.cssText;
-  ys.innerHTML=`<option value="">Cualquier año</option>`+Array.from({length:35},(_,i)=>2025-i).map(y=>`<option value="${y}">${y}</option>`).join("");
+
+  // Plataforma
+  const ps=document.createElement("select"); ps.style.cssText=selStyle;
+  ps.innerHTML=`<option value="">📺 Plataforma</option>`+STREAMING_PLATFORMS.map(p=>`<option value="${p.id}">${p.emoji} ${p.name}</option>`).join("");
+  ps.addEventListener("change",()=>{catalogState.filters.platform=ps.value||null;_resetCatalog();});
+  bar.appendChild(ps);
+
+  // Año
+  const ys=document.createElement("select"); ys.style.cssText=selStyle;
+  ys.innerHTML=`<option value="">📅 Año</option>`+Array.from({length:35},(_,i)=>2025-i).map(y=>`<option value="${y}">${y}</option>`).join("");
   ys.addEventListener("change",()=>{catalogState.filters.year=ys.value||null;_resetCatalog();});
   bar.appendChild(ys);
-  // Sort
-  const ss=document.createElement("select"); ss.className="filter-select";
-  ss.style.cssText=gs.style.cssText;
-  ss.innerHTML=[["","Por defecto"],["popularity.desc","Más popular"],["vote_average.desc","Mejor valorado"],["release_date.desc","Más reciente"]].map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+
+  // Orden
+  const ss=document.createElement("select"); ss.style.cssText=selStyle;
+  ss.innerHTML=[["","↕ Ordenar"],["popularity.desc","🔥 Más popular"],["vote_average.desc","⭐ Mejor valorado"],["release_date.desc","🆕 Más reciente"],["revenue.desc","💰 Mayor taquilla"]].map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
   ss.addEventListener("change",()=>{catalogState.filters.sort=ss.value||null;_resetCatalog();});
   bar.appendChild(ss);
-  // Reset btn
+
+  // Limpiar
   const rb=document.createElement("button");
-  rb.style.cssText="background:transparent;color:var(--text3);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer";
+  rb.style.cssText="background:transparent;color:var(--text3);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap";
   rb.textContent="↺ Limpiar";
-  rb.addEventListener("click",()=>{gs.value="";ys.value="";ss.value="";catalogState.filters={genre:null,year:null,sort:null};_resetCatalog();});
+  rb.addEventListener("click",()=>{
+    gs.value="";ps.value="";ys.value="";ss.value="";
+    catalogState.filters={genre:null,year:null,sort:null,platform:null};
+    _resetCatalog();
+  });
   bar.appendChild(rb);
 }
 
@@ -1404,6 +1428,10 @@ async function loadCatalogPage(){
     if(catalogState.filters.genre){
       const ex=params.get("with_genres");
       params.set("with_genres",ex?`${ex},${catalogState.filters.genre}`:catalogState.filters.genre);
+    }
+    if(catalogState.filters.platform){
+      params.set("with_watch_providers", catalogState.filters.platform);
+      params.set("watch_region", "AR");
     }
     if(catalogState.filters.year){
       if(cfg.type==="movie") params.set("primary_release_year",catalogState.filters.year);
