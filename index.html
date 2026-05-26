@@ -1722,33 +1722,30 @@ function showHome() {
 }
 
 /* ─── CANALES EN VIVO ─── */
-// Helper: URL de embed usando Channel ID — siempre apunta al live activo
-function ytLive(channelId){ return `https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=1`; }
-
 const LIVE_CHANNELS = [
+  /* IDs confirmados por el usuario — actualizar si dejan de funcionar */
   /* ── ARGENTINA · NOTICIAS ── */
-  { name:"TN",          url:ytLive("UCj6PcyLvpnIRT_2W_mwa9Aw"), badge:"NOTICIA", cat:"AR" },
-  { name:"C5N",         url:ytLive("UCNGApGbVd2jrI_6cW4BPIGA"), badge:"NOTICIA", cat:"AR" },
-  { name:"A24",         url:ytLive("UC0RhatS1pyxInC00YKjjBqQ"), badge:"NOTICIA", cat:"AR" },
-  { name:"LN+",         url:ytLive("UCFUfP9bxGVVMpPSaGy5OSnA"), badge:"NOTICIA", cat:"AR" },
-  { name:"Crónica",     url:ytLive("UCjBHHEnuE-eXQYHHfMCWdUA"), badge:"NOTICIA", cat:"AR" },
-  { name:"Canal 26",    url:ytLive("UCRUhIMEXUfOF3KA2t0y39VQ"), badge:"NOTICIA", cat:"AR" },
+  { name:"TN",         id:"cb12KmMMDJA", badge:"NOTICIA", cat:"AR" },
+  { name:"C5N",        id:"VWhQ6xspnSc", badge:"NOTICIA", cat:"AR" },
+  { name:"A24",        id:"ArKbAx1K-2U", badge:"NOTICIA", cat:"AR" },
+  { name:"LN+",        id:"DVZ2rJQb_0g", badge:"NOTICIA", cat:"AR" },
+  { name:"Crónica",    id:"JC7f3EUDaqw", badge:"NOTICIA", cat:"AR" },
+  { name:"Canal 26",   id:"JrmCaXL5GZs", badge:"NOTICIA", cat:"AR" },
   /* ── ARGENTINA · GENERAL ── */
-  { name:"Canal 9",     url:ytLive("UCMuGXRv5VVON6XESVS3LVKQ"), badge:"GENERAL", cat:"AR" },
-  { name:"TV Pública",  url:ytLive("UCJ-MBOnbVqWHCtWE-5PeAqA"), badge:"GENERAL", cat:"AR" },
-  { name:"América TV",  url:ytLive("UCG3HYBoqpHYQIyq1k3eDPsQ"), badge:"GENERAL", cat:"AR" },
-  { name:"El Trece",    url:ytLive("UCJAJmjnUJEIaHAeHXf-fLHw"), badge:"GENERAL", cat:"AR" },
-  { name:"Luzu TV",     url:ytLive("UCnMhz9RVmPBiXV2MCmQs7-A"), badge:"ENTRET.", cat:"AR" },
+  { name:"Canal 9",    id:"mCvoIRBgMU0", badge:"GENERAL", cat:"AR" },
+  { name:"TV Pública", id:"JoaoPpRWp8o", badge:"GENERAL", cat:"AR" },
+  { name:"América TV", id:"hJxoqRhCHFQ", badge:"GENERAL", cat:"AR" },
+  { name:"El Trece",   id:"rV10gIPWf_k", badge:"GENERAL", cat:"AR" },
+  { name:"Luzu TV",    id:"GtWNthI-BBY", badge:"ENTRET.", cat:"AR" },
   /* ── LATINOAMÉRICA ── */
-  { name:"CNN Español", url:ytLive("UCF9IOB2TExg3QIBupFtBDxg"), badge:"NOTICIA", cat:"LAT" },
-  { name:"NTN24",       url:ytLive("UCEJs1fTF3KszRJGxJY14VrA"), badge:"NOTICIA", cat:"LAT" },
-  { name:"Milenio TV",  url:ytLive("UCy4t-NzGJJbg0sLGGvCW3KA"), badge:"NOTICIA", cat:"LAT" },
-  { name:"DW Español",  url:ytLive("UCv-DcJHLHHZF07cGlqOuubA"), badge:"NOTICIA", cat:"LAT" },
+  { name:"CNN Español",id:"C8r9BPRNhiU", badge:"NOTICIA", cat:"LAT" },
+  { name:"NTN24",      id:"QuQvl9f3PH0", badge:"NOTICIA", cat:"LAT" },
+  { name:"DW Español", id:"rp0-m6MNR0A", badge:"NOTICIA", cat:"LAT" },
   /* ── INTERNACIONAL ── */
-  { name:"Al Jazeera",  url:ytLive("UCNye-wNBqNL5ZzHSJdrlvxA"), badge:"INTER.",  cat:"INT" },
-  { name:"BBC News",    url:ytLive("UC16niRr50-MSBwiO3YDb3RA"), badge:"INTER.",  cat:"INT" },
-  { name:"euronews",    url:ytLive("UCcKRPMGAl9KqITVdKb4yGHw"), badge:"INTER.",  cat:"INT" },
-  { name:"NASA TV",     url:ytLive("UCLA_DiR1FfKNvSAAaknsjbw"), badge:"NASA",    cat:"INT" },
+  { name:"Al Jazeera", id:"F-POzaABmSE", badge:"INTER.",  cat:"INT" },
+  { name:"BBC News",   id:"w_Ma8oQLmSM", badge:"INTER.",  cat:"INT" },
+  { name:"euronews",   id:"l-KNaCiTiJM", badge:"INTER.",  cat:"INT" },
+  { name:"NASA TV",    id:"21X5lGlDOfg", badge:"NASA",    cat:"INT" },
 ];
 function renderLiveChannels(filter) {
   filter = filter || "ALL";
@@ -1788,7 +1785,8 @@ function renderLiveChannels(filter) {
     card.innerHTML = `
       <div class="live-dot"></div>
       <span class="live-name">${ch.name}</span>
-      <span class="live-badge">${ch.badge}</span>`;
+      <span class="live-badge">${ch.badge}</span>
+`;
     card.addEventListener("click", () => openLiveChannel(ch));
     card.addEventListener("keydown", e => { if (e.key === "Enter") openLiveChannel(ch); });
     grid.appendChild(card);
@@ -1797,19 +1795,31 @@ function renderLiveChannels(filter) {
 function openLiveChannel(ch) {
   document.getElementById("modal-title").textContent = ch.name;
   document.getElementById("modal-overview").textContent = "Canal en vivo · Stream en tiempo real";
-  document.getElementById("modal-meta-row").innerHTML = `<span class="modal-meta-pill">EN VIVO</span><span class="modal-meta-pill modal-rating">● ${ch.badge}</span>`;
-  document.getElementById("modal-cast-section").style.display   = "none";
+  document.getElementById("modal-meta-row").innerHTML = `<span class="modal-meta-pill">🔴 EN VIVO</span><span class="modal-meta-pill modal-rating">● ${ch.badge}</span>`;
+  document.getElementById("modal-cast-section").style.display = "none";
   document.getElementById("modal-similar-section").style.display = "none";
   document.getElementById("episodes-panel").classList.remove("visible");
   document.getElementById("tv-selectors").classList.remove("visible");
-  if(getFrame()) getFrame().src = ch.url;
-  // Crear iframe fresco al abrir el modal
-  _createMovieFrame();
-  applyProviderSandbox();
+  document.getElementById("sub-tip-bar").style.display = "none";
+  document.getElementById("provider-bar").style.display = "none";
 
+  // Crear iframe con los permisos exactos que YouTube usa en su propio embed
+  _createMovieFrame();
+  const frame = getFrame();
+  if (frame) {
+    frame.removeAttribute("sandbox"); // YouTube necesita sin sandbox
+    frame.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+    frame.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
+    frame.allowFullscreen = true;
+    frame.src = `https://www.youtube.com/embed/${ch.id}?autoplay=1&si=YdcBZNVHuMJacSiA`;
+  }
+
+  const modalAlreadyOpen = document.getElementById("modal-overlay").classList.contains("open");
   document.getElementById("modal-overlay").classList.add("open");
+  const _ov = document.getElementById("modal-overlay");
+  if (_ov) _ov.scrollTop = 0;
   document.body.style.overflow = "hidden";
-  history.pushState({ modal: true }, "");
+  if (!modalAlreadyOpen) history.pushState({ modal: true }, "");
 }
 
 /* ─── NAV SCROLL ─── */
