@@ -583,7 +583,7 @@ const PROVIDERS = [
     sandbox:"allow-scripts allow-same-origin allow-presentation allow-forms allow-top-navigation-by-user-activation" },
 
   { id:"embedmaster",
-    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD",
+    name:"EmbedMaster", flag:"⭐", note:"Multi-calidad · HD", hidden:true,
     movie:(t,i)=>i?`https://embedmaster.link/movie/${i}`:null,
     tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
     sandbox:null },
@@ -1912,7 +1912,7 @@ async function openActorOverlay(personId, personName, imgSrc) {
         c.poster_path &&
         c.vote_count > 20 &&
         (c.order == null || c.order < 20) &&
-        (c.episode_count == null || c.episode_count >= 2) // al menos 2 episodios
+        (c.episode_count == null || c.episode_count >= 1) // al menos 2 episodio
       )
       .sort((a,b) => b.popularity - a.popularity)
       .slice(0, 30)
