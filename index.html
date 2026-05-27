@@ -117,7 +117,7 @@
   /* Panel del creador (mismo estilo que theme-picker-panel) */
   .creator-panel{
     position:absolute;top:calc(100% + 10px);right:0;
-    background:var(--bg2);border:1px solid rgba(255,255,255,.4);
+    background:var(--bg2);border:1px solid rgba(255,255,255,.1);
     border-radius:14px;padding:16px;width:236px;z-index:2000;
     display:none;flex-direction:column;gap:10px;
     box-shadow:0 8px 32px rgba(0,0,0,.6);
@@ -418,7 +418,8 @@
     <button class="nav-tab focusable" data-tab="peliculas" onclick="switchTab('peliculas')">Películas</button>
     <button class="nav-tab focusable" data-tab="series" onclick="switchTab('series')">Series</button>
     <button class="nav-tab focusable" data-tab="anime" onclick="switchTab('anime')">Anime</button>
-    <button class="nav-tab focusable" data-tab="canales" onclick="switchTab('canales')">En Vivo</button>
+    <!-- Tab En Vivo deshabilitado temporalmente -->
+    <!-- <button class="nav-tab focusable" data-tab="canales" onclick="switchTab('canales')">En Vivo</button> -->
   </div>
   <!-- Espacio flexible izquierdo -->
   <div style="flex:1"></div>
@@ -604,7 +605,7 @@
       </div>
     </div>
     <div id="sub-tip-bar" style="background:rgba(229,9,20,.12);border:1px solid rgba(229,9,20,.25);border-radius:8px;margin:4px 24px 8px;padding:10px 16px;align-items:center;gap:10px;font-size:13px;color:var(--text2);display:none">
-      <span>💬 <strong style="color:var(--text)">Subtítulos en español:</strong> apretá el ícono <strong style="color:var(--text)">CC</strong> dentro del reproductor → elegí <strong style="color:var(--text)">Spanish</strong>. Se guarda para siempre.</span>
+      <span>💬 <strong style="color:var(--text)">Subtítulos en español:</strong> apretá el ícono de <strong style="color:var(--text)">Subtítulos</strong> dentro del reproductor → <strong style="color:var(--text)">Search</strong> → elegí <strong style="color:var(--text)">Spanish</strong>. Se guarda para siempre.</span>
       <button onclick="closeSubTip()" style="background:var(--accent);color:#fff;border:none;border-radius:6px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0">Entendido ✓</button>
     </div>
     <div class="provider-bar" id="provider-bar"><span class="provider-label">🖥️ Ver en:</span></div>
@@ -1876,6 +1877,8 @@ const LIVE_CHANNELS = [
   { name:"BBC News",   id:"w_Ma8oQLmSM", badge:"INTER.",  cat:"INT" },
   { name:"euronews",   id:"l-KNaCiTiJM", badge:"INTER.",  cat:"INT" },
   { name:"NASA TV",    id:"21X5lGlDOfg", badge:"NASA",    cat:"INT" },
+  /* ── SENSA (requiere login de tu proveedor de internet) ── */
+  { name:"ESPN",        sensa:"https://player.sensa.com.ar/#spa/fullscreen/21?type=TV_CHANNEL",  badge:"DEPORTE", cat:"AR" },
 ];
 function renderLiveChannels(filter) {
   filter = filter || "ALL";
@@ -1932,15 +1935,19 @@ function openLiveChannel(ch) {
   document.getElementById("sub-tip-bar").style.display = "none";
   document.getElementById("provider-bar").style.display = "none";
 
-  // Crear iframe con los permisos exactos que YouTube usa en su propio embed
   _createMovieFrame();
   const frame = getFrame();
   if (frame) {
-    frame.removeAttribute("sandbox"); // YouTube necesita sin sandbox
+    frame.removeAttribute("sandbox");
     frame.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
     frame.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
     frame.allowFullscreen = true;
-    frame.src = `https://www.youtube.com/embed/${ch.id}?autoplay=1&si=YdcBZNVHuMJacSiA`;
+    // Sensa o YouTube
+    if (ch.sensa) {
+      frame.src = ch.sensa;
+    } else {
+      frame.src = `https://www.youtube.com/embed/${ch.id}?autoplay=1`;
+    }
   }
 
   const modalAlreadyOpen = document.getElementById("modal-overlay").classList.contains("open");
