@@ -1193,6 +1193,12 @@ async function openModal(item) {
   currentImdbId = null; currentSeasons = 1;
   updateFavBtn(item);
 
+  // Guardar en Continuar Viendo apenas abre el contenido
+  if (item && item.id) {
+    window.viciotvTrackContinueWatching(item);
+    renderContinueWatching();
+  }
+
   const modalAlreadyOpen = document.getElementById("modal-overlay").classList.contains("open");
   document.getElementById("modal-overlay").classList.add("open");
   // Scroll al top del overlay al abrir/cambiar contenido
