@@ -354,6 +354,11 @@
 
   /* ===== CONTINUAR VIENDO ===== */
   #viciotv-cw-container{padding:0 0 8px}
+  .cw-card-wrap{position:relative;flex-shrink:0;scroll-snap-align:start}
+  .cw-card-wrap .cw-remove{position:absolute;top:6px;right:6px;z-index:20;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1;transition:background .2s}
+  .cw-card-wrap:hover .cw-remove{display:flex}
+  .cw-card-wrap .cw-remove:hover{background:var(--accent);border-color:var(--accent)}
+  .cw-card-wrap .card{flex-shrink:unset;scroll-snap-align:unset;width:var(--card-w)}
 
   .focusable{outline:none}
   .focusable:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -495,7 +500,7 @@
 
   <!-- Mi Lista -->
   <div class="row-section" id="section-favs" style="display:none">
-    <div class="row-header"><span class="row-title">❤️ Mi Lista</span></div>
+    <div class="row-header"><span class="row-title">❤️ Favoritos</span></div>
     <div class="home-grid" id="carousel-favs"></div>
     <button id="favs-more-btn" onclick="loadMoreFavs()" style="display:none;margin:16px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 28px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;width:calc(100% - 64px);display:none;margin:16px 32px 0">Ver más</button>
   </div>
@@ -624,7 +629,7 @@
       <div class="modal-action-row">
         <button class="modal-action-btn focusable" id="fav-btn">
           <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          <span id="fav-btn-text">Mi lista</span>
+          <span id="fav-btn-text">+ Favoritos</span>
         </button>
         <button class="modal-action-btn focusable" id="share-btn">
           <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -838,11 +843,15 @@ function renderContinueWatching() {
   if (!history.length) { cwEl.innerHTML = ""; return; }
   cwEl.innerHTML = `
     <div class="row-section">
-      <div class="row-header"><span class="row-title">⏯️ Continuar Viendo</span></div>
+      <div class="row-header"><span class="row-title">➡️ Continuar Viendo</span></div>
       <div class="cards-scroll" id="cw-carousel-list"></div>
     </div>`;
   const listEl = document.getElementById("cw-carousel-list");
   history.slice().reverse().forEach((item, i) => {
+    // Wrapper para el botón X
+    const wrap = document.createElement("div");
+    wrap.className = "cw-card-wrap";
+
     const card = buildCard(item, i);
     const prog = getProgress(item.id);
     if (prog && prog.pct > 0) {
@@ -857,7 +866,21 @@ function renderContinueWatching() {
         card.appendChild(badge);
       }
     }
-    listEl.appendChild(card);
+
+    // Botón X para eliminar
+    const removeBtn = document.createElement("div");
+    removeBtn.className = "cw-remove";
+    removeBtn.innerHTML = "✕";
+    removeBtn.title = "Quitar de Continuar Viendo";
+    removeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      saveContinueWatching(getContinueWatching().filter(h => String(h.id) !== String(item.id)));
+      renderContinueWatching();
+    });
+
+    wrap.appendChild(card);
+    wrap.appendChild(removeBtn);
+    listEl.appendChild(wrap);
   });
   attachLongPressToCarousel();
 }
@@ -956,7 +979,7 @@ function updateFavBtn(item) {
   const btn = document.getElementById("fav-btn");
   const txt = document.getElementById("fav-btn-text");
   btn.classList.toggle("active", active);
-  txt.textContent = active ? "En mi lista" : "Mi lista";
+  txt.textContent = active ? "En favoritos" : "+ Favoritos";
   const svg = btn.querySelector("svg");
   svg.innerHTML = active ? '<polyline points="20 6 9 17 4 12"/>' : '<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>';
 }
@@ -1622,7 +1645,7 @@ function switchTab(tab) {
   // Continuar viendo y favoritos siempre visibles en inicio
   if (tab === "inicio") {
     document.getElementById("hero").style.display = "";
-    ["viciotv-cw-container","section-favs","sec-popular","sec-nowplaying","sec-tvtrending"].forEach(id => {
+    ["section-favs","viciotv-cw-container","sec-popular","sec-nowplaying","sec-tvtrending"].forEach(id => {
       const el = document.getElementById(id); if (el) el.style.display = "";
     });
     renderContinueWatching(); renderFavs();
