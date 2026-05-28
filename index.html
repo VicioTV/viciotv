@@ -338,9 +338,10 @@
     .trailer-btn.visible{display:none}
     .card:hover .trailer-btn.visible{display:block}
   }
-  /* Mobile: siempre visible */
+  /* Mobile: siempre visible, con o sin clase visible */
   @media(max-width:640px){
-    .trailer-btn.visible{display:block}
+    .trailer-btn{display:block!important}
+    .trailer-btn.no-trailer{display:none!important}
   }
   /* Barra progreso sobre card */
   .card-progress-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--accent);border-radius:0 0 0 var(--radius);z-index:5}
@@ -1386,7 +1387,10 @@ function buildCard(m, i) {
       .then(r=>r.json())
       .then(data => {
         const has = (data.results||[]).some(v=>v.site==="YouTube");
-        if (has) trailerBtns.forEach(b => b.classList.add("visible"));
+        trailerBtns.forEach(b => {
+          if (has) b.classList.add("visible");
+          else b.classList.add("no-trailer");
+        });
       }).catch(()=>{});
     trailerBtns.forEach(b => {
       const _trailerHandler = (e) => { e.stopPropagation(); e.preventDefault(); openHeroTrailer(m); };
