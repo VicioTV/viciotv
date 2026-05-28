@@ -264,6 +264,7 @@
   /* Badge visitas en card */
   .card-views{position:absolute;bottom:58px;right:8px;background:rgba(0,0,0,.78);color:var(--gold);font-size:.65rem;font-weight:600;padding:2px 6px;border-radius:3px;z-index:7;letter-spacing:.3px;opacity:0;transition:opacity .3s}
   .card-views.loaded{opacity:1}
+
   /* Long-press activo */
   .card--long-press-active{opacity:.6;transform:scale(.97)!important}
 
@@ -443,7 +444,7 @@
       border-bottom:1px solid rgba(255,255,255,.06);
     }
     /* Fila 1: logo | search | profile — ocupa toda la fila */
-    .logo{order:1;font-size:22px;letter-spacing:2px;padding:10px 0}
+    .logo{order:1;font-size:22px;letter-spacing:2px;padding:10px 0;flex:1;text-align:center}
     .nav-tabs{order:3;width:100%;display:flex;justify-content:space-around;padding:6px 0 8px;gap:0;border-top:1px solid rgba(255,255,255,.06);margin-top:2px}
     .nav-tab{flex:1;text-align:center;padding:6px 4px;font-size:11px;border-radius:6px}
     /* Search — más ancha y clickeable */
@@ -466,10 +467,10 @@
     .cards-scroll,.row-header,.live-grid{padding-left:12px;padding-right:12px}
     .home-grid{padding:0 12px!important}
     #catalog-grid,.actor-grid{padding:0 12px}
-    .filters-bar{padding:0 12px 12px!important;display:grid!important;grid-template-columns:1fr 1fr;gap:8px!important}
+    .filters-bar{padding:0 12px 12px!important;display:grid!important;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto;gap:8px!important}
     .filters-bar select{width:100%;box-sizing:border-box}
-    /* Botón limpiar — columna 2, fila 3 */
-    .filters-bar button{grid-column:2;grid-row:3;width:100%;box-sizing:border-box;margin:0!important;align-self:end}
+    /* Botón limpiar — columna 3, fila 2 (fila 1 col 3 vacía automáticamente) */
+    .filters-bar button{grid-column:3;grid-row:2;width:100%;box-sizing:border-box;margin:0!important;align-self:end}
     #live-filter-bar{padding:0 12px 12px!important}
     .row-header{padding:0 12px}
     #sec-catalog{padding-top:110px!important}
@@ -1203,7 +1204,7 @@ function buildCard(m, i) {
     (async () => {
       try {
         const cacheKey = `viciotv_views_${m.id}`;
-        const CACHE_TTL = 30 * 1000; // 30 segundos
+        const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
         let v;
         try {
           const cached = JSON.parse(sessionStorage.getItem(cacheKey));
