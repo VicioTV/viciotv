@@ -1366,12 +1366,15 @@ function buildCard(m, i) {
   // Corazón favorito
   const favBtn = card.querySelector(".card-fav-btn");
   if (favBtn) {
-    favBtn.addEventListener("click", (e) => {
+    const _favHandler = (e) => {
       e.stopPropagation();
+      e.preventDefault();
       toggleFav(m);
       const nowFav = isFav(m.id);
       favBtn.classList.toggle("is-fav", nowFav);
-    });
+    };
+    favBtn.addEventListener("click", _favHandler);
+    favBtn.addEventListener("touchend", _favHandler, { passive: false });
   }
 
   // Botones trailer — verificar disponibilidad y conectar
