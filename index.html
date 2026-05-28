@@ -500,11 +500,11 @@
     <div class="creator-badge" onclick="toggleCreatorPanel(event)" title="Personalizar tema">
       <div style="text-align:center">
         <span class="creator-sub">· Visitas <span id="visit-count">—</span> ·</span>
-        <span class="creator-label" style="display:block">BiENVENiDOS</span>
+        <span class="creator-label" style="display:block">boch4maN</span>
       </div>
     </div>
     <div class="creator-panel" id="creator-panel">
-      <div class="creator-panel-title">BiENVENiDOS</div>
+      <div class="creator-panel-title">boch4maN</div>
       <div class="tp-selector">
         <div class="tp-option" onclick="selectThemeTarget('accent')" id="tp-opt-accent">
           <div class="tp-radio selected" id="tp-radio-accent"></div>
@@ -2691,6 +2691,7 @@ function initApp() {
     renderFavs();
     renderContinueWatching();
     initContent();
+    registerVisit(active ? active.name : saved);
   } else {
     document.getElementById("profiles-screen").style.display = "flex";
   }
