@@ -2822,41 +2822,33 @@ initThemePicker();
 
 // ─── CONTADOR DE VISITAS ───
 (async function initVisitCounter() {
-  const SITE_ID = location.hostname || "viciotv";
-  const COOLDOWN_MS = 2 * 60 * 60 * 1000; // 2 horas
+  const COUNTER_KEY = "viciotv-visitas-v1"; // clave única en countapi
+  const COOLDOWN_MS = 2 * 60 * 60 * 1000;    // 2 horas
+  const API = `https://countapi.mileshilliard.com/api/v1/hit/${COUNTER_KEY}`;
+  const API_GET = `https://countapi.mileshilliard.com/api/v1/get/${COUNTER_KEY}`;
   const el = document.getElementById("visit-count");
 
-  // Obtener el total actual siempre (para mostrarlo)
-  async function getCount() {
-    try {
-      const res = await fetch(`https://api.visitor.6developer.com/v1/visit?site=${encodeURIComponent(SITE_ID)}`, {
-        method: "GET"
-      });
-      const data = await res.json();
-      return data.totalVisitors ?? data.total ?? null;
-    } catch { return null; }
-  }
-
-  // Registrar visita solo si pasaron 2 horas
-  async function registerVisit() {
-    try {
-      await fetch(`https://api.visitor.6developer.com/v1/visit?site=${encodeURIComponent(SITE_ID)}`, {
-        method: "POST"
-      });
-    } catch {}
-  }
-
-  // Lógica de cooldown local
   const lastVisit = parseInt(localStorage.getItem("viciotv_last_visit") || "0");
   const now = Date.now();
-  if (now - lastVisit > COOLDOWN_MS) {
-    localStorage.setItem("viciotv_last_visit", now);
-    await registerVisit();
-  }
 
-  // Mostrar el contador
-  const total = await getCount();
-  if (el) el.textContent = total !== null ? total.toLocaleString("es") : "—";
+  try {
+    let data;
+    if (now - lastVisit > COOLDOWN_MS) {
+      // Registra visita Y devuelve el nuevo valor
+      localStorage.setItem("viciotv_last_visit", now);
+      const res = await fetch(API);
+      data = await res.json();
+    } else {
+      // Solo consulta sin sumar
+      const res = await fetch(API_GET);
+      data = await res.json();
+    }
+    const value = data.value ?? data.count ?? null;
+    if (el && value !== null) el.textContent = Number(value).toLocaleString("es");
+  } catch {
+    // Si falla la API, no mostramos nada raro
+    if (el) el.textContent = "—";
+  }
 })();
 </script>
 </body>
