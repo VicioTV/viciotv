@@ -207,6 +207,10 @@
   .nav-search:focus-within{border-color:var(--accent);width:300px}
   .nav-search input{background:transparent;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;width:100%}
   .nav-search input::placeholder{color:var(--text3)}
+  #search-clear-btn{display:none;background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 0 2px 4px;font-size:16px;line-height:1;transition:color .2s;flex-shrink:0}
+  #search-clear-btn:hover{color:#fff}
+  .search-exit-btn{background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--text3);border-radius:20px;padding:4px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .search-exit-btn:hover{color:#fff;border-color:rgba(255,255,255,.4)}
   #pwa-install-btn{background:rgba(229,9,20,.12);border:1px solid var(--accent);color:var(--accent);padding:6px 14px;border-radius:6px;font-size:0.8rem;font-weight:500;cursor:pointer;display:none;margin-left:8px;transition:background .2s;font-family:'Outfit',sans-serif}
   #pwa-install-btn:hover{background:var(--accent);color:#fff}
 
@@ -617,7 +621,7 @@
   <div class="nav-search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="search-input" type="text" placeholder="Buscar..." oninput="onSearch(this.value)" onfocus="openSearchOverlay()" />
-    <button id="search-clear-btn" onclick="clearSearch()" title="Cerrar búsqueda" style="display:none;background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 0 2px 4px;font-size:16px;line-height:1;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">✕</button>
+    <button id="search-clear-btn" onclick="clearSearch()" title="Cerrar búsqueda">✕</button>
   </div>
   <button id="pwa-install-btn">⬇ Instalar</button>
   <div class="nav-profile focusable" tabindex="0" onclick="goToProfiles()" title="Cambiar perfil">
@@ -630,7 +634,7 @@
 <div id="search-overlay">
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
     <p class="search-header-txt" id="search-header-txt" style="margin:0">Resultados</p>
-    <button onclick="clearSearch()" style="background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--text3);border-radius:20px;padding:4px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;transition:all .2s;white-space:nowrap" onmouseover="this.style.color='#fff';this.style.borderColor='rgba(255,255,255,.4)'" onmouseout="this.style.color='';this.style.borderColor='rgba(255,255,255,.15)'">✕ Salir del buscador</button>
+    <button class="search-exit-btn" onclick="clearSearch()">✕ Salir del buscador</button>
   </div>
   <div class="search-results-grid" id="search-results-grid"></div>
 </div>
