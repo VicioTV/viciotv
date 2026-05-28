@@ -2859,28 +2859,22 @@ initThemePicker();
 // ─── CONTADOR DE VISITAS ───
 // Se llama desde selectProfile, con el perfil ya elegido
 async function registerVisit(profileName) {
-  const COUNTER_KEY = "viciotv-visitas-v1";
-  const COOLDOWN_MS = 2 * 60 * 60 * 1000; // 2 horas por perfil
-  const STORAGE_KEY = `viciotv_last_visit__${profileName}`; // clave por perfil
-  const API     = `https://countapi.mileshilliard.com/api/v1/hit/${COUNTER_KEY}`;
-  const API_GET = `https://countapi.mileshilliard.com/api/v1/get/${COUNTER_KEY}`;
+  const COOLDOWN_MS = 2 * 60 * 60 * 1000;
+  const STORAGE_KEY = `viciotv_last_visit__${profileName}`;
+  const KEY = "viciotv-visitas-v1";
+  const API_HIT = `https://countapi.mileshilliard.com/api/v1/hit/${KEY}`;
+  const API_GET = `https://countapi.mileshilliard.com/api/v1/get/${KEY}`;
   const el = document.getElementById("visit-count");
 
-  const lastVisit = parseInt(localStorage.getItem(STORAGE_KEY) || "0");
   const now = Date.now();
+  const shouldHit = now - parseInt(localStorage.getItem(STORAGE_KEY) || "0") > COOLDOWN_MS;
+  if (shouldHit) localStorage.setItem(STORAGE_KEY, now);
 
   try {
-    let data;
-    if (now - lastVisit > COOLDOWN_MS) {
-      localStorage.setItem(STORAGE_KEY, now);
-      const res = await fetch(API);
-      data = await res.json();
-    } else {
-      const res = await fetch(API_GET);
-      data = await res.json();
-    }
-    const value = data.value ?? data.count ?? null;
-    if (el && value !== null) el.textContent = Number(value).toLocaleString("es");
+    const r = await fetch(shouldHit ? API_HIT : API_GET);
+    const d = await r.json();
+    const value = d.value ?? d.count ?? null;
+    if (el) el.textContent = value !== null ? Number(value).toLocaleString("es") : "—";
   } catch {
     if (el) el.textContent = "—";
   }
