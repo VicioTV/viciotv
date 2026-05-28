@@ -1999,7 +1999,7 @@ function openCatalogTab(tabKey){
 
 function buildFiltersBar(cfg){
   const bar=document.getElementById("filters-bar"); bar.innerHTML="";
-  const selStyle="background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;outline:none;transition:border-color .2s";
+  const selStyle="background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;outline:none;transition:border-color .2s;width:160px;box-sizing:border-box";
 
   // Género
   const genres=cfg.type==="movie"?MOVIE_GENRES:TV_GENRES;
