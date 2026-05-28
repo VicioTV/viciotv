@@ -1,79 +1,68 @@
-const CACHE_NAME = "viciotv-cache-v3";
+const CACHE_VERSION = "v2";
+const CACHE_NAME = `viciotv-cache-${CACHE_VERSION}`;
 
-// SOLO assets locales del repo (GitHub Pages friendly)
-const STATIC_ASSETS = [
-  "./",
-  "./index.html",
-  "./styles.css",
-  "./app.js",
-  "./sw.js"
+const SHELL_FILES = [
+  "index.html",
+  "manifest.json",
+  "icon.png"
 ];
 
-// ─── INSTALL ───
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(STATIC_ASSETS);
-    })
-  );
-  self.skipWaiting();
-});
-
-// ─── ACTIVATE (evita cache viejo en GitHub Pages) ───
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    Promise.all([
-      caches.keys().then((keys) =>
-        Promise.all(
-          keys.map((key) => {
-            if (key !== CACHE_NAME) return caches.delete(key);
-          })
-        )
-      ),
-      self.clients.claim()
-    ])
+// ── INSTALL: cachear el shell
+self.addEventListener("install", (e) => {
+  e.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => cache.addAll(SHELL_FILES))
+      .then(() => self.skipWaiting())
   );
 });
 
-// ─── FETCH STRATEGY ───
-self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
+// ── ACTIVATE: limpiar caches viejas
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(
+        keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k))
+      ))
+      .then(() => clients.claim())
+  );
+});
 
-  // 1. TMDB API → siempre online (IMPORTANTE)
-  if (url.hostname.includes("api.themoviedb.org")) {
-    event.respondWith(fetch(event.request));
-    return;
-  }
+// ── FETCH
+self.addEventListener("fetch", (e) => {
+  // Ignorar métodos que no sean GET
+  if (e.request.method !== "GET") return;
 
-  // 2. Posters / imágenes → cache first
-  if (
-    url.hostname.includes("image.tmdb.org") ||
-    url.hostname.includes("dicebear.com")
-  ) {
-    event.respondWith(cacheFirst(event.request));
-    return;
-  }
+  const url = new URL(e.request.url);
 
-  // 3. Navegación (GitHub Pages SPA fix)
-  if (event.request.mode === "navigate") {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match("./index.html"))
+  // APIs externas (TMDB, providers, DiceBear) → solo red, sin cachear
+  if (url.origin !== self.location.origin) {
+    e.respondWith(
+      fetch(e.request).catch(() => new Response(JSON.stringify({ error: "offline" }), {
+        status: 503,
+        headers: { "Content-Type": "application/json" }
+      }))
     );
     return;
   }
 
-  // 4. default
-  event.respondWith(fetch(event.request));
+  // Archivos propios → cache first, red como fallback + actualizar cache
+  e.respondWith(
+    caches.match(e.request).then(cached => {
+      const networkFetch = fetch(e.request).then(response => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(e.request, clone));
+        }
+        return response;
+      }).catch(() => cached); // si falla la red y hay cache, usar cache
+
+      // Si hay cache la devolvemos ya, y actualizamos en segundo plano
+      return cached || networkFetch;
+    })
+  );
 });
 
-// ─── HELPERS ───
-async function cacheFirst(request) {
-  const cache = await caches.open(CACHE_NAME);
-  const cached = await cache.match(request);
-
-  if (cached) return cached;
-
-  const response = await fetch(request);
-  cache.put(request, response.clone());
-  return response;
-}
+// ── MENSAJE desde la app para forzar actualización
+self.addEventListener("message", (e) => {
+  if (e.data === "skipWaiting") self.skipWaiting();
+});
