@@ -426,22 +426,73 @@
 
   @media(max-width:640px){
     :root{--card-w:130px;--card-h:195px}
-    .hero-content{padding:100px 20px 0}
-    .hero-title{font-size:42px}
-    #nav{padding:0 16px;height:56px}
-    .nav-tab{padding:6px 10px;font-size:12px}
-    .nav-tabs{gap:2px}
-    .nav-search{width:36px;overflow:hidden}
-    .nav-search:focus-within{width:180px}
-    .cards-scroll,.row-header,.live-grid{padding-left:16px;padding-right:16px}
-    .profiles-title{font-size:24px}
-    .profile-avatar{width:90px;height:90px}
-    .modal-body{padding:16px}
-    .episode-thumb{width:110px;height:64px}
-    .similar-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr))}
-    .modal-topbar{padding:8px 12px}
+
+    /* ── NAV MOBILE: 2 filas ── */
+    #nav{
+      padding:0 12px;
+      height:auto;
+      flex-wrap:wrap;
+      align-items:center;
+      gap:0;
+      background:rgba(0,0,0,.97);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    /* Fila 1: logo | search | profile — ocupa toda la fila */
+    .logo{order:1;font-size:22px;letter-spacing:2px;padding:10px 0}
+    .nav-tabs{order:3;width:100%;display:flex;justify-content:space-around;padding:6px 0 8px;gap:0;border-top:1px solid rgba(255,255,255,.06);margin-top:2px}
+    .nav-tab{flex:1;text-align:center;padding:6px 4px;font-size:11px;border-radius:6px}
+    /* Search en fila 1, se expande */
+    .nav-search{order:2;margin-left:auto;width:34px;overflow:hidden}
+    .nav-search:focus-within{width:160px}
+    /* Profile en fila 1 */
+    .nav-profile{order:2;flex-shrink:0}
+    .nav-profile-name{display:none} /* solo mostrar avatar en mobile */
+    /* Ocultar en mobile: creator badge, spacers flex, pwa button */
+    .creator-wrap{display:none}
+    #pwa-install-btn{display:none!important}
+    #nav > div[style*="flex:1"]{display:none}
+
+    /* Ajuste del hero para el nav de 2 filas (~100px de altura) */
+    .hero-content{padding:108px 20px 0}
+    .hero-title{font-size:38px}
+    .hero-dots{left:16px;bottom:16px}
+
+    /* Catalog y secciones */
+    .cards-scroll,.row-header,.live-grid{padding-left:12px;padding-right:12px}
+    .home-grid{padding:0 12px!important}
+    #catalog-grid,.actor-grid{padding:0 12px}
+    .filters-bar{padding:0 12px 12px!important}
+    #live-filter-bar{padding:0 12px 12px!important}
+    .row-header{padding:0 12px}
+    #sec-catalog{padding-top:16px!important}
+
+    /* Modal */
     #modal-overlay{padding:0}
     #modal{border-radius:0;min-height:100vh}
+    .modal-body{padding:12px}
+    .modal-topbar{padding:8px 12px}
+    .modal-actions{flex-wrap:wrap;gap:8px;padding:0 12px 12px}
+    .provider-bar{padding:6px 12px 4px;gap:4px}
+    .provider-btn{padding:4px 8px;font-size:10px}
+    .cast-scroll{padding-left:12px}
+    .similar-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));padding:0 12px}
+    .episode-thumb{width:110px;height:64px}
+
+    /* Perfiles */
+    .profiles-logo{font-size:48px;letter-spacing:5px}
+    .profiles-title{font-size:20px}
+    .profile-avatar{width:90px;height:90px}
+    .profiles-grid{gap:14px;padding:0 16px}
+    .profile-editor-box{padding:20px;gap:14px}
+    .pe-av-grid{max-height:180px}
+
+    /* Actor overlay */
+    .actor-header{padding:0 12px;gap:12px}
+    .actor-grid{padding:0 12px}
+    .actor-name{font-size:1.5rem}
+
+    /* Cards */
+    .ep-panel-inner{padding:0 12px}
   }
 </style>
 </head>
