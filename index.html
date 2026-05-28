@@ -1398,22 +1398,25 @@ function buildCard(m, i) {
     (async () => {
       try {
         const cacheKey = `viciotv_views_${m.id}`;
-        const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
-        let v;
-        try {
-          const cached = JSON.parse(sessionStorage.getItem(cacheKey));
-          if (cached && Date.now() - cached.ts < CACHE_TTL) {
-            v = cached.v;
-          } else { throw new Error("expired"); }
-        } catch {
+        const CACHE_TTL = 30 * 1000; // 30 segundos
+        const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
+        // Mostrar caché instantáneo siempre
+        if (cached) {
+          _viewsEl.textContent = `👁 ${Number(cached.v).toLocaleString("es")}`;
+          _viewsEl.classList.add("loaded");
+        }
+        // Solo consultar la API si el caché expiró
+        if (!cached || Date.now() - cached.ts > CACHE_TTL) {
           const r = await fetch(`https://countapi.mileshilliard.com/api/v1/get/viciotv-item-${m.id}`);
           const d = await r.json();
-          v = d.value ?? d.count ?? 0;
-          sessionStorage.setItem(cacheKey, JSON.stringify({ v, ts: Date.now() }));
+          const v = d.value ?? d.count ?? 0;
+          localStorage.setItem(cacheKey, JSON.stringify({ v, ts: Date.now() }));
+          _viewsEl.textContent = `👁 ${Number(v).toLocaleString("es")}`;
+          _viewsEl.classList.add("loaded");
         }
         _viewsEl.textContent = `👁 ${Number(v).toLocaleString("es")}`;
       } catch {
-        _viewsEl.textContent = `👁 ✕`;
+        if (!cached) { _viewsEl.textContent = ''; } // silencioso si falla y no hay cache
       }
       _viewsEl.classList.add("loaded");
     })();
@@ -1571,7 +1574,9 @@ async function openModal(item) {
       const d = await r.json();
       const v = d.value ?? d.count;
       if (v != null) {
-        // Actualizar todos los badges de esta pelicula (puede aparecer en varias secciones)
+        // Actualizar caché local con el nuevo valor
+        localStorage.setItem(`viciotv_views_${item.id}`, JSON.stringify({ v, ts: Date.now() }));
+        // Actualizar todos los badges visibles
         document.querySelectorAll(`.card-views[data-id="${item.id}"]`).forEach(el => {
           el.textContent = `👁 ${Number(v).toLocaleString("es")}`;
           el.classList.add("loaded");
