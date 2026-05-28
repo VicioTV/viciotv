@@ -247,8 +247,59 @@
   /* ===== MAIN ===== */
   #main{padding:0 0 80px}
   .row-section{margin-bottom:48px}
-  .row-header{display:flex;align-items:center;justify-content:space-between;padding:0 32px;margin-bottom:16px}
-  .row-title{font-size:20px;font-weight:600}
+  .row-header{display:flex;align-items:center;justify-content:space-between;padding:0 32px;margin-bottom:24px;position:relative;gap:16px}
+  .row-title{
+    font-family:'Bebas Neue',cursive;
+    font-size:17px;
+    letter-spacing:5px;
+    background:linear-gradient(90deg,#fff 60%,rgba(255,255,255,.4));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    filter:drop-shadow(0 0 8px rgba(255,255,255,.15));
+    position:relative;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  /* Punto titilando — con margen para no cortarse */
+  .row-title::before{
+    content:'';
+    width:7px;height:7px;
+    border-radius:50%;
+    background:var(--accent);
+    flex-shrink:0;
+    display:inline-block;
+    margin-left:4px;
+    -webkit-text-fill-color:initial;
+    background-clip:unset;
+    -webkit-background-clip:unset;
+    animation:dot-pulse 3s ease-in-out infinite;
+  }
+  @keyframes dot-pulse{
+    0%,100%{box-shadow:0 0 3px var(--accent),0 0 6px var(--accent);opacity:1;transform:scale(1)}
+    50%{box-shadow:0 0 6px var(--accent),0 0 12px var(--accent);opacity:.5;transform:scale(.75)}
+  }
+  /* Línea efecto respirar — suave y con suspenso */
+  .row-header::after{
+    content:'';
+    flex:1;
+    height:1px;
+    border-radius:2px;
+    background:linear-gradient(90deg,
+      var(--accent) 0%,
+      rgba(255,100,60,.5) 20%,
+      rgba(255,255,255,.08) 50%,
+      rgba(255,255,255,.04) 100%
+    );
+    animation:line-breathe 4s ease-in-out infinite;
+  }
+  @keyframes line-breathe{
+    0%,100%{opacity:.3;filter:blur(0px)}
+    40%{opacity:1;filter:blur(0px)}
+    50%{opacity:1;filter:blur(.5px) drop-shadow(0 0 3px var(--accent))}
+    60%{opacity:.9;filter:blur(0px)}
+  }
   /* Carruseles horizontales — usados solo en Mi Lista, tabs de películas/series, etc */
   .cards-scroll{display:flex;gap:12px;padding:4px 32px 16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
   .cards-scroll::-webkit-scrollbar{display:none}
@@ -671,49 +722,49 @@
 
   <!-- Mi Lista -->
   <div class="row-section" id="section-favs" style="display:none">
-    <div class="row-header"><span class="row-title">❤️ Favoritos</span></div>
+    <div class="row-header"><span class="row-title">FAVORITOS</span></div>
     <div class="home-grid" id="carousel-favs"></div>
     <button id="favs-more-btn" onclick="loadMoreFavs()" style="display:none;margin:16px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 28px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;width:calc(100% - 64px);display:none;margin:16px 32px 0">Ver más</button>
   </div>
 
   <!-- Inicio -->
   <div id="sec-popular" class="row-section">
-    <div class="row-header"><span class="row-title">🔥 Populares</span></div>
+    <div class="row-header"><span class="row-title">POPULARES</span></div>
     <div class="home-grid" id="carousel-popular"></div>
     <button class="load-more-btn" id="btn-more-popular" onclick="loadMoreHome('popular')">Ver más</button>
   </div>
   <div id="sec-nowplaying" class="row-section">
-    <div class="row-header"><span class="row-title">🎬 Lo mas Nuevo</span></div>
+    <div class="row-header"><span class="row-title">LO MÁS NUEVO</span></div>
     <div class="home-grid" id="carousel-nowplaying"></div>
     <button class="load-more-btn" id="btn-more-nowplaying" onclick="loadMoreHome('nowplaying')">Ver más</button>
   </div>
   <div id="sec-tvtrending" class="row-section">
-    <div class="row-header"><span class="row-title">📺 Series Tendencia</span></div>
+    <div class="row-header"><span class="row-title">TENDENCIA</span></div>
     <div class="home-grid" id="carousel-tvtrending"></div>
     <button class="load-more-btn" id="btn-more-tvtrending" onclick="loadMoreHome('tvtrending')">Ver más</button>
   </div>
 
   <!-- Películas -->
   <div id="sec-movies-popular" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">🎬 Más Populares</span></div>
+    <div class="row-header"><span class="row-title">MÁS POPULARES</span></div>
     <div class="cards-scroll" id="carousel-movies-popular"></div>
   </div>
   <div id="sec-movies-top" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">⭐ Mejor Valoradas</span></div>
+    <div class="row-header"><span class="row-title">MEJOR VALORADAS</span></div>
     <div class="cards-scroll" id="carousel-movies-top"></div>
   </div>
   <div id="sec-movies-action" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">💥 Acción</span></div>
+    <div class="row-header"><span class="row-title">ACCIÓN</span></div>
     <div class="cards-scroll" id="carousel-movies-action"></div>
   </div>
 
   <!-- Series -->
   <div id="sec-series-popular" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">📺 Series Populares</span></div>
+    <div class="row-header"><span class="row-title">SERIES POPULARES</span></div>
     <div class="cards-scroll" id="carousel-series-popular"></div>
   </div>
   <div id="sec-series-top" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">⭐ Series Mejor Valoradas</span></div>
+    <div class="row-header"><span class="row-title">MEJOR VALORADAS</span></div>
     <div class="cards-scroll" id="carousel-series-top"></div>
   </div>
   <div id="sec-series-drama" class="row-section" style="display:none">
@@ -723,7 +774,7 @@
 
   <!-- Anime -->
   <div id="sec-anime" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">⛩️ Anime Popular</span></div>
+    <div class="row-header"><span class="row-title">ANIME POPULAR</span></div>
     <div class="cards-scroll" id="carousel-anime"></div>
   </div>
   <div id="sec-anime-top" class="row-section" style="display:none">
@@ -949,9 +1000,9 @@ let catalogState = { tab:null, page:1, totalPages:1, loading:false, ended:false,
 let catalogObserver = null;
 
 const CATALOG_TABS = {
-  movies: { title:"🎬 Películas", endpoint:"/discover/movie", type:"movie", defaultSort:"popularity.desc" },
-  series: { title:"📺 Series",    endpoint:"/discover/tv",    type:"tv",    defaultSort:"popularity.desc" },
-  anime:  { title:"⛩️ Anime",     endpoint:"/discover/tv",    type:"tv",    defaultSort:"popularity.desc",
+  movies: { title:"PELÍCULAS", endpoint:"/discover/movie", type:"movie", defaultSort:"popularity.desc" },
+  series: { title:"SERIES",    endpoint:"/discover/tv",    type:"tv",    defaultSort:"popularity.desc" },
+  anime:  { title:"ANIME",     endpoint:"/discover/tv",    type:"tv",    defaultSort:"popularity.desc",
              extraParams:{ with_genres:"16", with_original_language:"ja" } },
 };
 
@@ -1013,7 +1064,7 @@ function renderContinueWatching() {
   if (!history.length) { cwEl.innerHTML = ""; return; }
   cwEl.innerHTML = `
     <div class="row-section">
-      <div class="row-header"><span class="row-title">➡️ Continuar Viendo</span></div>
+      <div class="row-header"><span class="row-title">CONTINUAR VIENDO</span></div>
       <div class="cards-scroll" id="cw-carousel-list"></div>
     </div>`;
   const listEl = document.getElementById("cw-carousel-list");
