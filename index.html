@@ -237,7 +237,7 @@
   /* ===== MAIN ===== */
   #main{padding:0 0 80px}
   .row-section{margin-bottom:48px}
-  .row-header{display:flex;align-items:center;justify-content:space-between;padding:0 32px;margin-bottom:24px;position:relative;gap:16px}
+  .row-header{display:flex;align-items:center;justify-content:space-between;padding:0 32px;margin-bottom:24px;position:relative;gap:16px;z-index:11}
   .row-title{
     font-family:'Bebas Neue',cursive;
     font-size:16px;
@@ -265,10 +265,10 @@
     background:linear-gradient(90deg,rgba(255,255,255,.08),transparent);
   }
   /* Carruseles horizontales — usados solo en Mi Lista, tabs de películas/series, etc */
-  .cards-scroll{display:flex;gap:12px;padding:4px 32px 16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
+  .cards-scroll{display:flex;gap:12px;padding:12px 32px 16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
   .cards-scroll::-webkit-scrollbar{display:none}
   /* Grilla para secciones del home */
-  .home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:16px;padding:0 32px}
+  .home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:16px;padding:8px 32px 0}
   .home-grid .card{width:auto;flex-shrink:unset}
   .load-more-btn{display:block;margin:20px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 32px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;transition:all .2s}
   .load-more-btn:hover{background:rgba(229,9,20,.12);color:var(--accent);border-color:rgba(229,9,20,.3)}
@@ -305,6 +305,25 @@
     letter-spacing:.3px;
   }
   .trailer-btn:hover{background:#000;color:#fff}
+  /* Corazón en cards */
+  .card-fav-btn{
+    position:absolute;top:8px;right:8px;
+    width:30px;height:30px;border-radius:50%;
+    background:rgba(0,0,0,.5);border:none;
+    display:none;align-items:center;justify-content:center;
+    cursor:pointer;transition:all .2s;
+    font-size:14px;backdrop-filter:blur(4px);
+  }
+  .card-fav-btn svg{width:14px;height:14px;transition:all .2s}
+  .card-fav-btn.is-fav svg{fill:#e50914;stroke:#e50914}
+  .card-fav-btn:not(.is-fav) svg{fill:rgba(255,255,255,.2);stroke:rgba(255,255,255,.6)}
+  @media(min-width:641px){
+    .card-fav-btn.card-fav-visible{display:none}
+    .card:hover .card-fav-btn.card-fav-visible{display:flex}
+  }
+  @media(max-width:640px){
+    .card-fav-btn.card-fav-visible{display:flex}
+  }
   /* Desktop: solo en hover */
   @media(min-width:641px){
     .trailer-btn.visible{display:none}
@@ -469,10 +488,13 @@
 
   /* ===== CONTINUAR VIENDO ===== */
   #viciotv-cw-container{padding:0 0 8px}
-  .cw-card-wrap{position:relative;flex-shrink:0;scroll-snap-align:start}
-  .cw-card-wrap .cw-remove{position:absolute;top:6px;right:6px;z-index:20;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .2s}
-  .cw-card-wrap .cw-remove:hover{background:var(--accent);border-color:var(--accent)}
-  .cw-card-wrap .card{flex-shrink:unset;scroll-snap-align:unset;width:var(--card-w)}
+  .cw-card-wrap{flex-shrink:0;scroll-snap-align:start}
+  .cw-card-wrap .card{flex-shrink:unset;scroll-snap-align:unset;width:var(--card-w);position:relative}
+  .cw-card-wrap .cw-remove{position:absolute;top:6px;right:6px;z-index:20;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .cw-card-wrap .cw-remove svg{width:14px;height:14px}
+  .cw-card-wrap .cw-remove:hover{background:rgba(0,0,0,.9);transform:scale(1.1)}
+  .cw-delete-btn{position:absolute;top:6px;left:6px;z-index:20;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;line-height:1;transition:all .2s}
+  .cw-delete-btn:hover{background:rgba(180,0,0,.8);color:#fff}
 
   .focusable{outline:none}
   .focusable:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
@@ -1070,6 +1092,9 @@ function renderContinueWatching() {
     wrap.className = "cw-card-wrap";
 
     const card = buildCard(item, i);
+    // Ocultar corazón interno — usamos el del wrap
+    const innerHeart = card.querySelector(".card-fav-btn");
+    if (innerHeart) innerHeart.style.display = "none";
     const prog = getProgress(item.id);
     if (prog && prog.pct > 0) {
       const bar = document.createElement("div");
@@ -1084,19 +1109,33 @@ function renderContinueWatching() {
       }
     }
 
-    // Botón X para eliminar
+    // Corazón (derecha) — favoritos
     const removeBtn = document.createElement("div");
     removeBtn.className = "cw-remove";
-    removeBtn.innerHTML = "✕";
-    removeBtn.title = "Quitar de Continuar Viendo";
+    const _favColor = isFav(item.id) ? '#e50914' : 'rgba(255,255,255,.3)';
+    removeBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="${_favColor}" stroke="${_favColor}" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+    removeBtn.title = "Favoritos";
     removeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleFav(item);
+      const c = isFav(item.id) ? '#e50914' : 'rgba(255,255,255,.3)';
+      const svg = removeBtn.querySelector('svg');
+      if (svg) { svg.setAttribute('fill', c); svg.setAttribute('stroke', c); }
+    });
+    // X (izquierda) — quitar de Continuar Viendo
+    const deleteBtn = document.createElement("div");
+    deleteBtn.className = "cw-delete-btn";
+    deleteBtn.innerHTML = "✕";
+    deleteBtn.title = "Quitar de Continuar Viendo";
+    deleteBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       saveContinueWatching(getContinueWatching().filter(h => String(h.id) !== String(item.id)));
       renderContinueWatching();
     });
 
+    card.appendChild(removeBtn);
+    card.appendChild(deleteBtn);
     wrap.appendChild(card);
-    wrap.appendChild(removeBtn);
     listEl.appendChild(wrap);
   });
   attachLongPressToCarousel();
@@ -1189,7 +1228,19 @@ function toggleFav(item) {
   let favs = getFavs();
   const idx = favs.findIndex(f => f.id === item.id);
   if (idx === -1) favs.unshift(item); else favs.splice(idx, 1);
-  saveFavs(favs); updateFavBtn(item); renderFavs();
+  saveFavs(favs);
+  updateFavBtn(item);
+  renderFavs();
+  // Actualizar todos los corazones de cards visibles con este id
+  const nowFav = isFav(item.id);
+  document.querySelectorAll('.card-fav-btn[data-id="' + item.id + '"]').forEach(btn => {
+    btn.classList.toggle("is-fav", nowFav);
+  });
+  // También actualizar el corazón del wrap en Favoritos y CW
+  document.querySelectorAll('.cw-remove[data-id="' + item.id + '"]').forEach(btn => {
+    const svg = btn.querySelector('svg');
+    if (svg) svg.style.fill = nowFav ? '#e50914' : 'rgba(255,255,255,.3)';
+  });
 }
 function updateFavBtn(item) {
   const active = isFav(item.id);
@@ -1215,17 +1266,21 @@ function renderFavs() {
   favs.slice(0, _favsShown).forEach((m, i) => {
     const wrap = document.createElement("div");
     wrap.className = "cw-card-wrap";
-    wrap.appendChild(buildCard(m, i));
+    const card = buildCard(m, i);
+    // Ocultar el corazón interno de la card — usamos el del wrap
+    const innerHeart = card.querySelector(".card-fav-btn");
+    if (innerHeart) innerHeart.style.display = "none";
+    wrap.appendChild(card);
     const removeBtn = document.createElement("div");
     removeBtn.className = "cw-remove";
-    removeBtn.innerHTML = "✕";
+    removeBtn.dataset.id = m.id;
+    removeBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="#e50914" stroke="#e50914" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
     removeBtn.title = "Quitar de Favoritos";
     removeBtn.addEventListener("click", (e) => {
       e.stopPropagation();
-      saveFavs(getFavs().filter(f => String(f.id) !== String(m.id)));
-      renderFavs();
+      toggleFav(m);
     });
-    wrap.appendChild(removeBtn);
+    card.appendChild(removeBtn);
     car.appendChild(wrap);
   });
   if (btn) btn.style.display = favs.length > _favsShown ? "block" : "none";
@@ -1280,8 +1335,24 @@ function buildCard(m, i) {
       <button class="trailer-btn" data-id="${m.id}" data-type="${m._type||'movie'}">▶ Trailer</button>
       <div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
     </div>
+    <button class="card-fav-btn card-fav-visible ${(function(){try{return isFav(m.id)?'is-fav':''}catch(e){return ''}}())}" data-id="${m.id}">
+      <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      </svg>
+    </button>
     <div class="card-views" data-id="${m.id}">👁 —</div>`;
   card.addEventListener("click", () => openModal(m));
+
+  // Corazón favorito
+  const favBtn = card.querySelector(".card-fav-btn");
+  if (favBtn) {
+    favBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleFav(m);
+      const nowFav = isFav(m.id);
+      favBtn.classList.toggle("is-fav", nowFav);
+    });
+  }
 
   // Botones trailer — verificar disponibilidad y conectar
   const trailerBtns = card.querySelectorAll(".trailer-btn, .card-trailer-btn");
@@ -2458,6 +2529,12 @@ function renderProfiles() {
   const grid = document.getElementById("profiles-grid");
   grid.innerHTML = "";
 
+  // Sin perfiles → abrir editor directamente
+  if (!profiles.length) {
+    setTimeout(() => openProfileEditor(null), 100);
+    return;
+  }
+
   profiles.forEach((p, idx) => {
     const item = document.createElement("div");
     item.className = "profile-item";
@@ -2550,7 +2627,7 @@ function openProfileEditor(idx) {
     document.getElementById("pe-btn-delete").style.display = "none";
   }
 
-  buildAvatarPicker();
+  try { buildAvatarPicker(); } catch(e) { console.error("buildAvatarPicker error:", e); }
   modal.classList.add("open");
   document.getElementById("pe-name-input").focus();
 }
