@@ -571,6 +571,7 @@
     .filters-bar select:nth-child(2){grid-column:1;grid-row:2} /* Plataforma */
     .filters-bar select:nth-child(3){grid-column:2;grid-row:1} /* Año */
     .filters-bar select:nth-child(4){grid-column:3;grid-row:1} /* Ordenar */
+    .filters-bar select:nth-child(5){grid-column:2;grid-row:2} /* País */
     .filters-bar select{width:100%!important;box-sizing:border-box!important;font-size:10px!important;padding:6px 4px!important}
     .filters-bar button{grid-column:3;grid-row:2;width:100%;box-sizing:border-box;margin:0!important;font-size:10px!important;padding:6px 4px!important}
     #live-filter-bar{padding:0 12px 12px!important}
@@ -1042,7 +1043,7 @@ const STREAMING_PLATFORMS=[
 ];
 
 /* ── CATALOG STATE ── */
-let catalogState = { tab:null, page:1, totalPages:1, loading:false, ended:false, filters:{genre:null,year:null,sort:null,platform:null} };
+let catalogState = { tab:null, page:1, totalPages:1, loading:false, ended:false, filters:{genre:null,year:null,sort:null,platform:null,country:null} };
 let catalogObserver = null;
 
 const CATALOG_TABS = {
@@ -2246,13 +2247,46 @@ function buildFiltersBar(cfg){
   ss.addEventListener("change",()=>{catalogState.filters.sort=ss.value||null;_resetCatalog();});
   bar.appendChild(ss);
 
+  // País
+  const cs=document.createElement("select"); cs.style.cssText=selStyle;
+  const COUNTRIES=[
+    ["","🌍 País"],
+    ["AR","🇦🇷 Argentina"],
+    ["US","🇺🇸 EEUU"],
+    ["GB","🇬🇧 Reino Unido"],
+    ["FR","🇫🇷 Francia"],
+    ["DE","🇩🇪 Alemania"],
+    ["IT","🇮🇹 Italia"],
+    ["ES","🇪🇸 España"],
+    ["MX","🇲🇽 México"],
+    ["BR","🇧🇷 Brasil"],
+    ["CO","🇨🇴 Colombia"],
+    ["CL","🇨🇱 Chile"],
+    ["JP","🇯🇵 Japón"],
+    ["KR","🇰🇷 Corea del Sur"],
+    ["CN","🇨🇳 China"],
+    ["IN","🇮🇳 India"],
+    ["AU","🇦🇺 Australia"],
+    ["CA","🇨🇦 Canadá"],
+    ["RU","🇷🇺 Rusia"],
+    ["TR","🇹🇷 Turquía"],
+    ["SE","🇸🇪 Suecia"],
+    ["DK","🇩🇰 Dinamarca"],
+    ["NO","🇳🇴 Noruega"],
+    ["TH","🇹🇭 Tailandia"],
+    ["IL","🇮🇱 Israel"],
+  ];
+  cs.innerHTML=COUNTRIES.map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+  cs.addEventListener("change",()=>{catalogState.filters.country=cs.value||null;_resetCatalog();});
+  bar.appendChild(cs);
+
   // Limpiar
   const rb=document.createElement("button");
   rb.style.cssText="background:transparent;color:var(--text3);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap";
   rb.textContent="↺ Limpiar";
   rb.addEventListener("click",()=>{
-    gs.value="";ps.value="";ys.value="";ss.value="";
-    catalogState.filters={genre:null,year:null,sort:null,platform:null};
+    gs.value="";ps.value="";ys.value="";ss.value="";cs.value="";
+    catalogState.filters={genre:null,year:null,sort:null,platform:null,country:null};
     _resetCatalog();
   });
   bar.appendChild(rb);
@@ -2312,6 +2346,9 @@ async function loadCatalogPage(){
     if(catalogState.filters.platform){
       params.set("with_watch_providers", catalogState.filters.platform);
       params.set("watch_region", "AR");
+    }
+    if(catalogState.filters.country){
+      params.set("with_origin_country", catalogState.filters.country);
     }
     if(catalogState.filters.year){
       if(cfg.type === "movie") params.set("primary_release_year", catalogState.filters.year);
