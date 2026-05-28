@@ -531,6 +531,7 @@
       gap:0;
       background:rgba(0,0,0,.97);
       border-bottom:1px solid rgba(255,255,255,.06);
+      position:relative;
     }
     /* Fila 1: logo | search | profile — ocupa toda la fila */
     .logo{order:1;font-size:22px;letter-spacing:2px;padding:10px 0;flex:1;text-align:center}
@@ -602,7 +603,7 @@
     /* Cards */
     .ep-panel-inner{padding:0 12px}
     #search-overlay{padding-top:110px!important}
-    #visit-count-mobile{display:inline!important}
+    #visit-count-mobile{display:block!important;position:absolute;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.5px;white-space:nowrap;pointer-events:none}
   }
 </style>
 </head>
@@ -695,7 +696,7 @@
   <!-- Espacio flexible derecho -->
   <div style="flex:1"></div>
   <!-- Visitas solo en mobile -->
-  <span id="visit-count-mobile" style="font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.5px;order:2;display:none"></span>
+  <span id="visit-count-mobile" style="display:none"></span>
   <div class="nav-search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="search-input" type="text" placeholder="Buscar..." oninput="onSearch(this.value)" onfocus="openSearchOverlay()" />
