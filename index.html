@@ -284,11 +284,11 @@
   .card-meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text3)}
   .card-rating{color:var(--gold);font-weight:600;font-size:12px}
   .card-type-badge{position:absolute;top:8px;left:8px;background:rgba(229,9,20,.85);color:#fff;font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.5px}
-  .card-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.9) 0%,transparent 50%);opacity:0;transition:opacity var(--transition);display:flex;align-items:flex-end;padding:12px}
+  .card-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity var(--transition);display:flex;align-items:center;justify-content:center;padding:0}
   .card:hover .card-overlay{opacity:1}
-  .card-overlay-title{font-size:12px;font-weight:600;flex:1}
-  .card-overlay-rating{font-size:11px;color:var(--gold)}
-  .play-btn{width:36px;height:36px;border-radius:50%;background:var(--accent);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:auto;flex-shrink:0}
+  .card-overlay-title{display:none}
+  .card-overlay-rating{display:none}
+  .play-btn{width:44px;height:44px;border-radius:50%;background:var(--accent);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;box-shadow:0 0 20px rgba(229,9,20,.5)}
   .play-btn svg{width:16px;height:16px;fill:#fff}
   /* Barra progreso sobre card */
   .card-progress-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--accent);border-radius:0 0 0 var(--radius);z-index:5}
@@ -353,8 +353,10 @@
   .episodes-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
   .episodes-title-text{font-size:17px;font-weight:600}
   .season-dropdown{background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;outline:none;cursor:pointer}
-  .episode-list{display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto}
-  .episode-item{display:flex;gap:12px;background:var(--bg3);border-radius:8px;overflow:hidden;cursor:pointer;transition:background var(--transition);border:1px solid transparent}
+  .episode-list{display:flex;flex-direction:column;gap:8px;max-height:360px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--accent) transparent}
+  .episode-list::-webkit-scrollbar{width:4px}
+  .episode-list::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
+  .episode-item{display:flex;gap:12px;background:var(--bg3);border-radius:8px;overflow:hidden;cursor:pointer;transition:background var(--transition);border:1px solid transparent;flex-shrink:0}
   .episode-item:hover{background:rgba(229,9,20,.12);border-color:rgba(229,9,20,.2)}
   .episode-item.active-ep{border-color:var(--accent);background:rgba(229,9,20,.1)}
   .episode-thumb{position:relative;flex-shrink:0;width:140px;height:80px;background:var(--bg)}
@@ -444,8 +446,7 @@
   /* ===== CONTINUAR VIENDO ===== */
   #viciotv-cw-container{padding:0 0 8px}
   .cw-card-wrap{position:relative;flex-shrink:0;scroll-snap-align:start}
-  .cw-card-wrap .cw-remove{position:absolute;top:6px;right:6px;z-index:20;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;cursor:pointer;display:none;align-items:center;justify-content:center;line-height:1;transition:background .2s}
-  .cw-card-wrap:hover .cw-remove{display:flex}
+  .cw-card-wrap .cw-remove{position:absolute;top:6px;right:6px;z-index:20;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.2);color:#fff;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:background .2s}
   .cw-card-wrap .cw-remove:hover{background:var(--accent);border-color:var(--accent)}
   .cw-card-wrap .card{flex-shrink:unset;scroll-snap-align:unset;width:var(--card-w)}
 
@@ -1725,9 +1726,19 @@ function closeModal() {
 function _doCloseModal() {
   document.getElementById("modal-overlay").classList.remove("open");
   document.getElementById("modal").classList.remove("forced-fullscreen");
-  document.getElementById("fs-btn").textContent = "⛶";
-  // Reemplazar el iframe por uno nuevo — única forma 100% segura de parar el audio
-  _resetMovieFrame();
+  // Parar audio: reemplazar iframe por uno nuevo vacío
+  const frame = document.getElementById("movie-frame");
+  if (frame) {
+    const blank = document.createElement("iframe");
+    blank.id = "movie-frame";
+    blank.loading = "lazy";
+    blank.frameBorder = "0";
+    blank.setAttribute("allowfullscreen", "");
+    blank.setAttribute("allow", "autoplay; fullscreen *; encrypted-media; picture-in-picture");
+    blank.setAttribute("referrerpolicy", "origin");
+    blank.style.cssText = "width:100%;height:100%;border:none;display:block";
+    frame.replaceWith(blank);
+  }
   document.body.style.overflow = "";
   clearTimeout(nextEpisodeTimer);
   history.replaceState(null, "", window.location.pathname + window.location.search);
@@ -1739,9 +1750,8 @@ function getFrame() {
 }
 
 function _createMovieFrame() {
-  // En esta versión el iframe ya existe en el HTML — solo resetearlo
   const frame = document.getElementById('movie-frame');
-  if (frame) { frame.src = ''; }
+  if (frame) frame.src = '';
 }
 
 function _resetMovieFrame() {
@@ -1956,6 +1966,10 @@ document.addEventListener("click", e => {
 
 /* ─── TABS ─── */
 function switchTab(tab) {
+  // Destruir iframe al cambiar de tab — para el audio
+  try { _destroyMovieFrame(); } catch(e) {}
+  document.getElementById("modal-overlay").classList.remove("open");
+  document.body.style.overflow = "";
   activeTab = tab;
   document.querySelectorAll(".nav-tab").forEach(t => t.classList.toggle("active", t.dataset.tab === tab));
 
