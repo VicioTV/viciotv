@@ -250,59 +250,29 @@
   .row-header{display:flex;align-items:center;justify-content:space-between;padding:0 32px;margin-bottom:24px;position:relative;gap:16px}
   .row-title{
     font-family:'Bebas Neue',cursive;
-    font-size:19px;
+    font-size:16px;
     letter-spacing:5px;
-    background:linear-gradient(90deg,#fff,#aaa,#fff,#888,#fff);
-    background-size:300% auto;
-    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    animation:title-shimmer 6s linear infinite;
+    color:rgba(255,255,255,.9);
+    -webkit-font-smoothing:antialiased;
     position:relative;
-    display:flex;
+    display:inline-flex;
     align-items:center;
-    gap:12px;
     white-space:nowrap;
     flex-shrink:0;
+    /* Recuadro elegante */
+    padding:5px 14px 5px 12px;
+    border:1px solid rgba(255,255,255,.12);
+    border-left:2px solid var(--accent);
+    border-radius:4px;
+    background:rgba(255,255,255,.03);
+    backdrop-filter:blur(4px);
   }
-  @keyframes title-shimmer{to{background-position:300% center}}
-  /* Punto — más margen para no cortarse */
-  .row-title::before{
-    content:'';
-    width:7px;height:7px;
-    border-radius:50%;
-    background:var(--accent);
-    flex-shrink:0;
-    display:inline-block;
-    margin-left:10px;
-    -webkit-text-fill-color:initial;
-    background-clip:unset;
-    -webkit-background-clip:unset;
-    animation:dot-pulse 3s ease-in-out infinite;
-  }
-  @keyframes dot-pulse{
-    0%,100%{box-shadow:0 0 3px var(--accent),0 0 6px var(--accent);opacity:1;transform:scale(1)}
-    50%{box-shadow:0 0 6px var(--accent),0 0 12px var(--accent);opacity:.5;transform:scale(.75)}
-  }
-  /* Línea — ola que viaja de izquierda a derecha */
+  /* Línea estática — sin efecto */
   .row-header::after{
     content:'';
     flex:1;
     height:1px;
-    border-radius:2px;
-    background:linear-gradient(90deg,
-      rgba(255,255,255,.04) 0%,
-      rgba(255,255,255,.04) 30%,
-      var(--accent) 45%,
-      rgba(255,140,80,.7) 50%,
-      var(--accent) 55%,
-      rgba(255,255,255,.04) 70%,
-      rgba(255,255,255,.04) 100%
-    );
-    background-size:250% 100%;
-    animation:wave-travel 4s ease-in-out infinite;
-  }
-  @keyframes wave-travel{
-    0%  {background-position:170% center}
-    100%{background-position:-70% center}
+    background:linear-gradient(90deg,rgba(255,255,255,.08),transparent);
   }
   /* Carruseles horizontales — usados solo en Mi Lista, tabs de películas/series, etc */
   .cards-scroll{display:flex;gap:12px;padding:4px 32px 16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
