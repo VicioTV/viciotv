@@ -467,7 +467,6 @@
   .similar-card-title{padding:8px;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   /* ===== SEARCH OVERLAY ===== */
-  #sec-catalog{padding-top:80px}
   #search-overlay{display:none;position:fixed;inset:0;z-index:900;background:rgba(10,10,15,.98);padding:80px 32px 32px;overflow-y:auto}
   #search-overlay > div:first-child{position:sticky;top:0;z-index:2;background:rgba(10,10,15,.98);padding-bottom:12px;margin-bottom:4px}
   #search-overlay.open{display:block}
@@ -819,11 +818,11 @@
   </div>
 
   <!-- Catálogo infinito (películas / series / anime con filtros) -->
-  <div id="sec-catalog" class="row-section" style="display:none">
+  <div id="sec-catalog" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
       <span class="row-title" id="catalog-title">Catálogo</span>
     </div>
-    <div class="filters-bar" id="filters-bar"></div>
+    <div class="filters-bar" id="filters-bar" style="padding:0 32px 16px;display:flex;gap:8px;flex-wrap:wrap"></div>
     <div class="catalog-grid" id="catalog-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:16px;padding:0 32px"></div>
     <div id="load-more-trigger" style="height:60px;display:flex;align-items:center;justify-content:center;margin-top:16px">
       <div class="load-more-spinner skeleton" id="load-spinner" style="width:32px;height:32px;border-radius:50%;display:none;animation:spin .8s linear infinite"></div>
@@ -2211,7 +2210,7 @@ function openCatalogTab(tabKey){
 }
 
 function buildFiltersBar(cfg){
-  const bar=document.getElementById("filters-bar"); bar.innerHTML=""; bar.removeAttribute("style");
+  const bar=document.getElementById("filters-bar"); bar.innerHTML="";
   const selStyle="background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;outline:none;transition:border-color .2s;width:160px;box-sizing:border-box";
 
   // Género
