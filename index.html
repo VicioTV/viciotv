@@ -534,7 +534,7 @@
       position:relative;
     }
     /* Fila 1: logo | search | profile — ocupa toda la fila */
-    .logo{order:1;font-size:22px;letter-spacing:2px;padding:10px 0;flex:1;text-align:center}
+    .logo{order:1;font-size:22px;letter-spacing:2px;padding:10px 0;flex-shrink:0}
     .nav-tabs{order:3;width:100%;display:flex;justify-content:space-around;padding:6px 0 8px;gap:0;border-top:1px solid rgba(255,255,255,.06);margin-top:2px}
     .nav-tab{flex:1;text-align:center;padding:6px 4px;font-size:11px;border-radius:6px}
     /* Search — más ancha y clickeable */
@@ -603,7 +603,7 @@
     /* Cards */
     .ep-panel-inner{padding:0 12px}
     #search-overlay{padding-top:110px!important}
-    #visit-count-mobile{display:block!important;position:absolute;left:50%;transform:translateX(-50%);font-size:11px;color:rgba(255,255,255,.45);letter-spacing:.5px;white-space:nowrap;pointer-events:none}
+    #visit-count-mobile{display:block!important;order:1;flex:1;text-align:center;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.5px;white-space:nowrap;pointer-events:none;line-height:1}
   }
 </style>
 </head>
