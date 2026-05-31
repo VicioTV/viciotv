@@ -978,11 +978,23 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     .row-header{padding:16px 12px 24px}
     #sec-catalog{padding-top:16px!important}
     #sec-movies-filters,#sec-series-filters,#sec-anime-filters{padding-top:60px!important}
-    .tab-filters-bar{padding:0 12px 12px!important;display:grid!important;grid-template-columns:1fr 1fr 1fr;grid-template-rows:auto auto;gap:6px!important}
-    .tab-filters-bar select{width:100%!important;box-sizing:border-box!important;font-size:10px!important;padding:6px 4px!important}
-    .tab-filters-bar button{grid-column:3;grid-row:2;width:100%;box-sizing:border-box;margin:0!important;font-size:10px!important;padding:6px 4px!important}
+    .tab-filters-bar{padding:0 12px 20px!important;display:flex!important;flex-direction:column!important;gap:6px!important}
+    .tab-filters-bar select{width:100%!important;box-sizing:border-box!important;font-size:13px!important;padding:8px 10px!important}
+    .tab-filters-bar button{width:100%!important;box-sizing:border-box;margin:0!important;font-size:13px!important;padding:8px 10px!important}
+    /* Películas/Series/Anime: menos padding-top entre botonera y título, y cards más a la izq */
+    #sec-movies-filters .row-header,#sec-series-filters .row-header,#sec-anime-filters .row-header{padding-top:8px!important}
+    .tab-infinite-grid{padding:8px 12px 0!important}
     #sec-canales{padding-top:90px!important}
     #sec-netflixtop10,#sec-top100,#sec-mas-populares,#sec-mas-recientes,#sec-mejores-anime,#sec-proximamente{padding-top:24px!important}
+    /* Próximamente: filtros en 1 columna centrada */
+    .prox-filters{display:flex!important;flex-direction:column!important;align-items:center!important;padding:0 12px 16px!important;gap:8px!important}
+    .prox-filter-group{display:flex!important;flex-direction:column!important;width:100%!important;gap:8px!important}
+    .prox-filter-btn{text-align:center!important;width:100%!important}
+    /* Próximamente: cards centradas */
+    .prox-grid{padding:8px 12px 16px!important;justify-content:center!important}
+    /* Inicio: hrows scrolleables con el dedo en mobile */
+    .hero-row{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;scroll-snap-type:x mandatory!important}
+    .hcard{scroll-snap-align:start!important}
 
     /* Modal */
     #modal-overlay{padding:0}
@@ -3779,6 +3791,19 @@ function hrowNav(key, dir) {
   }
 }
 
+// Mobile: cargar más hcards al deslizar hasta el final
+function _initHrowTouchScroll(key) {
+  const row = document.getElementById(`hrow-${key}`);
+  if (!row || row._touchScrollBound) return;
+  row._touchScrollBound = true;
+  row.addEventListener("scroll", () => {
+    const cardW = row.querySelector(".hcard")?.offsetWidth || 280;
+    if (row.scrollWidth - row.scrollLeft - row.clientWidth < cardW * 2) {
+      _hrowRender(key);
+    }
+  }, { passive: true });
+}
+
 /* ── SISTEMA DE SCROLL INFINITO POR TAB (Películas / Series / Anime) ── */
 const _tabState = {
   movies: { page:1, totalPages:1, loading:false, ended:false, session:0, filters:{genre:null,year:null,sort:null,platform:null,country:null} },
@@ -3972,6 +3997,10 @@ async function initHomeHrows() {
     _hrowRender("nowplaying"),
     _hrowRender("tvtrending"),
   ]);
+  // Habilitar scroll infinito táctil en mobile
+  _initHrowTouchScroll("popular");
+  _initHrowTouchScroll("nowplaying");
+  _initHrowTouchScroll("tvtrending");
 }
 
 /* ── SIMILAR / RECOMENDACIONES PAGINADAS ── */
