@@ -825,7 +825,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   @media(max-width:640px){
     #sec-popular .row-nav,
     #sec-nowplaying .row-nav,
-    #sec-tvtrending .row-nav { display:none!important; }
+    #sec-tvtrending .row-nav,
+    #section-favs .row-nav { display:none!important; }
     /* Evitar zoom automático al clickear inputs en iOS/Android */
     input, select, textarea { font-size:16px!important; }
 
@@ -868,12 +869,23 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     .hero-btns{gap:6px;margin-top:12px}
     .btn-play{padding:10px 16px;font-size:13px}
     .btn-info{padding:10px 12px;font-size:12px}
-    .hero-dots{left:16px;bottom:16px}
     .hero-badge{font-size:9px;padding:3px 8px}
-    /* Ambas flechas visibles en mobile, más compactas */
-    .hero-nav-prev{display:flex;left:8px}
-    .hero-nav-next{right:8px}
-    .hero-nav-btn{width:36px;height:36px}
+    /* En mobile: flechas junto a los dots abajo, no en el centro del hero */
+    .hero-nav-btn{
+      top:auto;transform:none;
+      bottom:10px;
+      width:32px;height:32px;
+      background:rgba(0,0,0,.55);
+      backdrop-filter:blur(4px);
+    }
+    .hero-nav-btn:hover{transform:scale(1.05)}
+    .hero-nav-prev{left:16px;right:auto}
+    .hero-nav-next{right:16px;left:auto}
+    /* Dots centrados entre las flechas */
+    .hero-dots{
+      left:50%;transform:translateX(-50%);
+      bottom:16px;
+    }
 
     /* Catalog y secciones */
     .cards-scroll,.row-header,.live-grid{padding-left:12px;padding-right:12px}
@@ -892,8 +904,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     #sec-catalog{padding-top:16px!important}
     #sec-canales{padding-top:90px!important}
     #sec-netflixtop10,#sec-top100,#sec-mas-populares,#sec-mas-recientes,#sec-mejores-anime,#sec-proximamente{padding-top:24px!important}
-    /* 2 cards por fila en Películas/Series/Anime */
     #catalog-grid{grid-template-columns:repeat(2,1fr)!important;padding:0 12px!important}
+    /* 2 cards por fila en Inicio y secciones del sidebar */
+    .home-grid{grid-template-columns:repeat(2,1fr)!important;padding:0 12px!important;gap:10px!important}
+    #grid-netflixtop10,#grid-top100,#grid-mas-populares,#grid-mas-recientes,#grid-mejores-anime{padding:8px 12px 0!important}
 
     /* Modal */
     #modal-overlay{padding:0}
