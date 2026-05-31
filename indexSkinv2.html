@@ -196,6 +196,14 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     box-shadow:0 8px 32px rgba(0,0,0,.6);
   }
   .creator-panel.open{display:flex}
+  @media(max-width:640px){
+    .creator-panel{
+      position:fixed;top:auto;bottom:0;right:0;left:0;
+      width:100%!important;border-radius:16px 16px 0 0;
+      max-height:80vh;overflow-y:auto;
+      box-shadow:0 -8px 32px rgba(0,0,0,.7);
+    }
+  }
   .creator-panel-title{
     font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1.5px;
     background:linear-gradient(90deg,#ff0080,#ff4500,#ffd700,#00ff88,#00cfff,#a855f7,#ff0080);
@@ -933,10 +941,16 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     /* Profile en fila 1 */
     .nav-profile{order:2;flex-shrink:0}
     .nav-profile-name{display:none}
-    /* Ocultar en mobile: creator badge, spacers flex, pwa button */
+    /* Ocultar en mobile: creator badge, spacers flex, pwa button, visitas */
     .creator-wrap{display:none}
     #pwa-install-btn{display:none!important}
     #nav > div[style*="flex:1"]{display:none}
+    #visit-count-mobile{display:none!important}
+    /* Ruedita settings visible en mobile */
+    #nav-settings-btn{display:flex!important;order:2}
+    /* Orden fila 1: logo | search | settings | perfil */
+    .nav-search{order:2;margin-left:auto}
+    .nav-profile{order:2}
 
     /* Ajuste del hero para el nav de 2 filas (~100px de altura) */
     .hero-content{padding:80px 16px 16px}
@@ -1113,6 +1127,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <div style="flex:1"></div>
   <!-- Visitas solo en mobile -->
   <span id="visit-count-mobile" style="display:none"></span>
+  <!-- Botón settings mobile -->
+  <button id="nav-settings-btn" onclick="toggleCreatorPanel(event)" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer;flex-shrink:0;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text2)"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
   <div class="nav-search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="search-input" type="text" placeholder="Buscar..." oninput="onSearch(this.value)" onfocus="openSearchOverlay()" />
