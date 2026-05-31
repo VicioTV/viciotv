@@ -465,6 +465,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   }
   .infinite-end-msg{text-align:center;color:var(--text3);font-size:.85rem;padding:24px;grid-column:1/-1}
   .infinite-trigger{height:60px;display:flex;align-items:center;justify-content:center;margin:16px 0}
+  .spinner{width:28px;height:28px;border:3px solid var(--bg3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
   .top10-rank{
     position:absolute;top:90px;left:60%;transform:translateX(-50%);
     font-family:'Bebas Neue',cursive;font-size:225px;letter-spacing:-4px;
@@ -1290,8 +1292,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <div class="row-nav" id="favs-row-nav">
       </div>
     </div>
-    <div class="cards-scroll" id="carousel-favs"></div>
-    <button id="favs-more-btn" onclick="loadMoreFavs()" style="display:none;margin:16px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 28px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;width:calc(100% - 64px);margin:16px 32px 0">Ver más</button>
+    <div class="infinite-grid" id="carousel-favs"></div>
+    <div class="infinite-trigger" id="favs-infinite-trigger">
+      <div class="spinner" id="favs-spinner" style="display:none"></div>
+    </div>
   </div>
   <!-- Inicio -->
   <div id="sec-popular" class="row-section">
@@ -1952,46 +1956,58 @@ function updateFavBtn(item) {
 const FAVS_PAGE_SIZE = 12;
 let _favsShown = FAVS_PAGE_SIZE;
 
+let _favsObserver = null;
+
+function _buildFavCard(m, i) {
+  const wrap = document.createElement("div");
+  wrap.className = "cw-card-wrap";
+  const card = buildCard(m, i);
+  const innerHeart = card.querySelector(".card-fav-btn");
+  if (innerHeart) innerHeart.style.display = "none";
+  const removeBtn = document.createElement("div");
+  removeBtn.className = "cw-remove";
+  removeBtn.dataset.id = m.id;
+  removeBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="#e50914" stroke="#e50914" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
+  removeBtn.title = "Quitar de Favoritos";
+  removeBtn.addEventListener("click", (e) => { e.stopPropagation(); toggleFav(m); });
+  card.appendChild(removeBtn);
+  wrap.appendChild(card);
+  return wrap;
+}
+
 function renderFavs() {
   const favs = getFavs();
   const sec  = document.getElementById("section-favs");
   const car  = document.getElementById("carousel-favs");
-  const btn  = document.getElementById("favs-more-btn");
-  if (!favs.length) { sec.style.display = "none"; return; }
+  if (!favs.length) { sec.style.display = "none"; _disconnectFavsObserver(); return; }
   _favsShown = FAVS_PAGE_SIZE;
   sec.style.display = "";
   car.innerHTML = "";
-  favs.slice(0, _favsShown).forEach((m, i) => {
-    const wrap = document.createElement("div");
-    wrap.className = "cw-card-wrap";
-    const card = buildCard(m, i);
-    // Ocultar el corazón interno de la card — usamos el del wrap
-    const innerHeart = card.querySelector(".card-fav-btn");
-    if (innerHeart) innerHeart.style.display = "none";
-    wrap.appendChild(card);
-    const removeBtn = document.createElement("div");
-    removeBtn.className = "cw-remove";
-    removeBtn.dataset.id = m.id;
-    removeBtn.innerHTML = `<svg viewBox="0 0 24 24" width="12" height="12" fill="#e50914" stroke="#e50914" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>`;
-    removeBtn.title = "Quitar de Favoritos";
-    removeBtn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      toggleFav(m);
-    });
-    card.appendChild(removeBtn);
-    car.appendChild(wrap);
-  });
-  if (btn) btn.style.display = favs.length > _favsShown ? "block" : "none";
+  favs.slice(0, _favsShown).forEach((m, i) => car.appendChild(_buildFavCard(m, i)));
+  _setupFavsInfiniteScroll();
 }
 
 function loadMoreFavs() {
   const favs = getFavs();
   const car  = document.getElementById("carousel-favs");
-  const btn  = document.getElementById("favs-more-btn");
+  if (_favsShown >= favs.length) return;
   const prev = _favsShown;
   _favsShown = Math.min(_favsShown + FAVS_PAGE_SIZE, favs.length);
-  favs.slice(prev, _favsShown).forEach((m, i) => car.appendChild(buildCard(m, prev + i)));
-  if (btn) btn.style.display = _favsShown < favs.length ? "block" : "none";
+  favs.slice(prev, _favsShown).forEach((m, i) => car.appendChild(_buildFavCard(m, prev + i)));
+}
+
+function _disconnectFavsObserver() {
+  if (_favsObserver) { _favsObserver.disconnect(); _favsObserver = null; }
+}
+
+function _setupFavsInfiniteScroll() {
+  _disconnectFavsObserver();
+  const trigger = document.getElementById("favs-infinite-trigger");
+  if (!trigger) return;
+  _favsObserver = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) loadMoreFavs();
+  }, { rootMargin: "300px", threshold: 0 });
+  _favsObserver.observe(trigger);
 }
 
 /* ─── HELPERS ─── */
