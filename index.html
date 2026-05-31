@@ -3841,6 +3841,20 @@ function openSidebarSection(key){
   document.getElementById("modal-overlay").classList.remove("open");
   document.body.style.overflow = "";
 
+  // En mobile: colapsar sidebar al abrir una sección
+  if(window.innerWidth <= 640){
+    const sidebar = document.getElementById("sidebar");
+    if(sidebar){
+      sidebar.classList.remove("mob-expanded");
+      sidebar.classList.remove("sb-pinned");
+    }
+    document.body.classList.remove("sidebar-mob-expanded");
+    const icon  = document.getElementById("sb-expand-icon");
+    const title = document.getElementById("sb-salir-title");
+    if(icon) icon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
+    if(title) title.textContent = "Expandir";
+  }
+
   const allMain = [
     "sec-popular","sec-nowplaying","sec-tvtrending",
     "sec-movies-popular","sec-movies-top","sec-movies-action",
@@ -3874,13 +3888,16 @@ function _openPlatformMenu(){
   const btn  = document.getElementById("sb-top10");
   const sidebar = document.getElementById("sidebar");
   const rect = btn.getBoundingClientRect();
-  const sLeft = sidebar.getBoundingClientRect().left;
+  const sRect = sidebar.getBoundingClientRect();
   menu.style.top  = rect.top + "px";
-  menu.style.left = (sLeft + 210 + 6) + "px"; // siempre ancho expandido final
+  // En mobile el sidebar NO se expande con hover, usar el ancho real actual
+  const isMobile = window.innerWidth <= 640;
+  const sidebarRight = isMobile ? sRect.left + sRect.width : sRect.left + 210;
+  menu.style.left = (sidebarRight + 6) + "px";
   menu.classList.add("open");
   btn.classList.add("active");
   btn.classList.add("sb-top10-open");
-  sidebar.classList.add("sb-pinned");
+  if(!isMobile) sidebar.classList.add("sb-pinned");
 }
 function _closePlatformMenu(){
   const menu = document.getElementById("sb-platform-menu");
@@ -3992,6 +4009,20 @@ async function openTop10Platform(platformKey, providerId, platformName){
   if(pm){ pm.classList.remove("open"); }
   const top10Btn = document.getElementById("sb-top10");
   if(top10Btn){ top10Btn.classList.remove("sb-top10-open"); }
+
+  // En mobile: colapsar sidebar al abrir el catálogo
+  if(window.innerWidth <= 640){
+    const sidebar = document.getElementById("sidebar");
+    if(sidebar){
+      sidebar.classList.remove("mob-expanded");
+      sidebar.classList.remove("sb-pinned");
+    }
+    document.body.classList.remove("sidebar-mob-expanded");
+    const icon  = document.getElementById("sb-expand-icon");
+    const title = document.getElementById("sb-salir-title");
+    if(icon) icon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
+    if(title) title.textContent = "Expandir";
+  }
 
   openSidebarSection("netflixtop10");
   if(top10Btn) top10Btn.classList.add("active");
