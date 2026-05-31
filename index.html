@@ -840,27 +840,39 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       background:rgba(0,0,0,.97);
       border-bottom:1px solid rgba(255,255,255,.06);
       position:relative;
+      min-height:48px;
     }
-    /* Fila 1: logo | search | profile — ocupa toda la fila */
-    .logo{order:1;font-size:22px;letter-spacing:2px;padding:10px 0;flex-shrink:0}
-    .nav-tabs{order:3;width:100%;display:flex;justify-content:space-around;padding:6px 0 8px;gap:0;border-top:1px solid rgba(255,255,255,.06);margin-top:2px}
-    .nav-tab{flex:1;text-align:center;padding:6px 4px;font-size:11px;border-radius:6px}
-    /* Search — más ancha y clickeable */
-    .nav-search{order:2;margin-left:auto;width:140px;overflow:visible}
-    .nav-search:focus-within{width:160px}
-    /* Profile en fila 1 */
-    .nav-profile{order:2;flex-shrink:0}
+    /* ── FILA 1: [perfil][settings] ··· LOGO CENTRADO ··· [search] ── */
+    /* Logo: centrado absolutamente sobre la fila 1 */
+    .logo{
+      position:absolute;
+      left:50%;transform:translateX(-50%);
+      top:0;height:48px;
+      display:flex;align-items:center;
+      font-size:22px;letter-spacing:2px;
+      padding:0;pointer-events:auto;
+      order:2;flex-shrink:0;
+    }
+    /* Perfil — izquierda, primero */
+    .nav-profile{order:1;flex-shrink:0;margin-right:4px;height:48px;display:flex;align-items:center}
     .nav-profile-name{display:none}
+    /* Settings — izquierda, segundo */
+    #nav-settings-btn{display:flex!important;order:2;flex-shrink:0}
+    /* Spacer empuja search a la derecha */
+    #nav-mobile-spacer{display:block!important;flex:1;order:3;height:48px}
+    /* Search — derecha, solo icono por defecto */
+    .nav-search{order:4;margin-left:0;width:36px;padding:0 8px;justify-content:center;overflow:hidden;transition:width .25s,padding .25s;height:36px}
+    .nav-search input{width:0;transition:width .25s}
+    .nav-search:focus-within{width:160px;padding:6px 12px}
+    .nav-search:focus-within input{width:100%}
     /* Ocultar en mobile: creator badge, spacers flex, pwa button, visitas */
     .creator-wrap{display:none}
     #pwa-install-btn{display:none!important}
     #nav > div[style*="flex:1"]{display:none}
     #visit-count-mobile{display:none!important}
-    /* Ruedita settings visible en mobile */
-    #nav-settings-btn{display:flex!important;order:2}
-    /* Orden fila 1: logo | search | settings | perfil */
-    .nav-search{order:2;margin-left:auto}
-    .nav-profile{order:2}
+    /* Tabs — fila 2 */
+    .nav-tabs{order:99;width:100%;display:flex;justify-content:space-around;padding:6px 0 8px;gap:0;border-top:1px solid rgba(255,255,255,.06);margin-top:2px}
+    .nav-tab{flex:1;text-align:center;padding:6px 4px;font-size:11px;border-radius:6px}
 
     /* Ajuste del hero para el nav de 2 filas (~100px de altura) */
     .hero-content{padding:80px 16px 16px}
@@ -1021,6 +1033,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <button id="nav-settings-btn" onclick="toggleCreatorPanel(event)" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer;flex-shrink:0;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text2)"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
   </button>
+  <!-- Spacer mobile (empuja search a la derecha) -->
+  <div id="nav-mobile-spacer" style="display:none"></div>
   <div class="nav-search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="search-input" type="text" placeholder="Buscar..." oninput="onSearch(this.value)" onfocus="openSearchOverlay()" />
