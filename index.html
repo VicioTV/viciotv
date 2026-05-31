@@ -880,10 +880,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     .filters-bar select{width:100%!important;box-sizing:border-box!important;font-size:10px!important;padding:6px 4px!important}
     .filters-bar button{grid-column:3;grid-row:2;width:100%;box-sizing:border-box;margin:0!important;font-size:10px!important;padding:6px 4px!important}
     #live-filter-bar{padding:0 12px 12px!important}
-    .row-header{padding:0 12px}
+    .row-header{padding:16px 12px 24px}
     #sec-catalog{padding-top:16px!important}
     #sec-canales{padding-top:90px!important}
     #sec-netflixtop10,#sec-top100,#sec-mas-populares,#sec-mas-recientes,#sec-mejores-anime,#sec-proximamente{padding-top:24px!important}
+    /* 2 cards por fila en Películas/Series/Anime */
+    #catalog-grid{grid-template-columns:repeat(2,1fr)!important;padding:0 12px!important}
 
     /* Modal */
     #modal-overlay{padding:0}
