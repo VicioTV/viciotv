@@ -343,6 +343,19 @@
   #sidebar.sb-pinned .sb-top10-open .sb-chevron{transform:rotate(90deg);}
 
   /* ===== SIDEBAR EN MOBILE: igual que desktop, siempre visible ===== */
+  /* Sidebar oculto en mobile: solo muestra el botón X */
+  #sidebar.sb-hidden {
+    width: 38px !important;
+    box-shadow: none !important;
+  }
+  #sidebar.sb-hidden > *:not(#sb-x-btn) {
+    display: none !important;
+  }
+  /* Cuando oculto, el botón X muestra chevron (para indicar que se puede abrir) */
+  #sidebar.sb-hidden #sb-x-icon svg {
+    /* se cambia por JS */
+  }
+
   @media(max-width:640px){
     /* Mostrar el botón X en mobile */
     .sb-x-btn { display:flex !important; }
@@ -925,13 +938,10 @@
 <!-- ===== SIDEBAR IZQUIERDO ===== -->
 <div id="sidebar">
 
-  <!-- BOTÓN X (solo mobile): colapsa/expande todo el sidebar -->
-  <button class="sidebar-btn focusable sb-x-btn" id="sb-x-btn" onclick="sbToggleExpand()" style="display:none">
+  <!-- BOTÓN X (solo mobile): oculta/muestra el resto del sidebar -->
+  <button class="sidebar-btn focusable sb-x-btn" id="sb-x-btn" onclick="sbToggleHide()" style="display:none">
     <span class="sb-icon" id="sb-x-icon">
       <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </span>
-    <span class="sb-text">
-      <span class="sb-label"><span class="sb-title">Cerrar</span></span>
     </span>
   </button>
 
@@ -3819,10 +3829,32 @@ function _sbMobileInit(){
   if(title) title.textContent = "Expandir";
 }
 
+function sbToggleHide(){
+  if(window.innerWidth > 640) return;
+  const s = document.getElementById('sidebar');
+  const xIcon = document.getElementById('sb-x-icon');
+  const hidden = s.classList.toggle('sb-hidden');
+  // X cuando visible → ocultar; chevron cuando oculto → mostrar
+  if(hidden){
+    // Sidebar oculto: mostrar chevron derecho (indicar que se puede abrir)
+    xIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><polyline points="9 18 15 12 9 6"/></svg>';
+    // Asegurarse de que el sidebar esté colapsado (no expandido)
+    s.classList.remove('mob-expanded');
+    s.classList.remove('sb-pinned');
+    document.body.classList.remove('sidebar-mob-expanded');
+  } else {
+    // Sidebar visible: mostrar X
+    xIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  }
+}
+
+// URL del botón de publicidad/link en el sidebar (desktop)
+const SB_LINK_URL = 'https://www.instagram.com/afaseleccion/?hl=es';
+
 function sbToggleExpand(){
   if(window.innerWidth > 640){
-    // Desktop: comportamiento original = salir
-    goToProfiles();
+    // Desktop: abrir link de publicidad
+    window.open(SB_LINK_URL, '_blank', 'noopener,noreferrer');
     return;
   }
   // Mobile: toggle expand
@@ -4013,35 +4045,52 @@ function _isReallyInicio(){
   const el = document.getElementById("sec-popular");
   return el && el.style.display !== "none";
 }
+function _sbScrollToSection(sectionId){
+  // Calcular el offset del nav dinámicamente para mobile y desktop
+  const navEl = document.getElementById("nav");
+  const navH  = navEl ? navEl.getBoundingClientRect().height : 72;
+  const el = document.getElementById(sectionId);
+  if(el && el.style.display !== "none"){
+    const top = el.getBoundingClientRect().top + window.scrollY - navH - 8;
+    window.scrollTo({top: Math.max(0, top), behavior:"smooth"});
+  } else {
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+}
 function sbGoFavs(){
   _sbCollapseMobile();
   closeSearchResults();
   document.getElementById("search-input").value = "";
   const alreadyInicio = _isReallyInicio();
-  if(!alreadyInicio) switchTab("inicio");
-  const delay = alreadyInicio ? 0 : 120;
-  setTimeout(()=>{
-    const el = document.getElementById("section-favs");
-    if(el && el.style.display !== "none"){
-      const top = el.getBoundingClientRect().top + window.scrollY - 72;
-      window.scrollTo({top: Math.max(0, top), behavior:"smooth"});
-    } else window.scrollTo({top:0,behavior:"smooth"});
-  }, delay);
+  if(!alreadyInicio){
+    switchTab("inicio");
+    // Esperar a que switchTab renderice favoritos y el DOM se actualice
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      setTimeout(()=> _sbScrollToSection("section-favs"), 80);
+    }));
+  } else {
+    renderFavs();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      _sbScrollToSection("section-favs");
+    }));
+  }
 }
 function sbGoContinuar(){
   _sbCollapseMobile();
   closeSearchResults();
   document.getElementById("search-input").value = "";
   const alreadyInicio = _isReallyInicio();
-  if(!alreadyInicio) switchTab("inicio");
-  const delay = alreadyInicio ? 0 : 120;
-  setTimeout(()=>{
-    const el = document.getElementById("viciotv-cw-container");
-    if(el && el.style.display !== "none"){
-      const top = el.getBoundingClientRect().top + window.scrollY - 72;
-      window.scrollTo({top: Math.max(0, top), behavior:"smooth"});
-    } else window.scrollTo({top:0,behavior:"smooth"});
-  }, delay);
+  if(!alreadyInicio){
+    switchTab("inicio");
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      setTimeout(()=> _sbScrollToSection("viciotv-cw-container"), 80);
+    }));
+  } else {
+    renderContinueWatching();
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      _sbScrollToSection("viciotv-cw-container");
+    }));
+  }
 }
 
 /* ── TOP 10 POR PLATAFORMA ── */
