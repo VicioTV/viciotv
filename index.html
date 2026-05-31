@@ -4016,19 +4016,31 @@ function _initSkinSwitcher() {
 function toggleCreatorPanel(e) {
   e.stopPropagation();
   const panel = document.getElementById("creator-panel");
-  const isOpen = panel.classList.contains("open");
-  if (!isOpen) {
-    // Posicionar justo debajo del botón que lo abrió
-    const btn = e.currentTarget;
-    const rect = btn.getBoundingClientRect();
-    panel.style.top = (rect.bottom + 8) + "px";
-    panel.style.right = (window.innerWidth - rect.right) + "px";
-    panel.style.left = "auto";
-    panel.style.bottom = "auto";
-    panel.style.width = "260px";
-    panel.style.borderRadius = "14px";
+  const isOpen = panel.classList.toggle("open");
+  if (isOpen) {
+    const isMobile = window.innerWidth <= 640;
+    if (!isMobile) {
+      const btn = e.currentTarget;
+      const rect = btn.getBoundingClientRect();
+      panel.style.position = "fixed";
+      panel.style.top = (rect.bottom + 10) + "px";
+      panel.style.right = (window.innerWidth - rect.right) + "px";
+      panel.style.left = "auto";
+      panel.style.bottom = "auto";
+      panel.style.width = "260px";
+      panel.style.borderRadius = "14px";
+    } else {
+      const btn = e.currentTarget;
+      const rect = btn.getBoundingClientRect();
+      panel.style.position = "fixed";
+      panel.style.top = (rect.bottom + 8) + "px";
+      panel.style.right = "12px";
+      panel.style.left = "auto";
+      panel.style.bottom = "auto";
+      panel.style.width = "260px";
+      panel.style.borderRadius = "14px";
+    }
   }
-  panel.classList.toggle("open");
   highlightActiveColor();
   _initSkinSwitcher();
 }
