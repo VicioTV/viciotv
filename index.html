@@ -4543,6 +4543,13 @@ function highlightActiveColor() {
   });
 }
 
+// Default colors per skin
+const SKIN_DEFAULTS = {
+  "compacta": { accent: "#6366f1", bg: "#0a0a0f" },
+  "avanzada": { accent: "#e50914", bg: "#0a0a0f" }
+};
+const _skinId = window.location.pathname.includes("indexz") ? "avanzada" : "compacta";
+
 function applyThemeColor(type, value) {
   const root = document.documentElement;
   if (type === "accent") {
@@ -4550,7 +4557,7 @@ function applyThemeColor(type, value) {
     root.style.setProperty("--accent", value);
     root.style.setProperty("--accent2", "#6366f1"); // siempre fijo
     root.style.setProperty("--accent-subtle", `rgba(${r},${g},${b},.15)`);
-    localStorage.setItem("viciotv_accent", value);
+    localStorage.setItem("viciotv_accent_" + _skinId, value);
     const sw = document.getElementById("tp-swatch-accent");
     if (sw) sw.style.background = value;
   } else {
@@ -4558,7 +4565,7 @@ function applyThemeColor(type, value) {
     root.style.setProperty("--bg",  value);
     root.style.setProperty("--bg2", `rgb(${Math.min(r+8,255)},${Math.min(g+8,255)},${Math.min(b+8,255)})`);
     root.style.setProperty("--bg3", `rgb(${Math.min(r+16,255)},${Math.min(g+16,255)},${Math.min(b+16,255)})`);
-    localStorage.setItem("viciotv_bg", value);
+    localStorage.setItem("viciotv_bg_" + _skinId, value);
     const sw = document.getElementById("tp-swatch-bg");
     if (sw) { sw.style.background = value; }
   }
@@ -4576,8 +4583,8 @@ function updateThemeBtn() {
 
 function resetTheme() {
   // Limpiar localStorage primero
-  localStorage.removeItem("viciotv_accent");
-  localStorage.removeItem("viciotv_bg");
+  localStorage.removeItem("viciotv_accent_" + _skinId);
+  localStorage.removeItem("viciotv_bg_" + _skinId);
   // Aplicar defaults directamente al DOM (sin pasar por applyThemeColor para no re-guardar en localStorage)
   const root = document.documentElement;
   root.style.setProperty("--accent",        "#6366f1");
@@ -4672,8 +4679,8 @@ function initThemePicker() {
     });
   }
   // Restaurar tema guardado
-  const savedAccent = localStorage.getItem("viciotv_accent");
-  const savedBg     = localStorage.getItem("viciotv_bg");
+  const savedAccent = localStorage.getItem("viciotv_accent_" + _skinId);
+  const savedBg     = localStorage.getItem("viciotv_bg_" + _skinId);
   if (savedAccent) applyThemeColor("accent", savedAccent);
   if (savedBg)     applyThemeColor("bg",     savedBg);
   // Siempre forzar --accent2 al valor por defecto al arrancar
