@@ -504,7 +504,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .hero-dot.active{background:#fff;width:24px;border-radius:4px}
   .hero-dot:hover{background:rgba(255,255,255,.7)}
   /* Dots mobile: posición absoluta dentro del hero, solo dots sin flechas */
-  #hero-dots-mobile{display:none;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);gap:8px;align-items:center;z-index:5}
   .btn-play{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:14px 28px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all var(--transition)}
   .btn-play:hover{background:#c00712;transform:scale(1.03)}
   .btn-info{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:14px 24px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all var(--transition)}
@@ -901,8 +900,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     /* En mobile: wrapper externo oculto, dots van dentro del hero via posición absoluta */
     #hero{ padding-bottom:36px; }
     .hero-dots{left:16px;bottom:16px}
-    /* Clonar dots dentro del hero en mobile — ver #hero-dots-mobile en HTML */
-    #hero-dots-mobile{ display:flex !important; }
 
     /* Catalog y secciones */
     .cards-scroll,.row-header,.live-grid{padding-left:12px;padding-right:12px}
@@ -1256,7 +1253,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <div class="hero-bg"></div>
   <img class="hero-img" id="hero-img" src="" alt="">
   <div class="hero-gradient"></div>
-  <div id="hero-dots-mobile"></div>
   <div class="hero-content">
     <div class="hero-badge"><span class="hero-badge-dot"></span>TRENDING</div>
     <div class="hero-title" id="hero-title"></div>
@@ -2198,35 +2194,27 @@ async function initHero() {
 
 function buildHeroDots() {
   const container = document.getElementById("hero-dots");
-  const containerMobile = document.getElementById("hero-dots-mobile");
   if (!container) return;
   container.innerHTML = "";
-  if (containerMobile) containerMobile.innerHTML = "";
   _heroItems.forEach((_, i) => {
-    [container, containerMobile].forEach(c => {
-      if (!c) return;
-      const dot = document.createElement("button");
-      dot.className = "hero-dot" + (i === 0 ? " active" : "");
-      dot.setAttribute("aria-label", `Ir al trending ${i + 1}`);
-      dot.addEventListener("click", () => {
-        clearInterval(_heroInterval);
-        _heroIndex = i;
-        showHeroItem(i);
-        startHeroAutoplay();
-      });
-      c.appendChild(dot);
+    const dot = document.createElement("button");
+    dot.className = "hero-dot" + (i === 0 ? " active" : "");
+    dot.setAttribute("aria-label", `Ir al trending ${i + 1}`);
+    dot.addEventListener("click", () => {
+      clearInterval(_heroInterval);
+      _heroIndex = i;
+      showHeroItem(i);
+      startHeroAutoplay();
     });
+    container.appendChild(dot);
   });
 }
 
 function updateHeroDots(index) {
-  // Update each container independently so indices always match
-  ["hero-dots", "hero-dots-mobile"].forEach(containerId => {
-    const c = document.getElementById(containerId);
-    if (!c) return;
-    c.querySelectorAll(".hero-dot").forEach((d, i) => {
-      d.classList.toggle("active", i === index);
-    });
+  const c = document.getElementById("hero-dots");
+  if (!c) return;
+  c.querySelectorAll(".hero-dot").forEach((d, i) => {
+    d.classList.toggle("active", i === index);
   });
 }
 
