@@ -415,6 +415,14 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
   /* Secciones especiales del sidebar */
   #sec-netflixtop10{display:none}
+  /* Top 10: título más a la derecha y arriba, cards levemente a la izquierda */
+  #sec-netflixtop10 .row-header{
+    padding-left:52px;
+    padding-bottom:28px;
+  }
+  #sec-netflixtop10 .top10-grid{
+    padding-left:32px;
+  }
   #sec-top100{display:none}
   #sec-mas-populares{display:none}
   #sec-mas-recientes{display:none}
@@ -422,9 +430,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   #sec-proximamente{display:none}
 
   /* ===== PRÓXIMAMENTE ===== */
-  .prox-filters{display:flex;flex-wrap:wrap;gap:8px;padding:0 22px 20px 22px}
-  .prox-filter-group{display:flex;gap:6px;flex-wrap:wrap}
-  .prox-filter-btn{padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .prox-filters{display:flex;flex-wrap:wrap;gap:8px;padding:5px 22px 20px 22px}
+  .prox-filter-group{display:flex;gap:10px;flex-wrap:wrap;width:50%}
+  .prox-filter-btn{padding:8px 0;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap;flex:1;text-align:center}
   .prox-filter-btn:hover{border-color:rgba(255,255,255,.3);color:#fff}
   .prox-filter-btn.active{background:var(--accent-subtle);border-color:var(--accent);color:var(--accent)}
   .prox-grid{display:flex;flex-wrap:wrap;gap:16px;padding:8px 22px 16px 22px}
@@ -1549,7 +1557,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <!-- Top 10 Netflix Argentina -->
   <div id="sec-netflixtop10" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
-      <span class="row-title">🔴 TOP 10 NETFLIX</span>
+      <span class="row-title">🔴 TOP 10 NETFLIX ARGENTINA</span>
     </div>
     <div class="top10-grid" id="grid-netflixtop10"></div>
     <div class="infinite-trigger" id="trigger-top10" style="display:none">
@@ -1611,7 +1619,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <div class="row-header" style="padding-left:22px;padding-right:22px">
       <span class="row-title">PRÓXIMAMENTE</span>
     </div>
-    <div class="prox-filters" style="padding-left:22px;padding-right:22px">
+    <div class="prox-filters">
       <div class="prox-filter-group" id="prox-type-filters">
         <button class="prox-filter-btn active" data-type="all" onclick="setProxFilter('type','all')">Todo</button>
         <button class="prox-filter-btn" data-type="movie" onclick="setProxFilter('type','movie')">Películas</button>
@@ -5129,7 +5137,7 @@ async function openTop10Platform(platformKey, providerId, platformName){
 
   _activeTop10Platform = platformKey;
   const titleEl = document.querySelector("#sec-netflixtop10 .row-title");
-  if(titleEl) titleEl.textContent = `TOP 10 ${platformName.toUpperCase()}`;
+  if(titleEl) titleEl.textContent = `TOP 10 ${platformName.toUpperCase()} ARGENTINA`;
 
   _netflixTop10Loaded = false;
   _currentTop10Provider = providerId;
