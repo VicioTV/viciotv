@@ -426,6 +426,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .prox-filter-btn{padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
   .prox-filter-btn:hover{border-color:rgba(255,255,255,.3);color:#fff}
   .prox-filter-btn.active{background:rgba(229,9,20,.15);border-color:rgba(229,9,20,.5);color:var(--accent)}
+  @media(max-width:640px){
+    .prox-filters{padding:0 12px 16px;justify-content:center}
+    .prox-filter-group{flex-wrap:nowrap;gap:5px;width:100%;justify-content:center}
+    .prox-filter-btn{font-size:11px;padding:6px 10px;flex:1;text-align:center}
+  }
   .prox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;padding:0 32px 40px}
   .prox-card{background:var(--bg2);border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.07);transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,border-color .3s;position:relative}
   .prox-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 20px 50px rgba(0,0,0,.65);border-color:rgba(229,9,20,.35)}
@@ -818,7 +823,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   @keyframes spin{to{transform:rotate(360deg)}}
 
   @media(max-width:640px){
-    :root{--card-w:130px;--card-h:195px}
+    #sec-popular .row-nav,
+    #sec-nowplaying .row-nav,
+    #sec-tvtrending .row-nav { display:none!important; }
     /* Evitar zoom automático al clickear inputs en iOS/Android */
     input, select, textarea { font-size:16px!important; }
 
@@ -863,9 +870,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     .btn-info{padding:10px 12px;font-size:12px}
     .hero-dots{left:16px;bottom:16px}
     .hero-badge{font-size:9px;padding:3px 8px}
-    /* Solo flecha derecha en mobile */
-    .hero-nav-prev{display:none}
+    /* Ambas flechas visibles en mobile, más compactas */
+    .hero-nav-prev{display:flex;left:8px}
     .hero-nav-next{right:8px}
+    .hero-nav-btn{width:36px;height:36px}
 
     /* Catalog y secciones */
     .cards-scroll,.row-header,.live-grid{padding-left:12px;padding-right:12px}
@@ -1243,9 +1251,15 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
   <!-- Mi Lista -->
   <div class="row-section" id="section-favs" style="display:none">
-    <div class="row-header"><span class="row-title">Mis Favoritos</span></div>
-    <div class="home-grid" id="carousel-favs"></div>
-    <button id="favs-more-btn" onclick="loadMoreFavs()" style="display:none;margin:16px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 28px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;width:calc(100% - 64px);display:none;margin:16px 32px 0">Ver más</button>
+    <div class="row-header">
+      <span class="row-title">Mis Favoritos</span>
+      <div class="row-nav" id="favs-row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-favs',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-favs',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
+    <div class="cards-scroll" id="carousel-favs"></div>
+    <button id="favs-more-btn" onclick="loadMoreFavs()" style="display:none;margin:16px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 28px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;width:calc(100% - 64px);margin:16px 32px 0">Ver más</button>
   </div>
   <!-- Inicio -->
   <div id="sec-popular" class="row-section">
