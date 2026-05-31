@@ -999,22 +999,52 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     .filters-bar button{grid-column:3;grid-row:2;width:100%;box-sizing:border-box;margin:0!important;font-size:10px!important;padding:6px 4px!important}
     #live-filter-bar{padding:0 12px 12px!important}
     .row-header{padding:16px 12px 24px}
-    #sec-catalog{padding-top:16px!important}
-    #sec-movies-filters,#sec-series-filters,#sec-anime-filters{padding-top:30px!important}
-    .tab-filters-bar{padding:0 12px 20px!important;display:grid!important;grid-template-columns:1fr 1fr 1fr!important;gap:6px!important}
-    .tab-filters-bar select,.tab-filters-bar button{width:100%!important;box-sizing:border-box!important;font-size:12px!important;padding:8px 4px!important}
-    /* Fila 1: Género | Plataforma | Año — Fila 2: Ordenar | País | Limpiar */
-    .tab-filters-bar select:nth-child(1){order:1} /* Género     → fila1 col1 */
-    .tab-filters-bar select:nth-child(2){order:2} /* Plataforma → fila1 col2 */
-    .tab-filters-bar select:nth-child(3){order:3} /* Año        → fila1 col3 */
-    .tab-filters-bar select:nth-child(4){order:4} /* Ordenar    → fila2 col1 */
-    .tab-filters-bar select:nth-child(5){order:5} /* País       → fila2 col2 */
-    .tab-filters-bar button{order:6}              /* Limpiar    → fila2 col3 */
-    /* Películas/Series/Anime: menos padding-top entre botonera y título, y cards más a la izq */
-    #sec-movies-filters .row-header,#sec-series-filters .row-header,#sec-anime-filters .row-header{padding-top:15px!important}
+    #sec-catalog{padding-top:8px!important}
+    #section-favs,#sec-popular,#sec-nowplaying,#sec-tvtrending{padding-top:4px!important}
+    #sec-movies-filters,#sec-series-filters,#sec-anime-filters{padding-top:8px!important}
+    /* Filtros mobile: scroll horizontal de chips */
+    .tab-filters-bar{
+      padding:0 0 12px!important;
+      display:flex!important;
+      flex-direction:row!important;
+      flex-wrap:nowrap!important;
+      gap:8px!important;
+      overflow-x:auto!important;
+      overflow-y:hidden!important;
+      scrollbar-width:none!important;
+      -webkit-overflow-scrolling:touch!important;
+      padding-left:12px!important;
+      padding-right:12px!important;
+    }
+    .tab-filters-bar::-webkit-scrollbar{display:none!important}
+    .tab-filters-bar select{
+      flex-shrink:0!important;
+      width:auto!important;
+      min-width:0!important;
+      box-sizing:border-box!important;
+      font-size:12px!important;
+      padding:7px 28px 7px 10px!important;
+      border-radius:20px!important;
+      background:var(--bg3)!important;
+      border:1px solid rgba(255,255,255,.12)!important;
+      color:var(--text)!important;
+      appearance:auto!important;
+      -webkit-appearance:auto!important;
+      cursor:pointer!important;
+      white-space:nowrap!important;
+    }
+    .tab-filters-bar button{
+      flex-shrink:0!important;
+      width:auto!important;
+      padding:7px 14px!important;
+      font-size:12px!important;
+      border-radius:20px!important;
+      white-space:nowrap!important;
+    }
+    #sec-movies-filters .row-header,#sec-series-filters .row-header,#sec-anime-filters .row-header{padding-top:8px!important}
     .tab-infinite-grid{padding:8px 12px 0!important}
-    #sec-canales{padding-top:90px!important}
-    #sec-netflixtop10,#sec-top100,#sec-mas-populares,#sec-mas-recientes,#sec-mejores-anime,#sec-proximamente{padding-top:24px!important}
+    #sec-canales{padding-top:8px!important}
+    #sec-netflixtop10,#sec-top100,#sec-mas-populares,#sec-mas-recientes,#sec-mejores-anime,#sec-proximamente{padding-top:8px!important}
     /* Próximamente: 4 botones en 1 fila */
     .prox-filters{display:flex!important;flex-direction:row!important;padding:0 12px 16px!important;gap:6px!important}
     .prox-filter-group{display:flex!important;flex-direction:row!important;width:100%!important;gap:6px!important}
@@ -1202,7 +1232,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <span class="sb-text">
       <span class="sb-label">
         <span class="sb-title">Top 10</span>
-        <span class="sb-sub">Argentina hoy</span>
+        <span class="sb-sub">Hoy en streaming</span>
       </span>
     </span>
     <span class="sb-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
@@ -1499,7 +1529,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <!-- Top 10 Netflix Argentina -->
   <div id="sec-netflixtop10" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
-      <span class="row-title">🔴 TOP 10 NETFLIX ARGENTINA</span>
+      <span class="row-title">🔴 TOP 10 NETFLIX</span>
     </div>
     <div class="top10-grid" id="grid-netflixtop10"></div>
     <div class="infinite-trigger" id="trigger-top10" style="display:none">
@@ -4942,7 +4972,7 @@ async function openTop10Platform(platformKey, providerId, platformName){
 
   _activeTop10Platform = platformKey;
   const titleEl = document.querySelector("#sec-netflixtop10 .row-title");
-  if(titleEl) titleEl.textContent = `TOP 10 ${platformName.toUpperCase()} — ARGENTINA`;
+  if(titleEl) titleEl.textContent = `TOP 10 ${platformName.toUpperCase()}`;
 
   _netflixTop10Loaded = false;
   _currentTop10Provider = providerId;
