@@ -15,7 +15,7 @@
    VICIO TV — COMPLETE REDESIGN 2.0
    ═══════════════════════════════════════════════════════════ */
 :root {
-  --bg:#080810; --bg2:#0d0d18; --bg3:#141422;
+  --bg:#0a0a0f; --bg2:#121218; --bg3:#1a1a22;
   --bg4:#1c1c2e; --surface:rgba(255,255,255,.04);
   --accent:#e50914; --accent2:#ff6b35;
   --gold:#f5c518; --text:#f0f0f8; --text2:#9090b0; --text3:#50507a;
@@ -491,7 +491,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .hero-meta .rating{color:var(--gold);font-weight:600}
   .hero-overview{font-size:15px;line-height:1.7;color:var(--text2);margin-bottom:28px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
   .hero-btns{display:flex;gap:12px}
-  .hero-dots{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:3;align-items:center}
+  .hero-dots{position:absolute;bottom:24px;left:48px;display:flex;gap:8px;z-index:3;align-items:center}
   /* Botones prev/next del hero — integrados en la barra de dots */
   .hero-nav-btn{position:static;transform:none;z-index:4;background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .25s;backdrop-filter:blur(4px);flex-shrink:0}
   .hero-nav-btn:hover{background:rgba(229,9,20,.5);border-color:rgba(229,9,20,.6);transform:scale(1.1)}
@@ -501,6 +501,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .hero-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);cursor:pointer;transition:all .3s;border:none;padding:0;flex-shrink:0}
   .hero-dot.active{background:#fff;width:24px;border-radius:4px}
   .hero-dot:hover{background:rgba(255,255,255,.7)}
+  /* Dots mobile: posición absoluta dentro del hero, solo dots sin flechas */
+  #hero-dots-mobile{display:none;position:absolute;bottom:14px;left:50%;transform:translateX(-50%);gap:8px;align-items:center;z-index:5}
   .btn-play{display:flex;align-items:center;gap:10px;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:14px 28px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all var(--transition)}
   .btn-play:hover{background:#c00712;transform:scale(1.03)}
   .btn-info{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:14px 24px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all var(--transition)}
@@ -893,11 +895,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     .btn-play{padding:10px 16px;font-size:13px}
     .btn-info{padding:10px 12px;font-size:12px}
     .hero-badge{font-size:9px;padding:3px 8px}
-    /* Dots centrados */
-    .hero-dots{
-      left:50%;transform:translateX(-50%);
-      bottom:16px;
-    }
+
+    /* En mobile: wrapper externo oculto, dots van dentro del hero via posición absoluta */
+    #hero{ padding-bottom:36px; }
+    .hero-dots{left:16px;bottom:16px}
+    /* Clonar dots dentro del hero en mobile — ver #hero-dots-mobile en HTML */
+    #hero-dots-mobile{ display:flex !important; }
 
     /* Catalog y secciones */
     .cards-scroll,.row-header,.live-grid{padding-left:12px;padding-right:12px}
@@ -1251,6 +1254,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <div class="hero-bg"></div>
   <img class="hero-img" id="hero-img" src="" alt="">
   <div class="hero-gradient"></div>
+  <div id="hero-dots-mobile"></div>
   <div class="hero-content">
     <div class="hero-badge"><span class="hero-badge-dot"></span>TRENDING</div>
     <div class="hero-title" id="hero-title"></div>
@@ -1262,7 +1266,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <button class="btn-info focusable" id="hero-info-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg> Más info</button>
     </div>
   </div>
-  <div class="hero-dots" id="hero-dots-wrapper" style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:4;align-items:center">
+  <div class="hero-dots" id="hero-dots-wrapper">
     <button class="hero-nav-btn hero-nav-prev" id="hero-prev" aria-label="Anterior">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
     </button>
@@ -2178,25 +2182,35 @@ async function initHero() {
 
 function buildHeroDots() {
   const container = document.getElementById("hero-dots");
+  const containerMobile = document.getElementById("hero-dots-mobile");
   if (!container) return;
   container.innerHTML = "";
+  if (containerMobile) containerMobile.innerHTML = "";
   _heroItems.forEach((_, i) => {
-    const dot = document.createElement("button");
-    dot.className = "hero-dot" + (i === 0 ? " active" : "");
-    dot.setAttribute("aria-label", `Ir al trending ${i + 1}`);
-    dot.addEventListener("click", () => {
-      clearInterval(_heroInterval);
-      _heroIndex = i;
-      showHeroItem(i);
-      startHeroAutoplay();
+    [container, containerMobile].forEach(c => {
+      if (!c) return;
+      const dot = document.createElement("button");
+      dot.className = "hero-dot" + (i === 0 ? " active" : "");
+      dot.setAttribute("aria-label", `Ir al trending ${i + 1}`);
+      dot.addEventListener("click", () => {
+        clearInterval(_heroInterval);
+        _heroIndex = i;
+        showHeroItem(i);
+        startHeroAutoplay();
+      });
+      c.appendChild(dot);
     });
-    container.appendChild(dot);
   });
 }
 
 function updateHeroDots(index) {
-  document.querySelectorAll(".hero-dot").forEach((d, i) => {
-    d.classList.toggle("active", i === index);
+  // Update each container independently so indices always match
+  ["hero-dots", "hero-dots-mobile"].forEach(containerId => {
+    const c = document.getElementById(containerId);
+    if (!c) return;
+    c.querySelectorAll(".hero-dot").forEach((d, i) => {
+      d.classList.toggle("active", i === index);
+    });
   });
 }
 
@@ -4019,10 +4033,10 @@ function updateThemeBtn() {
 }
 
 function resetTheme() {
-  applyThemeColor("accent", "#e50914");
-  applyThemeColor("bg",     "#0a0a0f");
   localStorage.removeItem("viciotv_accent");
   localStorage.removeItem("viciotv_bg");
+  applyThemeColor("accent", "#e50914");
+  applyThemeColor("bg",     "#0a0a0f");
 }
 
 function switchSkin(skin) {
@@ -4100,11 +4114,11 @@ function initThemePicker() {
       container.appendChild(dot);
     });
   }
-  // Restaurar tema guardado
+  // Restaurar tema guardado (si no hay guardado, forzar el default correcto)
   const savedAccent = localStorage.getItem("viciotv_accent");
   const savedBg     = localStorage.getItem("viciotv_bg");
-  if (savedAccent) applyThemeColor("accent", savedAccent);
-  if (savedBg)     applyThemeColor("bg",     savedBg);
+  applyThemeColor("accent", savedAccent || "#e50914");
+  applyThemeColor("bg",     savedBg     || "#0a0a0f");
   updateThemeBtn();
   // Cerrar al clickear fuera
   document.addEventListener("click", e => {
@@ -4220,7 +4234,6 @@ function openSidebarSection(key){
   ];
   allMain.forEach(id => { const el=document.getElementById(id); if(el) el.style.display="none"; });
   document.getElementById("hero").style.display = "none";
-  document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
 
   document.querySelectorAll(".sidebar-btn").forEach(b=>b.classList.remove("active"));
   const _sbIdMap = {"netflixtop10":"sb-top10","mas-populares":"sb-populares","mas-recientes":"sb-recientes","mejores-anime":"sb-anime","proximamente":"sb-proximamente"};
