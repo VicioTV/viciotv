@@ -404,6 +404,39 @@
   #sec-mas-populares{display:none}
   #sec-mas-recientes{display:none}
   #sec-mejores-anime{display:none}
+  #sec-proximamente{display:none}
+
+  /* ===== PRÓXIMAMENTE ===== */
+  .prox-filters{display:flex;flex-wrap:wrap;gap:8px;padding:0 32px 20px}
+  .prox-filter-group{display:flex;gap:6px;flex-wrap:wrap}
+  .prox-filter-btn{padding:6px 16px;border-radius:20px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);color:var(--text2);font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;white-space:nowrap}
+  .prox-filter-btn:hover{border-color:rgba(255,255,255,.3);color:#fff}
+  .prox-filter-btn.active{background:rgba(229,9,20,.15);border-color:rgba(229,9,20,.5);color:var(--accent)}
+  .prox-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:20px;padding:0 32px 40px}
+  .prox-card{background:var(--bg2);border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.07);transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s,border-color .3s;position:relative}
+  .prox-card:hover{transform:translateY(-6px) scale(1.02);box-shadow:0 20px 50px rgba(0,0,0,.65);border-color:rgba(229,9,20,.35)}
+  .prox-card-poster{width:100%;aspect-ratio:2/3;object-fit:cover;display:block}
+  .prox-card-no-poster{width:100%;aspect-ratio:2/3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--text3);font-size:.8rem;background:var(--bg3)}
+  .prox-card-type-badge{position:absolute;top:10px;left:10px;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+  .prox-card-type-badge.movie{background:rgba(229,9,20,.85);color:#fff}
+  .prox-card-type-badge.tv{background:rgba(99,102,241,.85);color:#fff}
+  .prox-card-type-badge.anime{background:rgba(245,197,24,.95);color:#111}
+  .prox-card-country{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);color:#fff;font-size:.65rem;font-weight:600;padding:3px 7px;border-radius:4px;letter-spacing:.5px;backdrop-filter:blur(4px)}
+  .prox-card-info{padding:14px;text-align:center}
+  .prox-card-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;text-align:center}
+  .prox-card-meta{font-size:11px;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
+  .prox-card-date{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:3px 8px;font-size:11px;color:var(--text2);font-weight:500}
+  .prox-trailer-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px 0;background:rgba(229,9,20,.12);border:1px solid rgba(229,9,20,.35);border-radius:8px;color:var(--accent);font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;letter-spacing:.5px;cursor:pointer;transition:all .25s;text-decoration:none}
+  .prox-trailer-btn:hover{background:var(--accent);color:#fff;border-color:var(--accent);transform:scale(1.03);box-shadow:0 0 20px rgba(229,9,20,.4)}
+  .prox-trailer-btn svg{width:16px;height:16px;flex-shrink:0}
+  .prox-skeleton{background:var(--bg3);border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.05)}
+  .prox-skeleton-img{width:100%;aspect-ratio:2/3;background:linear-gradient(90deg,var(--bg3) 25%,var(--bg2) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+  .prox-skeleton-info{padding:14px;display:flex;flex-direction:column;gap:8px}
+  .prox-skeleton-line{height:12px;border-radius:4px;background:linear-gradient(90deg,var(--bg3) 25%,var(--bg2) 50%,var(--bg3) 75%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .prox-empty{grid-column:1/-1;text-align:center;color:var(--text3);padding:60px 20px;font-size:15px}
+  .prox-load-more{display:block;margin:0 32px 32px;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:11px 32px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;transition:all .2s;width:calc(100% - 64px)}
+  .prox-load-more:hover{background:rgba(229,9,20,.12);color:var(--accent);border-color:rgba(229,9,20,.3)}
 
   /* Grid para scroll infinito */
   .infinite-grid{
@@ -499,14 +532,19 @@
 
   /* ===== CARDS ===== */
   .card{flex-shrink:0;width:var(--card-w);border-radius:var(--radius);overflow:hidden;cursor:pointer;position:relative;background:var(--bg3);transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;scroll-snap-align:start}
-  .card:hover{transform:scale(1.08) translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px var(--accent);z-index:10}
+  .card:hover{transform:scale(1.08) translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.7);z-index:10}
+  /* Solo anime mantiene glow de color al hover */
+  .card.badge-anime-card:hover{box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 0 1px rgba(245,197,24,.5)}
   .card img{width:100%;height:var(--card-h);object-fit:cover;display:block}
   .card-no-poster{width:100%;height:var(--card-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text3);font-size:.75rem}
-  .card-info{padding:10px;background:var(--bg2)}
+  .card-info{padding:6px 10px 10px;background:var(--bg2)}
   .card-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px}
   .card-meta{display:flex;align-items:center;justify-content:space-between;font-size:11px;color:var(--text3)}
   .card-rating{color:var(--gold);font-weight:600;font-size:12px}
-  .card-type-badge{position:absolute;top:8px;left:8px;background:rgba(229,9,20,.85);color:#fff;font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.5px}
+  .card-type-badge{position:absolute;top:8px;left:8px;font-size:.6rem;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.5px}
+  .card-type-badge.badge-movie{background:rgba(229,9,20,.85);color:#fff}
+  .card-type-badge.badge-serie{background:rgba(99,102,241,.85);color:#fff}
+  .card-type-badge.badge-anime{background:rgba(245,197,24,.95);color:#111}
   .card-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity var(--transition);display:flex;align-items:center;justify-content:center;padding:0}
   .card:hover .card-overlay{opacity:1}
   .card-overlay-title{display:none}
@@ -521,21 +559,31 @@
   .card-trailer-btn.visible{display:flex}
   /* Trailer btn — abajo a la izquierda, junto al 👁 */
   .trailer-btn{
-    position:absolute;bottom:62px;left:8px;
-    background:rgba(20,20,30,.82);border:1px solid rgba(255,255,255,.18);color:#fff;
-    border-radius:20px;padding:4px 10px;
-    font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;
-    cursor:pointer;transition:all .2s;display:none;white-space:nowrap;
-    letter-spacing:.3px;backdrop-filter:blur(6px);
-    align-items:center;gap:5px;
+    position:absolute;
+    bottom:52px;
+    left:0;
+    background:rgba(10,10,18,.72);
+    border:none;
+    border-top:1px solid rgba(10,10,18,.72);
+    border-right:1px solid rgba(10,10,18,.72);
+    color:rgba(255,255,255,.88);
+    border-radius:0 6px 0 0;
+    padding:5px 10px 5px 10px;
+    font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;
+    cursor:pointer;white-space:nowrap;
+    letter-spacing:.6px;text-transform:uppercase;
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    display:none;align-items:center;gap:5px;
+    transition:background .18s,color .18s;
+    z-index:6;
   }
-  .trailer-btn:hover{background:rgba(229,9,20,.85);border-color:var(--accent);color:#fff}
-  /* desktop: solo hover */
+  .trailer-btn svg{width:9px;height:9px;flex-shrink:0;opacity:.85}
+  .trailer-btn:hover{background:rgba(229,9,20,.82);color:#fff}
+  .trailer-btn:hover svg{opacity:1}
   @media(min-width:641px){
     .trailer-btn.visible{display:none}
     .card:hover .trailer-btn.visible{display:flex}
   }
-  /* mobile: siempre si tiene visible */
   @media(max-width:640px){
     .trailer-btn.visible{display:flex}
     .trailer-btn.no-trailer{display:none!important}
@@ -563,8 +611,8 @@
   /* Barra progreso sobre card */
   .card-progress-bar{position:absolute;bottom:0;left:0;height:3px;background:var(--accent);border-radius:0 0 0 var(--radius);z-index:5}
   .card-ep-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.75);border:1px solid rgba(229,9,20,.4);border-radius:5px;padding:2px 7px;font-size:.6rem;color:var(--accent);font-weight:600;z-index:5}
-  /* Badge visitas en card */
-  .card-views{position:absolute;bottom:58px;right:8px;background:rgba(0,0,0,.78);color:var(--gold);font-size:.65rem;font-weight:600;padding:2px 6px;border-radius:3px;z-index:7;letter-spacing:.3px;opacity:0;transition:opacity .3s}
+  /* Vistas — inline junto al rating y año */
+  .card-views{display:inline-flex;align-items:center;gap:2px;color:var(--text3);font-size:11px;font-weight:600;letter-spacing:.3px;opacity:0;transition:opacity .3s}
   .card-views.loaded{opacity:1}
 
   /* Long-press activo */
@@ -887,6 +935,7 @@
     <button class="nav-tab focusable" data-tab="peliculas" onclick="switchTab('peliculas')">Películas</button>
     <button class="nav-tab focusable" data-tab="series" onclick="switchTab('series')">Series</button>
     <button class="nav-tab focusable" data-tab="anime" onclick="switchTab('anime')">Anime</button>
+    <button class="nav-tab focusable" data-tab="proximamente" onclick="openSidebarSection('proximamente')">Próximamente</button>
     <!-- Tab En Vivo deshabilitado temporalmente -->
     <!-- <button class="nav-tab focusable" data-tab="canales" onclick="switchTab('canales')">En Vivo</button> -->
   </div>
@@ -992,6 +1041,19 @@
       <span class="sb-label">
         <span class="sb-title">Mejores Anime</span>
         <span class="sb-sub">Por puntuación</span>
+      </span>
+    </span>
+  </button>
+
+  <!-- PRÓXIMAMENTE -->
+  <button class="sidebar-btn focusable" id="sb-proximamente" onclick="openSidebarSection('proximamente')">
+    <span class="sb-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    </span>
+    <span class="sb-text">
+      <span class="sb-label">
+        <span class="sb-title">Próximamente</span>
+        <span class="sb-sub">Trailers &amp; Estrenos</span>
       </span>
     </span>
   </button>
@@ -1264,7 +1326,22 @@
     </div>
   </div>
 
-</main>
+  <!-- Próximamente -->
+  <div id="sec-proximamente" class="row-section" style="display:none;padding-top:80px">
+    <div class="row-header">
+      <span class="row-title">🎬 PRÓXIMAMENTE</span>
+    </div>
+    <div class="prox-filters">
+      <div class="prox-filter-group" id="prox-type-filters">
+        <button class="prox-filter-btn active" data-type="all" onclick="setProxFilter('type','all')">Todo</button>
+        <button class="prox-filter-btn" data-type="movie" onclick="setProxFilter('type','movie')">Películas</button>
+        <button class="prox-filter-btn" data-type="tv" onclick="setProxFilter('type','tv')">Series</button>
+        <button class="prox-filter-btn" data-type="anime" onclick="setProxFilter('type','anime')">Anime</button>
+      </div>
+    </div>
+    <div class="prox-grid" id="prox-grid"></div>
+    <button class="prox-load-more" id="prox-load-more-btn" onclick="proxLoadMore()" style="display:none">Ver más</button>
+  </div>
 
 <!-- ===== MODAL ===== -->
 <div id="modal-overlay">
@@ -1766,21 +1843,29 @@ function renderSkeletons(container, count = 12) {
   }
 }
 function buildCard(m, i) {
+  const isTV    = m._type === "tv";
+  const isAnime = m._cat === "anime" || (m._type === "tv" && (m.genre_ids||[]).includes(16) && (m.origin_country||[]).includes("JP"));
   const card = document.createElement("div");
-  card.className = "card";
+  card.className = "card" + (isAnime ? " badge-anime-card" : "");
   card.style.animationDelay = `${i * 0.04}s`;
-  const isTV  = m._type === "tv";
-  const title = m.title || m.name || "Sin título";
-  const poster = m.poster_path ? `${IMG_BASE}${m.poster_path}` : null;
-  const year  = (m.release_date || m.first_air_date || "").slice(0, 4) || "–";
-  const rating = m.vote_average ? m.vote_average.toFixed(1) : "–";
+  const title   = m.title || m.name || "Sin título";
+  const poster  = m.poster_path ? `${IMG_BASE}${m.poster_path}` : null;
+  const year    = (m.release_date || m.first_air_date || "").slice(0, 4) || "–";
+  const rating  = m.vote_average ? m.vote_average.toFixed(1) : "–";
+
+  let badgeLabel, badgeClass;
+  if (isAnime)   { badgeLabel = "ANIME";    badgeClass = "badge-anime"; }
+  else if (isTV) { badgeLabel = "SERIE";    badgeClass = "badge-serie"; }
+  else           { badgeLabel = "PELÍCULA"; badgeClass = "badge-movie"; }
+
   card.innerHTML = `
     ${poster ? `<img src="${poster}" alt="${title}" loading="lazy"/>` : `<div class="card-no-poster">🎬<span>${title}</span></div>`}
-    ${isTV ? `<div class="card-type-badge">SERIE</div>` : ""}
+    <div class="card-type-badge ${badgeClass}">${badgeLabel}</div>
     <div class="card-info">
       <div class="card-name">${title}</div>
       <div class="card-meta">
         <span class="card-rating">★ ${rating}</span>
+        <span class="card-views" data-id="${m.id}">👁 —</span>
         <span>${year}</span>
       </div>
     </div>
@@ -1797,8 +1882,7 @@ function buildCard(m, i) {
       <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
       </svg>
-    </button>
-    <div class="card-views" data-id="${m.id}">👁 —</div>`;
+    </button>`;
   card.addEventListener("click", () => openModal(m));
 
   // Corazón favorito
@@ -2625,7 +2709,7 @@ function switchTab(tab) {
     "sec-series-popular","sec-series-top","sec-series-drama",
     "sec-anime","sec-anime-top","sec-canales","sec-search","sec-catalog",
     "section-favs","viciotv-cw-container",
-    "sec-netflixtop10","sec-top100","sec-mas-populares","sec-mas-recientes","sec-mejores-anime"
+    "sec-netflixtop10","sec-top100","sec-mas-populares","sec-mas-recientes","sec-mejores-anime","sec-proximamente"
   ];
   // Limpiar estado de sección activa del sidebar al cambiar de tab
   _activeSidebarSection = null;
@@ -3877,7 +3961,7 @@ function sbToggleExpand(){
 }
 
 /* Secciones extras del sidebar */
-const SIDEBAR_SECTIONS = ["netflixtop10","mas-populares","mas-recientes","mejores-anime"];
+const SIDEBAR_SECTIONS = ["netflixtop10","mas-populares","mas-recientes","mejores-anime","proximamente"];
 const _sbState = {
   "mas-populares":{page:1,total:1,loading:false,ended:false,observer:null},
   "mas-recientes":{page:1,total:1,loading:false,ended:false,observer:null},
@@ -3911,16 +3995,18 @@ function openSidebarSection(key){
     "sec-series-popular","sec-series-top","sec-series-drama",
     "sec-anime","sec-anime-top","sec-canales","sec-search","sec-catalog",
     "section-favs","viciotv-cw-container",
-    "sec-netflixtop10","sec-top100","sec-mas-populares","sec-mas-recientes","sec-mejores-anime"
+    "sec-netflixtop10","sec-top100","sec-mas-populares","sec-mas-recientes","sec-mejores-anime","sec-proximamente"
   ];
   allMain.forEach(id => { const el=document.getElementById(id); if(el) el.style.display="none"; });
   document.getElementById("hero").style.display = "none";
   document.querySelectorAll(".nav-tab").forEach(t=>t.classList.remove("active"));
 
   document.querySelectorAll(".sidebar-btn").forEach(b=>b.classList.remove("active"));
-  const _sbIdMap = {"netflixtop10":"sb-top10","mas-populares":"sb-populares","mas-recientes":"sb-recientes","mejores-anime":"sb-anime"};
+  const _sbIdMap = {"netflixtop10":"sb-top10","mas-populares":"sb-populares","mas-recientes":"sb-recientes","mejores-anime":"sb-anime","proximamente":"sb-proximamente"};
   const activeBtn = document.getElementById(_sbIdMap[key]);
   if(activeBtn) activeBtn.classList.add("active");
+  // Marcar nav-tab si corresponde
+  document.querySelectorAll(".nav-tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===key));
 
   _activeSidebarSection = key;
   const sec = document.getElementById("sec-"+key);
@@ -3930,6 +4016,7 @@ function openSidebarSection(key){
   if(key === "mas-populares") _initInfiniteSection("mas-populares");
   else if(key === "mas-recientes") _initInfiniteSection("mas-recientes");
   else if(key === "mejores-anime") _initInfiniteSection("mejores-anime");
+  else if(key === "proximamente") initProximamente();
 }
 
 /* ── TOGGLE SUBMENU PLATAFORMAS ── */
@@ -4315,6 +4402,136 @@ function _setupInfiniteObserver(key){
 }
 
 
+
+/* ══════════════════════════════════════════════════
+   PRÓXIMAMENTE — Trailers de estrenos futuros
+══════════════════════════════════════════════════ */
+const _prox = {
+  allItems:[],filtered:[],shown:0,PAGE:20,
+  loading:false,loaded:false,typeFilter:"all",
+};
+const _proxFlagMap = {"US":"🇺🇸","GB":"🇬🇧","JP":"🇯🇵","KR":"🇰🇷","ES":"🇪🇸","FR":"🇫🇷","DE":"🇩🇪","IT":"🇮🇹","AU":"🇦🇺","CA":"🇨🇦","BR":"🇧🇷","MX":"🇲🇽","IN":"🇮🇳","CN":"🇨🇳","AR":"🇦🇷"};
+
+async function initProximamente(){
+  if(_prox.loaded){ _proxApplyFilters(); return; }
+  _prox.loaded = true;
+  _proxRenderSkeletons();
+  const today = new Date().toISOString().slice(0,10);
+  const futureDate = new Date(); futureDate.setMonth(futureDate.getMonth()+14);
+  const future = futureDate.toISOString().slice(0,10);
+  try {
+    const [rM1,rM2,rM3,rTV1,rTV2,rA1,rA2] = await Promise.all([
+      fetch(`${API_BASE}/movie/upcoming?api_key=${API_KEY}&language=es-MX&page=1`).then(r=>r.json()),
+      fetch(`${API_BASE}/movie/upcoming?api_key=${API_KEY}&language=es-MX&page=2`).then(r=>r.json()),
+      fetch(`${API_BASE}/movie/upcoming?api_key=${API_KEY}&language=es-MX&page=3`).then(r=>r.json()),
+      fetch(`${API_BASE}/discover/tv?api_key=${API_KEY}&language=es-MX&first_air_date.gte=${today}&first_air_date.lte=${future}&sort_by=popularity.desc&page=1`).then(r=>r.json()),
+      fetch(`${API_BASE}/discover/tv?api_key=${API_KEY}&language=es-MX&first_air_date.gte=${today}&first_air_date.lte=${future}&sort_by=popularity.desc&page=2`).then(r=>r.json()),
+      fetch(`${API_BASE}/discover/tv?api_key=${API_KEY}&language=es-MX&with_genres=16&with_origin_country=JP&first_air_date.gte=${today}&first_air_date.lte=${future}&sort_by=popularity.desc&page=1`).then(r=>r.json()),
+      fetch(`${API_BASE}/discover/tv?api_key=${API_KEY}&language=es-MX&with_genres=16&with_origin_country=JP&first_air_date.gte=${today}&first_air_date.lte=${future}&sort_by=popularity.desc&page=2`).then(r=>r.json()),
+    ]);
+    const animeIds = new Set([...(rA1.results||[]),...(rA2.results||[])].map(x=>x.id));
+    const movies = [...(rM1.results||[]),...(rM2.results||[]),...(rM3.results||[])]
+      .filter(m=>{ const d=m.release_date||""; return !d||d>=today; })
+      .map(m=>({...m,_type:"movie",_cat:"movie"}));
+    const animeItems = [...(rA1.results||[]),...(rA2.results||[])].map(m=>({...m,_type:"tv",_cat:"anime"}));
+    const tvItems = [...(rTV1.results||[]),...(rTV2.results||[])].filter(m=>!animeIds.has(m.id)).map(m=>({...m,_type:"tv",_cat:"tv"}));
+    const seen = new Set();
+    const all = [...movies,...tvItems,...animeItems].filter(m=>{ if(seen.has(m.id)) return false; seen.add(m.id); return true; });
+    all.sort((a,b)=>{ const da=a.release_date||a.first_air_date||"9999"; const db=b.release_date||b.first_air_date||"9999"; return da.localeCompare(db); });
+    _prox.allItems = all;
+    _proxApplyFilters();
+  } catch(e){
+    const g=document.getElementById("prox-grid");
+    if(g) g.innerHTML=`<div class="prox-empty">Error al cargar. Revisá tu conexión.</div>`;
+  }
+}
+
+function setProxFilter(filterType, value){
+  if(filterType==="type"){
+    _prox.typeFilter = value;
+    document.querySelectorAll("#prox-type-filters .prox-filter-btn").forEach(b=>b.classList.toggle("active",b.dataset.type===value));
+  }
+  _proxApplyFilters();
+}
+
+function _proxApplyFilters(){
+  let items = _prox.allItems;
+  if(_prox.typeFilter!=="all") items = items.filter(m=>m._cat===_prox.typeFilter);
+  _prox.filtered = items;
+  _prox.shown = 0;
+  const grid = document.getElementById("prox-grid");
+  if(grid) grid.innerHTML="";
+  _proxRenderPage();
+}
+
+function _proxRenderSkeletons(){
+  const g=document.getElementById("prox-grid");
+  if(!g) return;
+  g.innerHTML="";
+  for(let i=0;i<12;i++){
+    g.innerHTML+=`<div class="prox-skeleton"><div class="prox-skeleton-img"></div><div class="prox-skeleton-info"><div class="prox-skeleton-line" style="width:70%"></div><div class="prox-skeleton-line" style="width:45%"></div><div class="prox-skeleton-line" style="width:100%;height:40px;border-radius:8px;margin-top:6px"></div></div></div>`;
+  }
+}
+
+function _proxRenderPage(){
+  const g=document.getElementById("prox-grid");
+  const btn=document.getElementById("prox-load-more-btn");
+  if(!g) return;
+  const slice=_prox.filtered.slice(_prox.shown,_prox.shown+_prox.PAGE);
+  if(slice.length===0 && _prox.shown===0){
+    g.innerHTML=`<div class="prox-empty">Sin resultados para estos filtros.</div>`;
+    if(btn) btn.style.display="none";
+    return;
+  }
+  slice.forEach(m=>{
+    const title=m.title||m.name||"Sin título";
+    const poster=m.poster_path?`${IMG_BASE}${m.poster_path}`:null;
+    const dateRaw=m.release_date||m.first_air_date||"";
+    const dateStr=dateRaw?new Date(dateRaw+"T12:00:00").toLocaleDateString("es-AR",{day:"numeric",month:"short",year:"numeric"}):"Próximamente";
+    const origins=m.origin_country||[];
+    const countryCode=origins[0]||"";
+    const countryFlag=_proxFlagMap[countryCode]||"";
+    const catLabel=m._cat==="movie"?"Película":m._cat==="anime"?"Anime":"Serie";
+    const catClass=m._cat==="movie"?"movie":m._cat==="anime"?"anime":"tv";
+    const card=document.createElement("div");
+    card.className="prox-card";
+    card.innerHTML=`
+      ${poster?`<img class="prox-card-poster" src="${poster}" alt="${title}" loading="lazy"/>`:
+        `<div class="prox-card-no-poster">🎬<span>${title}</span></div>`}
+      <div class="prox-card-type-badge ${catClass}">${catLabel}</div>
+      ${countryFlag?`<div class="prox-card-country">${countryFlag} ${countryCode}</div>`:""}
+      <div class="prox-card-info">
+        <div class="prox-card-title">${title}</div>
+        <div class="prox-card-meta"><span class="prox-card-date">📅 ${dateStr}</span></div>
+        <button class="prox-trailer-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+          Ver Trailer
+        </button>
+      </div>`;
+    const trailerBtn=card.querySelector(".prox-trailer-btn");
+    fetch(`${API_BASE}/${m._type}/${m.id}/videos?api_key=${API_KEY}&language=es-MX`)
+      .then(r=>r.json())
+      .then(data=>{
+        const yt=(data.results||[]).find(v=>v.site==="YouTube"&&(v.type==="Trailer"||v.type==="Teaser"||v.type==="Clip"));
+        if(yt){
+          trailerBtn.addEventListener("click",()=>openHeroTrailer(m));
+        } else {
+          const q=encodeURIComponent(title+" trailer oficial "+(dateRaw.slice(0,4)||""));
+          trailerBtn.addEventListener("click",(e)=>{ e.stopPropagation(); window.open(`https://www.youtube.com/results?search_query=${q}`,"_blank","noopener,noreferrer"); });
+          trailerBtn.innerHTML=`<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg> Ver en YouTube`;
+        }
+      }).catch(()=>{
+        const q=encodeURIComponent(title+" trailer");
+        trailerBtn.addEventListener("click",(e)=>{ e.stopPropagation(); window.open(`https://www.youtube.com/results?search_query=${q}`,"_blank","noopener,noreferrer"); });
+        trailerBtn.innerHTML=`<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg> Ver en YouTube`;
+      });
+    g.appendChild(card);
+  });
+  _prox.shown+=slice.length;
+  if(btn) btn.style.display=_prox.shown<_prox.filtered.length?"block":"none";
+}
+
+function proxLoadMore(){ _proxRenderPage(); }
 
 // ─── ARRANQUE ───
 initApp();
