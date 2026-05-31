@@ -344,6 +344,14 @@
 
   /* ===== SIDEBAR EN MOBILE: igual que desktop, siempre visible ===== */
   @media(max-width:640px){
+    /* Mostrar el botón X en mobile */
+    .sb-x-btn { display:flex !important; }
+    /* Estilo especial: X siempre visible con color destacado */
+    .sb-x-btn .sb-icon { color: var(--text2); }
+    .sb-x-btn:hover .sb-icon { color: #fff; }
+    /* Cuando expandido, la X cambia a aspecto de "cerrar" */
+    #sidebar.mob-expanded .sb-x-btn .sb-icon { color: var(--accent); }
+
     /* En mobile el hover NO expande — anulamos todo hover del sidebar */
     #sidebar:hover{ width:38px; box-shadow:none; }
     #sidebar:hover .sidebar-btn .sb-text{ opacity:0 !important; max-width:0 !important; }
@@ -916,6 +924,16 @@
 
 <!-- ===== SIDEBAR IZQUIERDO ===== -->
 <div id="sidebar">
+
+  <!-- BOTÓN X (solo mobile): colapsa/expande todo el sidebar -->
+  <button class="sidebar-btn focusable sb-x-btn" id="sb-x-btn" onclick="sbToggleExpand()" style="display:none">
+    <span class="sb-icon" id="sb-x-icon">
+      <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </span>
+    <span class="sb-text">
+      <span class="sb-label"><span class="sb-title">Cerrar</span></span>
+    </span>
+  </button>
 
   <!-- TOP 10 — badge rojo + chevron, submenu al costado -->
   <button class="sidebar-btn focusable" id="sb-top10" onclick="togglePlatformMenu(event)">
@@ -3811,9 +3829,10 @@ function sbToggleExpand(){
   const s = document.getElementById("sidebar");
   const icon = document.getElementById("sb-expand-icon");
   const title = document.getElementById("sb-salir-title");
+  const xIcon = document.getElementById("sb-x-icon");
   const expanded = s.classList.toggle("mob-expanded");
   document.body.classList.toggle("sidebar-mob-expanded", expanded);
-  // Rotar icono
+  // Rotar icono del botón expandir/colapsar
   if(icon){
     if(expanded){
       icon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>';
@@ -3821,6 +3840,14 @@ function sbToggleExpand(){
     } else {
       icon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
       if(title) title.textContent = "Expandir";
+    }
+  }
+  // Actualizar ícono de la X
+  if(xIcon){
+    if(expanded){
+      xIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+    } else {
+      xIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
     }
   }
 }
@@ -3970,10 +3997,24 @@ document.addEventListener("click", function(e){
 });
 
 /* ── Favoritos y Continuar Viendo desde sidebar ── */
+function _sbCollapseMobile(){
+  if(window.innerWidth > 640) return;
+  const sidebar = document.getElementById("sidebar");
+  if(sidebar){ sidebar.classList.remove("mob-expanded"); sidebar.classList.remove("sb-pinned"); }
+  document.body.classList.remove("sidebar-mob-expanded");
+  const icon  = document.getElementById("sb-expand-icon");
+  const title = document.getElementById("sb-salir-title");
+  const xIcon = document.getElementById("sb-x-icon");
+  if(icon) icon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
+  if(title) title.textContent = "Expandir";
+  if(xIcon) xIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
+}
 function sbGoFavs(){
+  _sbCollapseMobile();
   closeSearchResults();
   document.getElementById("search-input").value = "";
-  switchTab("inicio", { skipScroll: true });
+  const alreadyInicio = activeTab === "inicio";
+  if(!alreadyInicio) switchTab("inicio");
   requestAnimationFrame(()=>{
     requestAnimationFrame(()=>{
       const el = document.getElementById("section-favs");
@@ -3985,9 +4026,11 @@ function sbGoFavs(){
   });
 }
 function sbGoContinuar(){
+  _sbCollapseMobile();
   closeSearchResults();
   document.getElementById("search-input").value = "";
-  switchTab("inicio", { skipScroll: true });
+  const alreadyInicio = activeTab === "inicio";
+  if(!alreadyInicio) switchTab("inicio");
   requestAnimationFrame(()=>{
     requestAnimationFrame(()=>{
       const el = document.getElementById("viciotv-cw-container");
