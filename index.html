@@ -1385,9 +1385,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
   <!-- Mi Lista -->
   <div class="row-section" id="section-favs" style="display:none">
-    <div class="row-header"><span class="row-title">Mis Favoritos</span></div>
+    <div class="row-header">
+      <span class="row-title">Mis Favoritos</span>
+      <button class="row-nav-btn" id="nav-prev-favs" onclick="favsNav(-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button class="row-nav-btn" id="nav-next-favs" onclick="favsNav(1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+    </div>
     <div class="hero-row hero-row-wrap" id="carousel-favs" style="padding-left:58px"></div>
-    <button id="favs-more-btn" onclick="loadMoreFavs()" style="display:none;margin:16px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 28px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;width:calc(100% - 64px);margin:16px 32px 0">Ver más</button>
   </div>
   <!-- Inicio -->
   <div id="sec-popular" class="row-section">
@@ -1986,14 +1989,12 @@ function renderFavs() {
   const car  = document.getElementById("carousel-favs");
   const btn  = document.getElementById("favs-more-btn");
   if (!favs.length) { sec.style.display = "none"; return; }
-  _favsShown = FAVS_PAGE_SIZE;
+  _favsShown = favs.length;
   sec.style.display = "";
   car.innerHTML = "";
-  favs.slice(0, _favsShown).forEach((m, i) => {
-    const card = buildHeroCard(m);
-    car.appendChild(card);
-  });
-  if (btn) btn.style.display = favs.length > _favsShown ? "block" : "none";
+  favs.forEach(m => car.appendChild(buildHeroCard(m)));
+  if (btn) btn.style.display = "none";
+  _initDragScroll(car);
 }
 
 function loadMoreFavs() {
@@ -2004,6 +2005,23 @@ function loadMoreFavs() {
   _favsShown = Math.min(_favsShown + FAVS_PAGE_SIZE, favs.length);
   favs.slice(prev, _favsShown).forEach((m, i) => car.appendChild(buildHeroCard(m)));
   if (btn) btn.style.display = _favsShown < favs.length ? "block" : "none";
+}
+
+function favsNav(dir) {
+  const car = document.getElementById("carousel-favs");
+  if (!car) return;
+  // Cargar todos los favs si quedan pendientes
+  const favs = getFavs();
+  if (_favsShown < favs.length) {
+    favs.slice(_favsShown).forEach(m => car.appendChild(buildHeroCard(m)));
+    _favsShown = favs.length;
+    const btn = document.getElementById("favs-more-btn");
+    if (btn) btn.style.display = "none";
+  }
+  const cardW = car.querySelector(".hcard")?.offsetWidth || 280;
+  const gap   = 16;
+  const step  = (cardW + gap) * 4;
+  car.scrollBy({ left: dir * step, behavior: "smooth" });
 }
 
 /* ─── HELPERS ─── */
@@ -3809,7 +3827,7 @@ function hrowNav(key, dir) {
 
   const cardW = row.querySelector(".hcard")?.offsetWidth || 280;
   const gap   = 16;
-  const step  = (cardW + gap) * HROW_BATCH;
+  const step  = (cardW + gap) * 4;
 
   if (dir === 1) {
     const scrollEnd = row.scrollLeft + row.clientWidth;
@@ -3834,6 +3852,100 @@ function _initHrowTouchScroll(key) {
       _hrowRender(key);
     }
   }, { passive: true });
+}
+
+function _initDragScroll(row, onScrollNearEnd) {
+  if (!row || row._dragScrollBound) return;
+  row._dragScrollBound = true;
+
+  let isPressing = false;  // mousedown ocurrió
+  let isDragging = false;  // se movió suficiente para ser drag
+  let startX = 0, lastX = 0, lastTime = 0;
+  let velocity = 0;
+  let rafId = null;
+  let moved = 0;
+  const DRAG_THRESHOLD = 6;
+  const FRICTION = 0.92;
+
+  function cancelMomentum() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  function applyMomentum() {
+    velocity *= FRICTION;
+    if (Math.abs(velocity) < 0.5) { cancelMomentum(); return; }
+    row.scrollLeft -= velocity;
+    if (onScrollNearEnd) onScrollNearEnd(row);
+    rafId = requestAnimationFrame(applyMomentum);
+  }
+
+  function activateDrag() {
+    isDragging = true;
+    // Recién acá deshabilitamos pointer-events en hijos
+    row.querySelectorAll(".hcard").forEach(c => c.style.pointerEvents = "none");
+    row.style.cursor = "grabbing";
+    row.style.scrollSnapType = "none";
+  }
+
+  function endDrag() {
+    if (!isPressing) return;
+    isPressing = false;
+    if (isDragging) {
+      isDragging = false;
+      row.querySelectorAll(".hcard").forEach(c => c.style.pointerEvents = "");
+      row.style.cursor = "";
+      row.style.scrollSnapType = "";
+      if (Math.abs(velocity) > 1) {
+        rafId = requestAnimationFrame(applyMomentum);
+      }
+    }
+  }
+
+  // mousedown: solo registrar posición, NO activar drag todavía
+  row.addEventListener("mousedown", e => {
+    if (e.button !== 0) return;
+    cancelMomentum();
+    isPressing = true;
+    isDragging = false;
+    startX = e.clientX;
+    lastX = e.clientX;
+    lastTime = performance.now();
+    velocity = 0;
+    moved = 0;
+  });
+
+  window.addEventListener("mousemove", e => {
+    if (!isPressing) return;
+    const now = performance.now();
+    const dx = e.clientX - lastX;
+    const dt = now - lastTime || 1;
+    moved = Math.abs(e.clientX - startX);
+
+    // Activar drag solo cuando se supera el umbral
+    if (!isDragging && moved > DRAG_THRESHOLD) {
+      activateDrag();
+    }
+
+    if (isDragging) {
+      velocity = velocity * 0.6 + (dx / dt * 16) * 0.4;
+      row.scrollLeft -= dx;
+      if (onScrollNearEnd) onScrollNearEnd(row);
+    }
+
+    lastX = e.clientX;
+    lastTime = now;
+  });
+
+  window.addEventListener("mouseup", endDrag);
+
+  // Cancelar click solo si hubo drag real
+  row.addEventListener("click", e => {
+    if (moved > DRAG_THRESHOLD) {
+      e.stopPropagation();
+      e.preventDefault();
+      moved = 0;
+    }
+  }, true);
 }
 
 /* ── SISTEMA DE SCROLL INFINITO POR TAB (Películas / Series / Anime) ── */
@@ -4033,6 +4145,12 @@ async function initHomeHrows() {
   _initHrowTouchScroll("popular");
   _initHrowTouchScroll("nowplaying");
   _initHrowTouchScroll("tvtrending");
+  ["popular","nowplaying","tvtrending"].forEach(key => {
+    _initDragScroll(document.getElementById(`hrow-${key}`), row => {
+      const cardW = row.querySelector(".hcard")?.offsetWidth || 280;
+      if (row.scrollWidth - row.scrollLeft - row.clientWidth < cardW * 2) _hrowRender(key);
+    });
+  });
 }
 
 /* ── SIMILAR / RECOMENDACIONES PAGINADAS ── */
