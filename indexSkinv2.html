@@ -197,11 +197,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     max-height:80vh;overflow-y:auto;
   }
   .creator-panel.open{display:flex}
-  @media(max-width:640px){
-    .creator-panel{
-      box-shadow:0 -8px 32px rgba(0,0,0,.7);
-    }
-  }
   .creator-panel-title{
     font-family:'Bebas Neue',cursive;font-size:15px;letter-spacing:1.5px;
     background:linear-gradient(90deg,#ff0080,#ff4500,#ffd700,#00ff88,#00cfff,#a855f7,#ff0080);
@@ -4414,13 +4409,16 @@ function toggleCreatorPanel(e) {
       panel.style.width = "260px";
       panel.style.borderRadius = "14px";
     } else {
+      // Mobile: open below the trigger button, aligned to the right edge
+      const btn = e.currentTarget;
+      const rect = btn.getBoundingClientRect();
       panel.style.position = "fixed";
-      panel.style.top = "auto";
-      panel.style.bottom = "0";
-      panel.style.left = "0";
-      panel.style.right = "0";
-      panel.style.width = "100%";
-      panel.style.borderRadius = "16px 16px 0 0";
+      panel.style.top = (rect.bottom + 8) + "px";
+      panel.style.right = "12px";
+      panel.style.left = "auto";
+      panel.style.bottom = "auto";
+      panel.style.width = "260px";
+      panel.style.borderRadius = "14px";
     }
   }
   highlightActiveColor();

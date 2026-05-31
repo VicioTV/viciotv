@@ -4033,14 +4033,16 @@ function toggleCreatorPanel(e) {
     panel.style.width = "260px";
     panel.style.borderRadius = "14px";
   } else {
-    // Mobile: sheet desde abajo
+    // Mobile: debajo de la ruedita, alineado a la derecha
+    const btn = e.currentTarget;
+    const rect = btn.getBoundingClientRect();
     panel.style.position = "fixed";
-    panel.style.bottom = "0";
-    panel.style.left = "0";
-    panel.style.right = "0";
-    panel.style.top = "auto";
-    panel.style.width = "100%";
-    panel.style.borderRadius = "16px 16px 0 0";
+    panel.style.top = (rect.bottom + 8) + "px";
+    panel.style.right = "12px";
+    panel.style.left = "auto";
+    panel.style.bottom = "auto";
+    panel.style.width = "260px";
+    panel.style.borderRadius = "14px";
   }
   panel.classList.toggle("open");
   highlightActiveColor();
