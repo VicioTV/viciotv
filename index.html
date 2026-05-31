@@ -9,17 +9,27 @@
 <title>VicioTV</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#e50914">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg:#0a0a0f; --bg2:#12121a; --bg3:#1a1a26;
-    --accent:#e50914; --accent2:#ff6b35;
-    --gold:#f5c518; --text:#ffffff; --text2:#b3b3cc; --text3:#6b6b8a;
-    --card-w:160px; --card-h:240px; --radius:10px; --transition:0.25s ease;
-  }
-  *{margin:0;padding:0;box-sizing:border-box}
-  html,body{background:var(--bg);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--bg3) transparent}
-  ::-webkit-scrollbar{width:4px;height:4px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
+/* ═══════════════════════════════════════════════════════════
+   VICIO TV — COMPLETE REDESIGN 2.0
+   ═══════════════════════════════════════════════════════════ */
+:root {
+  --bg:#080810; --bg2:#0d0d18; --bg3:#141422;
+  --bg4:#1c1c2e; --surface:rgba(255,255,255,.04);
+  --accent:#e50914; --accent2:#ff6b35;
+  --gold:#f5c518; --text:#f0f0f8; --text2:#9090b0; --text3:#50507a;
+  --card-w:160px; --card-h:240px; --radius:12px; --transition:0.3s cubic-bezier(0.4,0,0.2,1);
+  --nav-h:68px;
+  --glow:0 0 40px rgba(229,9,20,.18);
+  --border:rgba(255,255,255,.07);
+  --border-bright:rgba(255,255,255,.14);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--bg3) transparent}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
 
   /* ===== PROFILE SCREEN ===== */
   /* ── PROFILES SCREEN ── */
@@ -490,45 +500,62 @@
   .btn-info{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:14px 24px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:all var(--transition)}
   .btn-info:hover{background:rgba(255,255,255,.2)}
 
-  /* ===== MAIN ===== */
-  #main{padding:0 0 80px}
-  .row-section{margin-bottom:18px}
-  .row-header{display:flex;align-items:center;justify-content:space-between;padding:0 32px;margin-bottom:24px;position:relative;gap:16px;z-index:11}
-  .row-title{
-    font-family:'Bebas Neue',cursive;
-    font-size:16px;
-    letter-spacing:5px;
-    color:rgba(255,255,255,.9);
-    -webkit-font-smoothing:antialiased;
-    position:relative;
-    display:inline-flex;
-    align-items:center;
-    white-space:nowrap;
-    flex-shrink:0;
-    /* Recuadro elegante */
-    padding:5px 14px 5px 12px;
-    border:1px solid rgba(255,255,255,.12);
-    border-left:2px solid var(--accent);
-    border-radius:4px;
-    background:rgba(255,255,255,.03);
-    backdrop-filter:blur(4px);
-  }
-  /* Línea estática — sin efecto */
-  .row-header::after{
-    content:'';
-    flex:1;
-    height:1px;
-    background:linear-gradient(90deg,rgba(255,255,255,.08),transparent);
-  }
-  /* Carruseles horizontales — usados solo en Mi Lista, tabs de películas/series, etc */
-  .cards-scroll{display:flex;gap:12px;padding:22px 32px 16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
-  .cards-scroll::-webkit-scrollbar{display:none}
-  /* Grilla para secciones del home */
-  .home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:16px;padding:8px 32px 0}
-  .home-grid .card{width:auto;flex-shrink:unset}
-  .load-more-btn{display:block;margin:20px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:10px 32px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;transition:all .2s}
-  .load-more-btn:hover{background:rgba(229,9,20,.12);color:var(--accent);border-color:rgba(229,9,20,.3)}
-  .load-more-btn:disabled{opacity:.4;pointer-events:none}
+/* ═══════════════════════ MAIN CONTENT ═══════════════════════ */
+#main{padding:0 0 100px}
+.row-section{margin-bottom:12px}
+/* Section header — big text, reference style */
+.row-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:32px 40px 16px;
+  position:relative;gap:16px;z-index:11;
+}
+.row-title{
+  font-family:'Syne',sans-serif;
+  font-size:22px;font-weight:700;
+  color:rgba(255,255,255,.92);
+  letter-spacing:-.3px;
+  white-space:nowrap;flex-shrink:0;
+  position:relative;
+}
+/* Subtle accent underline */
+.row-title::after{
+  content:'';position:absolute;bottom:-4px;left:0;
+  width:24px;height:2px;border-radius:1px;
+  background:var(--accent);
+}
+.row-header::after{
+  content:'';flex:1;height:1px;
+  background:linear-gradient(90deg,var(--border),transparent);
+  margin-left:20px;
+}
+/* Row navigation buttons (prev/next) */
+.row-nav{display:flex;gap:8px;align-items:center;flex-shrink:0;z-index:1}
+.row-nav-btn{
+  width:36px;height:36px;border-radius:50%;
+  background:var(--surface);border:1px solid var(--border);
+  color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;
+}
+.row-nav-btn:hover{background:rgba(229,9,20,.15);border-color:rgba(229,9,20,.3);color:var(--text)}
+.row-nav-btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
+
+/* Cards scroll */
+.cards-scroll{display:flex;gap:12px;padding:8px 40px 16px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
+.cards-scroll::-webkit-scrollbar{display:none}
+/* Grid for home sections */
+.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:16px;padding:8px 40px 0}
+.home-grid .card{width:auto;flex-shrink:unset}
+.load-more-btn{
+  display:block;margin:20px auto 0;
+  background:transparent;color:var(--text2);
+  border:1px solid var(--border);border-radius:30px;
+  padding:10px 36px;font-family:'DM Sans',sans-serif;font-size:13px;
+  cursor:pointer;transition:all .2s;letter-spacing:.3px;
+}
+.load-more-btn:hover{background:rgba(229,9,20,.08);color:var(--accent);border-color:rgba(229,9,20,.3)}
+.load-more-btn:disabled{opacity:.3;pointer-events:none}
+
 
   /* ===== CARDS ===== */
   .card{flex-shrink:0;width:var(--card-w);border-radius:var(--radius);overflow:hidden;cursor:pointer;position:relative;background:var(--bg3);transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;scroll-snap-align:start}
@@ -1189,69 +1216,134 @@
 
   <!-- Mi Lista -->
   <div class="row-section" id="section-favs" style="display:none">
-    <div class="row-header"><span class="row-title">MIS FAVORITOS</span></div>
+    <div class="row-header"><span class="row-title">Mis Favoritos</span></div>
     <div class="home-grid" id="carousel-favs"></div>
     <button id="favs-more-btn" onclick="loadMoreFavs()" style="display:none;margin:16px auto 0;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:9px 28px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;width:calc(100% - 64px);display:none;margin:16px 32px 0">Ver más</button>
   </div>
-
   <!-- Inicio -->
   <div id="sec-popular" class="row-section">
-    <div class="row-header"><span class="row-title">PELÍCULAS POPULARES</span></div>
+    <div class="row-header">
+      <span class="row-title">Películas Populares</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-popular',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-popular',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="home-grid" id="carousel-popular"></div>
     <button class="load-more-btn" id="btn-more-popular" onclick="loadMoreHome('popular')">Ver más</button>
   </div>
   <div id="sec-nowplaying" class="row-section">
-    <div class="row-header"><span class="row-title">LO MÁS NUEVO EN PELÍCULAS</span></div>
+    <div class="row-header">
+      <span class="row-title">Lo Más Nuevo</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-nowplaying',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-nowplaying',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="home-grid" id="carousel-nowplaying"></div>
     <button class="load-more-btn" id="btn-more-nowplaying" onclick="loadMoreHome('nowplaying')">Ver más</button>
   </div>
   <div id="sec-tvtrending" class="row-section">
-    <div class="row-header"><span class="row-title">SERIES EN TENDENCIA</span></div>
+    <div class="row-header">
+      <span class="row-title">Series en Tendencia</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-tvtrending',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-tvtrending',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="home-grid" id="carousel-tvtrending"></div>
     <button class="load-more-btn" id="btn-more-tvtrending" onclick="loadMoreHome('tvtrending')">Ver más</button>
   </div>
 
   <!-- Películas -->
   <div id="sec-movies-popular" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">MÁS POPULARES</span></div>
+    <div class="row-header">
+      <span class="row-title">Más Populares</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-movies-popular',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-movies-popular',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="cards-scroll" id="carousel-movies-popular"></div>
   </div>
   <div id="sec-movies-top" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">MEJOR VALORADAS</span></div>
+    <div class="row-header">
+      <span class="row-title">Mejor Valoradas</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-movies-top',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-movies-top',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="cards-scroll" id="carousel-movies-top"></div>
   </div>
   <div id="sec-movies-action" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">ACCIÓN</span></div>
+    <div class="row-header">
+      <span class="row-title">Acción</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-movies-action',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-movies-action',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="cards-scroll" id="carousel-movies-action"></div>
   </div>
 
   <!-- Series -->
   <div id="sec-series-popular" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">SERIES POPULARES</span></div>
+    <div class="row-header">
+      <span class="row-title">Series Populares</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-series-popular',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-series-popular',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="cards-scroll" id="carousel-series-popular"></div>
   </div>
   <div id="sec-series-top" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">MEJOR VALORADAS</span></div>
+    <div class="row-header">
+      <span class="row-title">Mejor Valoradas</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-series-top',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-series-top',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="cards-scroll" id="carousel-series-top"></div>
   </div>
   <div id="sec-series-drama" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">🎭 Drama</span></div>
+    <div class="row-header">
+      <span class="row-title">Drama</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-series-drama',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-series-drama',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="cards-scroll" id="carousel-series-drama"></div>
   </div>
 
   <!-- Anime -->
   <div id="sec-anime" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">ANIME POPULAR</span></div>
+    <div class="row-header">
+      <span class="row-title">Anime Popular</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-anime',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-anime',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="cards-scroll" id="carousel-anime"></div>
   </div>
   <div id="sec-anime-top" class="row-section" style="display:none">
-    <div class="row-header"><span class="row-title">🏆 Anime Mejor Valorado</span></div>
+    <div class="row-header">
+      <span class="row-title">Anime Mejor Valorado</span>
+      <div class="row-nav">
+        <button class="row-nav-btn" onclick="scrollRow('carousel-anime-top',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button class="row-nav-btn" onclick="scrollRow('carousel-anime-top',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
+      </div>
+    </div>
     <div class="cards-scroll" id="carousel-anime-top"></div>
   </div>
 
   <!-- Canales en vivo -->
   <div id="sec-canales" class="row-section" style="display:none;padding-top:80px">
-    <div class="row-header"><span class="row-title">📡 Canales en Vivo</span></div>
+    <div class="row-header"><span class="row-title">Canales en Vivo</span></div>
     <div class="live-grid" id="live-grid"></div>
   </div>
 
@@ -1260,8 +1352,8 @@
     <div class="row-header">
       <span class="row-title" id="catalog-title">Catálogo</span>
     </div>
-    <div class="filters-bar" id="filters-bar" style="padding:0 32px 16px;display:flex;gap:8px;flex-wrap:wrap"></div>
-    <div class="catalog-grid" id="catalog-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:16px;padding:0 32px"></div>
+    <div class="filters-bar" id="filters-bar" style="padding:0 40px 16px;display:flex;gap:8px;flex-wrap:wrap"></div>
+    <div class="catalog-grid" id="catalog-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(var(--card-w),1fr));gap:16px;padding:0 40px"></div>
     <div id="load-more-trigger" style="height:60px;display:flex;align-items:center;justify-content:center;margin-top:16px">
       <div class="load-more-spinner skeleton" id="load-spinner" style="width:32px;height:32px;border-radius:50%;display:none;animation:spin .8s linear infinite"></div>
       <div id="catalog-end-msg" style="color:var(--text3);font-size:.85rem;display:none">— Llegaste al final —</div>
@@ -1271,7 +1363,7 @@
   <!-- Search results -->
   <div id="sec-search" class="row-section" style="display:none">
     <div class="row-header"><span class="row-title" id="search-label">Resultados</span></div>
-    <div class="search-results-grid" id="search-grid" style="padding:0 32px"></div>
+    <div class="search-results-grid" id="search-grid" style="padding:0 40px"></div>
   </div>
 
   <!-- ── SIDEBAR SECTIONS ── -->
