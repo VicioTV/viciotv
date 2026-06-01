@@ -6131,6 +6131,161 @@ initThemePicker();
     const termEl   = el('vtv-terminal');
 
 
+    // ── Onda de expansión liviana (un solo div CSS) ──
+    // ── Electricidad en el logo post-reveal ──
+    function spawnLogoElectricity() {
+      const logoEl = el('vtv-logo-wrap');
+      if (!logoEl) return;
+      const r = logoEl.getBoundingClientRect();
+
+      // Canvas encima de todo, del tamaño de la ventana
+      const cv = document.createElement('canvas');
+      cv.width = W; cv.height = H;
+      cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99999;';
+      document.body.appendChild(cv);
+      const c = cv.getContext('2d');
+
+      // ── Puntos ancla sobre el logo (donde nacen los rayos) ──
+      const anchors = [];
+      const cols = 9, rows = 3;
+      for (let i = 0; i <= cols; i++)
+        for (let j = 0; j <= rows; j++)
+          anchors.push({ x: r.left + (r.width  / cols) * i,
+                         y: r.top  + (r.height / rows) * j });
+
+      // ── Mini explosiones / chispas ──
+      const sparks = [];
+      function addSparks(x, y, count, power) {
+        for (let i = 0; i < count; i++) {
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 1.5 + Math.random() * 4 * power;
+          sparks.push({
+            x, y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            life: 0.8 + Math.random() * 0.5,
+            decay: 0.035 + Math.random() * 0.04,
+            r: 1 + Math.random() * 2.5 * power,
+          });
+        }
+      }
+
+      // ── Segmentos de rayo que se regeneran ──
+      function makeBolt(ax, ay, spread, depth) {
+        const segs = [];
+        function split(x1, y1, x2, y2, d, sp) {
+          if (d === 0) { segs.push([x1,y1,x2,y2]); return; }
+          const mx = (x1+x2)/2 + (Math.random()-.5)*sp;
+          const my = (y1+y2)/2 + (Math.random()-.5)*sp*.5;
+          split(x1,y1,mx,my,d-1,sp*.6);
+          split(mx,my,x2,y2,d-1,sp*.6);
+          if (d>=2 && Math.random()<.4) {
+            const len = .3+Math.random()*.4;
+            const ang = (Math.random()-.5)*1.4;
+            const dx=x2-x1, dy=y2-y1;
+            split(mx,my, mx+(Math.cos(ang)*dx-Math.sin(ang)*dy)*len,
+                         my+(Math.sin(ang)*dx+Math.cos(ang)*dy)*len, d-2, sp*.5);
+          }
+        }
+        const angle = Math.random() * Math.PI * 2;
+        const dist  = spread * (0.5 + Math.random() * 0.8);
+        split(ax, ay, ax + Math.cos(angle)*dist, ay + Math.sin(angle)*dist, depth, spread*.6);
+        return segs;
+      }
+
+      const TOTAL = 2200; // duración total ms
+      let bolts = [];
+      let lastBoltTime = 0;
+      let startTs = null;
+
+      function tick(ts) {
+        if (!startTs) startTs = ts;
+        const elapsed = ts - startTs;
+        const t = elapsed / TOTAL; // 0→1
+        if (t >= 1) { cv.remove(); return; }
+
+        c.clearRect(0, 0, W, H);
+
+        // Fade global: máximo al principio, se apaga hacia el final
+        const globalFade = Math.pow(1 - t, 1.2);
+
+        // ── Generar nuevos rayos periódicamente (más frecuentes al inicio) ──
+        const boltInterval = 55 + t * 120; // 55ms→175ms
+        if (elapsed - lastBoltTime > boltInterval) {
+          lastBoltTime = elapsed;
+          const boltCount = Math.max(1, Math.round(5 - t * 4));
+          for (let b = 0; b < boltCount; b++) {
+            const anchor = anchors[Math.floor(Math.random() * anchors.length)];
+            const spread = 40 + Math.random() * 80 * (1 - t * .6);
+            const depth  = 2 + Math.floor(Math.random() * 3);
+            const segs   = makeBolt(anchor.x, anchor.y, spread, depth);
+            const life   = 0.6 + Math.random() * 0.5;
+            bolts.push({ segs, life, decay: .08 + Math.random() * .08,
+                         cx: anchor.x, cy: anchor.y });
+
+            // Mini explosión en el punto de origen
+            if (Math.random() < .55) addSparks(anchor.x, anchor.y, 3+Math.floor(Math.random()*5), 1-t*.7);
+          }
+        }
+
+        // ── Dibujar rayos ──
+        c.lineCap = 'round';
+        for (let i = bolts.length-1; i >= 0; i--) {
+          const bolt = bolts[i];
+          bolt.life -= bolt.decay;
+          if (bolt.life <= 0) { bolts.splice(i,1); continue; }
+          const alpha = bolt.life * globalFade;
+
+          // Glow
+          c.save();
+          c.globalAlpha = alpha * .5;
+          c.strokeStyle = 'rgba(160,180,255,1)';
+          c.lineWidth = 3;
+          c.shadowColor = 'rgba(140,160,255,.9)';
+          c.shadowBlur = 12;
+          bolt.segs.forEach(([x1,y1,x2,y2]) => {
+            c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
+          });
+          c.restore();
+
+          // Núcleo blanco
+          c.save();
+          c.globalAlpha = alpha;
+          c.strokeStyle = 'rgba(255,255,255,1)';
+          c.lineWidth = 1;
+          c.shadowBlur = 0;
+          bolt.segs.forEach(([x1,y1,x2,y2]) => {
+            c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke();
+          });
+          c.restore();
+        }
+
+        // ── Dibujar sparks ──
+        for (let i = sparks.length-1; i >= 0; i--) {
+          const s = sparks[i];
+          s.x += s.vx; s.y += s.vy;
+          s.vy += .12; // gravedad leve
+          s.vx *= .94;
+          s.life -= s.decay;
+          if (s.life <= 0) { sparks.splice(i,1); continue; }
+          c.save();
+          c.globalAlpha = s.life * globalFade;
+          c.fillStyle = `rgba(255,${200+Math.random()*55|0},120,1)`;
+          c.shadowColor = 'rgba(255,180,80,.8)';
+          c.shadowBlur = 6;
+          c.beginPath();
+          c.arc(s.x, s.y, s.r * s.life, 0, Math.PI*2);
+          c.fill();
+          c.restore();
+        }
+
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+
     // ── GRAN REVEAL: incandescencia + logo ──
     let revealTriggered = false;
     async function triggerReveal() {
@@ -6175,6 +6330,7 @@ initThemePicker();
         logoWrap.style.filter = 'blur(0px) brightness(1)';
       }
 
+      spawnLogoElectricity();
 
       // 6. Parpadeos del logo post-reveal (simula carga eléctrica)
       fatigueActive = true;
@@ -6426,8 +6582,7 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Onda de estabilización ──
-
+      // ── Onda de estabilización (CSS transition, sin cómputo por frame) ──
       // ── Fatiga y flicker ──
       updateFatigue(dt);
       updateFlicker(dt);
@@ -8246,7 +8401,7 @@ initThemePicker();
   // ── Scheduler realista ──
   function scheduleNext() {
     // Silencio entre relámpagos: 15–80 segundos
-    const silence = 15000 + Math.random() * 65000;
+    const silence = 8000 + Math.random() * 22000;
     setTimeout(() => {
       // Ráfaga de 1–3 relámpagos seguidos
       const burst = 1 + Math.floor(Math.random() * 3);
@@ -8260,7 +8415,7 @@ initThemePicker();
   }
 
   // Primer relámpago entre 8 y 25 segundos
-  setTimeout(scheduleNext, 8000 + Math.random() * 17000);
+  setTimeout(scheduleNext, 3000 + Math.random() * 5000);
 
 })();
 
