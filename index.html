@@ -1090,6 +1090,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     .modal-body{padding:12px}
     .modal-topbar{padding:8px 12px}
     .modal-actions{flex-wrap:wrap;gap:8px;padding:0 12px 12px}
+    .modal-action-row{flex-wrap:nowrap;gap:6px}
+    .modal-action-btn{flex:1;justify-content:center;padding:10px 8px;white-space:nowrap;font-size:12px}
     .provider-bar{padding:6px 12px 4px;gap:4px}
     .provider-btn{padding:4px 8px;font-size:10px}
     .cast-scroll{padding-left:12px}
@@ -1673,7 +1675,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <p class="modal-overview" id="modal-overview"></p>
       <div class="modal-action-row">
         <button class="modal-action-btn focusable" id="fav-btn">
-          <span id="fav-btn-text">+ Favoritos</span>
+          <span id="fav-btn-text">Favoritos</span>
         </button>
         <button class="modal-action-btn focusable" id="share-btn">
           <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
@@ -2055,7 +2057,7 @@ function updateFavBtn(item) {
   const btn = document.getElementById("fav-btn");
   const txt = document.getElementById("fav-btn-text");
   btn.classList.toggle("active", active);
-  txt.textContent = active ? "En favoritos" : "+ Favoritos";
+  txt.textContent = active ? "En favoritos" : "Favoritos";
 }
 let _favsShown = 0;
 
