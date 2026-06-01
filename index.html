@@ -1215,11 +1215,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
 <!-- ===== CREATOR PANEL (direct body child so position:fixed works on mobile) ===== -->
 <div class="creator-panel" id="creator-panel">
-  <div class="creator-panel-title" style="font-size:13px;letter-spacing:1px;color:var(--text2);font-family:'Outfit',sans-serif;font-weight:600;-webkit-text-fill-color:unset;background:none;animation:none;text-align:left;padding-bottom:2px">🎨 Personalización</div>
+  <div class="creator-panel-title" style="font-size:13px;letter-spacing:1px;color:var(--text2);font-family:'Outfit',sans-serif;font-weight:600;-webkit-text-fill-color:unset;background:none;animation:none;text-align:center;padding-bottom:0px">Personalización</div>
 
   <!-- Switch de versión -->
   <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px">
-    <span style="font-size:11px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase">Versión de interfaz</span>
+    <span style="font-size:11px;color:#a78bfa;letter-spacing:.5px;text-transform:uppercase;text-align:center;display:block;width:100%">Versiones distintas de Interfaz</span>
     <div style="display:flex;background:rgba(0,0,0,.3);border-radius:8px;padding:3px;gap:3px">
       <button onclick="switchSkin('compacta')" id="skin-btn-compacta" style="flex:1;padding:7px 8px;border-radius:6px;border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;color:var(--text3)">Moderna</button>
       <button onclick="switchSkin('avanzada')" id="skin-btn-avanzada" style="flex:1;padding:7px 8px;border-radius:6px;border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:var(--accent);color:#fff">Tradicional</button>
@@ -1245,6 +1245,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
   <div class="theme-colors" id="theme-colors"></div>
   <button class="theme-reset" onclick="resetTheme()">↺ Restaurar por defecto</button>
+  <div style="padding-top:5px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600">
+    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 2.3.8</div>
+  </div>
 </div>
 
 <!-- ===== SIDEBAR IZQUIERDO ===== -->
