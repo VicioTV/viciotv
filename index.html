@@ -31,6 +31,178 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
 
+  /* ═══════════════════════════════════════════════════════════
+     VICIO TV — DIGITAL AWAKENING INTRO v3.0
+     10 fases cinematográficas: vacío → materialización
+  ═══════════════════════════════════════════════════════════ */
+  #vtv-intro{
+    position:fixed;inset:0;z-index:99999;
+    background:#000;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    overflow:hidden;pointer-events:all;
+  }
+  #vtv-intro.hidden{display:none}
+
+  /* ── CANVAS base (partículas + noise) ── */
+  #vtv-particles-canvas{
+    position:absolute;inset:0;width:100%;height:100%;
+    pointer-events:none;opacity:0;
+  }
+
+  /* ── NÚCLEO DE ENERGÍA (Fase 3) ── */
+  #vtv-energy-core{
+    position:absolute;top:50%;left:50%;
+    width:4px;height:4px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:#fff;
+    box-shadow:0 0 0 0 rgba(99,102,241,0);
+    opacity:0;pointer-events:none;
+    z-index:3;
+  }
+  /* Anillo de expansión de energía */
+  .vtv-energy-ring{
+    position:absolute;top:50%;left:50%;
+    border-radius:50%;border:1px solid rgba(99,102,241,.6);
+    transform:translate(-50%,-50%) scale(0);
+    opacity:0;pointer-events:none;
+  }
+  @keyframes vtv-energy-ring-out{
+    0%  {transform:translate(-50%,-50%) scale(0);opacity:.8}
+    100%{transform:translate(-50%,-50%) scale(4);opacity:0}
+  }
+
+  /* ── LOGO CANVAS (construcción letra a letra) ── */
+  #vtv-logo-canvas{
+    position:absolute;top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    pointer-events:none;z-index:4;
+    opacity:0;
+  }
+
+  /* ── LOGO SVG (post-construcción, visible y animado) ── */
+  #vtv-logo-wrap{
+    position:relative;z-index:5;
+    display:flex;flex-direction:column;align-items:center;gap:4px;
+    opacity:0;pointer-events:none;
+  }
+  .vtv-logo-text{
+    font-family:'Bebas Neue',cursive;
+    font-size:clamp(56px,10vw,96px);
+    letter-spacing:10px;
+    background:linear-gradient(90deg,
+      var(--accent,#6366f1),
+      color-mix(in srgb,var(--accent,#6366f1) 40%,#fff),
+      #fff,
+      color-mix(in srgb,var(--accent,#6366f1) 40%,#fff),
+      var(--accent,#6366f1));
+    background-size:300% auto;
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    animation:logo-shimmer 8s linear infinite;
+    line-height:1;
+    filter:drop-shadow(0 0 40px rgba(99,102,241,.8));
+  }
+  .vtv-logo-sub{
+    font-size:10px;letter-spacing:7px;text-transform:uppercase;
+    color:rgba(255,255,255,.25);margin-top:4px;
+    font-family:'Outfit',sans-serif;
+  }
+
+  /* ── DISTORSIÓN ESPACIAL (Fase 5) ── */
+  #vtv-distort-overlay{
+    position:absolute;inset:0;pointer-events:none;
+    opacity:0;z-index:6;
+    background:radial-gradient(ellipse at center,
+      rgba(99,102,241,.0) 0%,
+      rgba(99,102,241,.08) 30%,
+      rgba(99,102,241,.0) 60%,
+      transparent 80%);
+  }
+  @keyframes vtv-distort-wave{
+    0%  {transform:scale(0.95);opacity:0;filter:blur(0px)}
+    15% {opacity:.9;filter:blur(2px)}
+    50% {transform:scale(1.08);opacity:.4;filter:blur(8px)}
+    100%{transform:scale(1.4);opacity:0;filter:blur(20px)}
+  }
+
+  /* ── SCAN LINE (Fase 7 — identificación de usuario) ── */
+  #vtv-scan-line{
+    position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:0;z-index:7;
+  }
+  #vtv-scan-line::after{
+    content:'';position:absolute;
+    top:0;left:0;width:100%;height:2px;
+    background:linear-gradient(90deg,
+      transparent 0%,
+      rgba(99,102,241,.2) 20%,
+      rgba(150,155,255,.6) 40%,
+      rgba(255,255,255,.9) 50%,
+      rgba(150,155,255,.6) 60%,
+      rgba(99,102,241,.2) 80%,
+      transparent 100%);
+    box-shadow:0 0 20px 4px rgba(99,102,241,.4), 0 0 60px 12px rgba(99,102,241,.12);
+    filter:blur(0.5px);
+    animation:vtv-scan-vertical 1.4s cubic-bezier(.4,0,.15,1) forwards;
+  }
+  @keyframes vtv-scan-vertical{
+    0%  {top:-2px}
+    100%{top:100%}
+  }
+  /* Glow residual al paso del scanner */
+  #vtv-scan-reveal{
+    position:absolute;inset:0;pointer-events:none;
+    background:linear-gradient(180deg,
+      rgba(99,102,241,.04) 0%,transparent 30%);
+    opacity:0;z-index:6;clip-path:inset(0 0 100% 0);
+  }
+
+  /* ── TERMINAL DE STATUS (Fase 8) ── */
+  #vtv-terminal{
+    position:absolute;bottom:clamp(40px,8vh,80px);left:50%;
+    transform:translateX(-50%);
+    z-index:8;opacity:0;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    pointer-events:none;min-width:280px;
+  }
+  .vtv-term-line{
+    font-family:'Outfit',monospace;
+    font-size:11px;letter-spacing:3px;text-transform:uppercase;
+    color:rgba(99,102,241,.0);
+    display:flex;align-items:center;gap:8px;
+    white-space:nowrap;
+    transition:color 200ms ease, opacity 200ms ease;
+  }
+  .vtv-term-line.active{color:rgba(99,102,241,.75)}
+  .vtv-term-line.done{color:rgba(255,255,255,.2)}
+  .vtv-term-line.final{color:rgba(255,255,255,.7);font-size:12px;letter-spacing:4px}
+  .vtv-term-dot{
+    width:4px;height:4px;border-radius:50%;
+    background:currentColor;flex-shrink:0;
+    box-shadow:0 0 6px currentColor;
+  }
+  .vtv-term-dot.pulse{animation:vtv-blink .6s ease-in-out infinite}
+  @keyframes vtv-blink{0%,100%{opacity:.2}50%{opacity:1}}
+
+  /* ── HALO AMBIENTAL (persiste al final) ── */
+  #vtv-ambient-glow{
+    position:absolute;top:50%;left:50%;
+    width:min(700px,100vw);height:min(700px,100vw);
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(ellipse,
+      rgba(99,102,241,.18) 0%,
+      rgba(99,102,241,.08) 35%,
+      rgba(99,102,241,.02) 60%,
+      transparent 75%);
+    filter:blur(40px);
+    opacity:0;pointer-events:none;z-index:2;
+    animation:vtv-ambient-breathe 4s ease-in-out infinite;
+  }
+  @keyframes vtv-ambient-breathe{
+    0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.7}
+    50%    {transform:translate(-50%,-50%) scale(1.08);opacity:1}
+  }
+
   /* ===== PROFILE SCREEN ===== */
   /* ── PROFILES SCREEN ── */
   #profiles-screen{position:fixed;inset:0;z-index:5000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;overflow:hidden}
@@ -1126,6 +1298,27 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 </style>
 </head>
 <body>
+
+<!-- ══ VICIO TV INTRO ══ -->
+<div id="vtv-intro">
+  <canvas id="vtv-particles-canvas"></canvas>
+  <div id="vtv-ambient-glow"></div>
+  <div id="vtv-energy-core"></div>
+  <canvas id="vtv-logo-canvas"></canvas>
+  <div id="vtv-logo-wrap">
+    <div class="vtv-logo-text">VicioTV</div>
+    <div class="vtv-logo-sub">Sistema de entretenimiento</div>
+  </div>
+  <div id="vtv-distort-overlay"></div>
+  <div id="vtv-scan-line"></div>
+  <div id="vtv-scan-reveal"></div>
+  <div id="vtv-terminal">
+    <div class="vtv-term-line" id="vtl-1"><span class="vtv-term-dot"></span><span class="vtv-term-txt">VICIOTV 2.3.8</span></div>
+    <div class="vtv-term-line" id="vtl-2"><span class="vtv-term-dot"></span><span class="vtv-term-txt">Sincronizando entorno</span></div>
+    <div class="vtv-term-line" id="vtl-3"><span class="vtv-term-dot"></span><span class="vtv-term-txt">Usuario detectado</span></div>
+    <div class="vtv-term-line final" id="vtl-4"><span class="vtv-term-dot pulse"></span><span class="vtv-term-txt">Interfaz disponible</span></div>
+  </div>
+</div>
 
 <!-- ===== PANTALLA DE PERFILES ===== -->
 <div id="profiles-screen">
@@ -4676,7 +4869,21 @@ function initApp() {
     showSidebar();
     registerVisit(active ? active.name : saved);
   } else {
-    document.getElementById("profiles-screen").style.display = "flex";
+    // Si la intro ya se mostr� esta sesi�n, mostrar directamente
+    const introAlreadyDone = sessionStorage.getItem("vtv_intro_done");
+    const pscreen = document.getElementById("profiles-screen");
+    if (!introAlreadyDone) {
+      pscreen.style.opacity = "0";
+      pscreen.style.transform = "scale(0.97)";
+      pscreen.style.display = "flex";
+      setTimeout(() => {
+        pscreen.style.transition = "opacity 600ms ease, transform 600ms cubic-bezier(0.34,1.56,0.64,1)";
+        pscreen.style.opacity = "1";
+        pscreen.style.transform = "scale(1)";
+      }, 3350);
+    } else {
+      pscreen.style.display = "flex";
+    }
   }
 }
 let _contentInited = false;
@@ -5604,6 +5811,743 @@ function proxLoadMore(){ _proxRenderAll(); }
 // ─── ARRANQUE ───
 initApp();
 initThemePicker();
+
+
+// ═══════════════════════════════════════════════════════════
+//  VICIO TV — ENERGY ASSEMBLY ENGINE v6.0
+//  Relámpagos de fondo · Chispas & arcos masivos · Reveal épico
+// ═══════════════════════════════════════════════════════════
+(function() {
+  'use strict';
+
+  function el(id) { return document.getElementById(id); }
+  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+  function getAccentRgb() {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue('--accent-rgb').trim() || '99,102,241';
+  }
+  function getAccentHex() {
+    return getComputedStyle(document.documentElement)
+      .getPropertyValue('--accent').trim() || '#6366f1';
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  //  ENERGY ASSEMBLY ENGINE v6
+  // ═══════════════════════════════════════════════════════════
+  function runEnergyAssembly(introEl, accentRgb, accentHex, onComplete) {
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+
+    const cv = document.createElement('canvas');
+    cv.width = W; cv.height = H;
+    cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:10;';
+    introEl.appendChild(cv);
+    const ctx = cv.getContext('2d');
+
+    // ── Persistent trail buffer ──
+    const trailCv = document.createElement('canvas');
+    trailCv.width = W; trailCv.height = H;
+    const tCtx = trailCv.getContext('2d');
+
+    // ── Paleta de energía ──
+    const COLORS = [
+      `rgba(${accentRgb},`,
+      'rgba(140,80,255,',
+      'rgba(60,200,255,',
+      'rgba(200,120,255,',
+      'rgba(255,255,255,',
+    ];
+
+    let segments = [];
+    let sparks   = [];
+    let arcs     = [];
+
+    // ──────────────────────────────────────────
+    //  RELÁMPAGOS DE FONDO
+    // ──────────────────────────────────────────
+    let lightningFlashes = []; // { alpha, decay, type:'fast'|'slow' }
+    let lightningTimer = 0;
+    let lightningInterval = 1800; // ms hasta próximo relámpago
+    let logoRevealDone = false;   // bloquea nuevos segments tras reveal
+    let linesKilled = false;      // true cuando todas las líneas terminaron
+
+    function scheduleNextLightning() {
+      // Intervalo aleatorio entre relámpagos: 1.2s – 3s
+      lightningInterval = 1200 + Math.random() * 1800;
+    }
+
+    function spawnLightningFlash(type) {
+      // type: 'fast' = destello breve intenso, 'slow' = se desvanece lentamente
+      if (type === 'fast') {
+        lightningFlashes.push({ alpha: 0.55 + Math.random() * 0.35, decay: 0.09 + Math.random() * 0.08, type:'fast' });
+      } else {
+        lightningFlashes.push({ alpha: 0.3 + Math.random() * 0.25, decay: 0.012 + Math.random() * 0.01, type:'slow' });
+      }
+      // El flash de reveal es especial — muy brillante
+    }
+
+    function spawnRevealFlash() {
+      // Incandescencia total para el reveal del logo
+      lightningFlashes.push({ alpha: 1.0, decay: 0.018, type:'reveal' });
+    }
+
+    function drawLightningFlashes() {
+      for (let i = lightningFlashes.length - 1; i >= 0; i--) {
+        const f = lightningFlashes[i];
+        if (f.alpha <= 0) { lightningFlashes.splice(i, 1); continue; }
+
+        ctx.save();
+        if (f.type === 'reveal') {
+          // Blanco puro total
+          ctx.globalAlpha = f.alpha;
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(0, 0, W, H);
+        } else {
+          // Gradiente radial — simula iluminación desde arriba
+          const cx2 = W * (0.3 + Math.random() * 0.4);
+          const cy2 = H * 0.1;
+          const grad = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, H * 1.4);
+          grad.addColorStop(0,   `rgba(200,210,255,${f.alpha})`);
+          grad.addColorStop(0.3, `rgba(140,150,255,${f.alpha * 0.5})`);
+          grad.addColorStop(1,   'transparent');
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, W, H);
+        }
+        ctx.restore();
+
+        f.alpha -= f.decay;
+      }
+    }
+
+    // ──────────────────────────────────────────
+    //  SEGMENTOS DE ENERGÍA
+    // ──────────────────────────────────────────
+    function makeSegment(phase) {
+      const types = ['h','v','d','di'];
+      const pool = phase < 2 ? ['h','v'] : types;
+      const type = pool[Math.floor(Math.random() * pool.length)];
+
+      // v6: velocidad base AUMENTADA x2.2
+      const speed = lerp(0.0009, 0.004, Math.min(phase / 6, 1)) * (0.7 + Math.random() * 0.6);
+      const len = 0.08 + Math.random() * 0.3;
+      const colorBase = COLORS[Math.floor(Math.random() * COLORS.length)];
+      const lineW = phase < 3 ? (0.5 + Math.random() * 0.8) : (0.5 + Math.random() * 1.5);
+      const glowR = phase > 4 ? 8 + Math.random() * 16 : 4 + Math.random() * 8;
+
+      let x0, y0, x1, y1, dx, dy;
+
+      if (type === 'h') {
+        y0 = y1 = Math.random() * H;
+        const fromRight = Math.random() < 0.5;
+        x0 = fromRight ? W + 10 : -10;
+        x1 = fromRight ? -10 : W + 10;
+        dx = fromRight ? -speed * W : speed * W;
+        dy = 0;
+      } else if (type === 'v') {
+        x0 = x1 = Math.random() * W;
+        const fromBottom = Math.random() < 0.5;
+        y0 = fromBottom ? H + 10 : -10;
+        y1 = fromBottom ? -10 : H + 10;
+        dx = 0;
+        dy = fromBottom ? -speed * H : speed * H;
+      } else if (type === 'd') {
+        const fromLeft = Math.random() < 0.5;
+        if (fromLeft) {
+          x0 = -10; y0 = Math.random() * H;
+          x1 = W + 10; y1 = y0 + (W * (0.3 + Math.random() * 0.7)) * (Math.random() < 0.5 ? 1 : -1);
+        } else {
+          x0 = W + 10; y0 = Math.random() * H;
+          x1 = -10; y1 = y0 + (W * (0.3 + Math.random() * 0.7)) * (Math.random() < 0.5 ? 1 : -1);
+        }
+        const dist = Math.hypot(x1 - x0, y1 - y0);
+        dx = (x1 - x0) / dist * speed * W;
+        dy = (y1 - y0) / dist * speed * W;
+      } else {
+        const fromTop = Math.random() < 0.5;
+        if (fromTop) {
+          x0 = Math.random() * W; y0 = -10;
+          x1 = x0 + (H * (0.3 + Math.random() * 0.8)) * (Math.random() < 0.5 ? 1 : -1);
+          y1 = H + 10;
+        } else {
+          x0 = Math.random() * W; y0 = H + 10;
+          x1 = x0 + (H * (0.3 + Math.random() * 0.8)) * (Math.random() < 0.5 ? 1 : -1);
+          y1 = -10;
+        }
+        const dist = Math.hypot(x1 - x0, y1 - y0);
+        dx = (x1 - x0) / dist * speed * H;
+        dy = (y1 - y0) / dist * speed * H;
+      }
+
+      const segLen = Math.hypot(x1 - x0, y1 - y0) * len;
+
+      return {
+        hx: x0, hy: y0,
+        tx: x0, ty: y0,
+        dx, dy,
+        segLen,
+        color: colorBase,
+        lineW,
+        glowR,
+        alpha: 0.6 + Math.random() * 0.4,
+        done: false,
+      };
+    }
+
+    // v6: más chispas por cruce
+    function spawnSpark(x, y, intensity) {
+      const count = 6 + Math.floor(intensity * 18);
+      for (let i = 0; i < count; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const spd = 1.5 + Math.random() * (5 + intensity * 6);
+        sparks.push({
+          x, y,
+          vx: Math.cos(angle) * spd,
+          vy: Math.sin(angle) * spd,
+          life: 1,
+          decay: 0.025 + Math.random() * 0.05,
+          r: 0.5 + Math.random() * 2.5,
+          color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        });
+      }
+    }
+
+    // v6: arcos más largos y más visibles
+    function spawnArc(x1, y1, x2, y2, forceBright) {
+      arcs.push({
+        x1, y1, x2, y2,
+        life: 1,
+        decay: forceBright ? 0.04 + Math.random() * 0.04 : 0.06 + Math.random() * 0.08,
+        segments: 6 + Math.floor(Math.random() * 10),
+        color: forceBright ? 'rgba(255,255,255,' : COLORS[Math.floor(Math.random() * COLORS.length)],
+        width: forceBright ? (1 + Math.random() * 2) : (0.5 + Math.random() * 1.5),
+      });
+    }
+
+    // v6: cruces más frecuentes + más arcos
+    function checkCrossings(seg, phase) {
+      for (const other of segments) {
+        if (other === seg || other.done) continue;
+        const dx2 = seg.hx - other.hx;
+        const dy2 = seg.hy - other.hy;
+        const dist = Math.sqrt(dx2*dx2 + dy2*dy2);
+        if (dist < 30) {
+          const mx = (seg.hx + other.hx) / 2;
+          const my = (seg.hy + other.hy) / 2;
+          spawnSpark(mx, my, phase / 6);
+          // Más arcos: 60% de chance (antes 30%)
+          if (Math.random() < 0.6) {
+            spawnArc(seg.hx, seg.hy,
+              other.hx + (Math.random()-0.5)*80,
+              other.hy + (Math.random()-0.5)*80, false);
+          }
+          // Segundo arco rápido con baja prob
+          if (Math.random() < 0.25) {
+            spawnArc(seg.hx + (Math.random()-0.5)*40, seg.hy + (Math.random()-0.5)*40,
+              other.hx + (Math.random()-0.5)*60, other.hy + (Math.random()-0.5)*60, true);
+          }
+        }
+      }
+    }
+
+    function drawSegment(seg) {
+      const headAlpha = seg.alpha;
+      const grad = ctx.createLinearGradient(seg.tx, seg.ty, seg.hx, seg.hy);
+      grad.addColorStop(0, `${seg.color}0)`);
+      grad.addColorStop(0.4, `${seg.color}${headAlpha * 0.3})`);
+      grad.addColorStop(1, `${seg.color}${headAlpha})`);
+
+      ctx.save();
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = seg.lineW;
+      ctx.shadowBlur = seg.glowR;
+      ctx.shadowColor = `${seg.color}${seg.alpha})`;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(seg.tx, seg.ty);
+      ctx.lineTo(seg.hx, seg.hy);
+      ctx.stroke();
+
+      ctx.shadowBlur = seg.glowR * 1.5;
+      ctx.fillStyle = `rgba(255,255,255,${seg.alpha * 0.9})`;
+      ctx.beginPath();
+      ctx.arc(seg.hx, seg.hy, seg.lineW * 1.2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function burnTrail(seg) {
+      const alpha = 0.12 + Math.random() * 0.12;
+      const lw = seg.lineW * (0.4 + Math.random() * 0.3);
+      tCtx.save();
+      tCtx.strokeStyle = `${seg.color}${alpha})`;
+      tCtx.lineWidth = lw;
+      tCtx.shadowBlur = 3;
+      tCtx.shadowColor = `${seg.color}${alpha * 2})`;
+      tCtx.lineCap = 'round';
+      tCtx.beginPath();
+      tCtx.moveTo(seg.tx, seg.ty);
+      tCtx.lineTo(seg.hx, seg.hy);
+      tCtx.stroke();
+      tCtx.restore();
+    }
+
+    // ══════════════════════════════
+    //  SECUENCIA PRINCIPAL
+    // ══════════════════════════════
+
+    let globalPhase = 0;
+    let phaseTime = 0;
+    let running = true;
+    let segmentTimer = 0;
+    let prevTime = null;
+    let animId;
+
+    // FASES (ms):
+    // 0: silencio inicial
+    // 1-4: activación progresiva con relámpagos de fondo
+    // 5: cortocircuito masivo
+    // 6: UN GRAN TRUENO → incandescencia → reveal logo → líneas dejan de spawnear
+    // 7: logo visible, parpadeo, loading terminal
+    // 8: fade out
+    const PHASE_DURATIONS = [
+      500,   // 0
+      1000,  // 1
+      1200,  // 2
+      1000,  // 3
+      900,   // 4
+      700,   // 5
+      1400,  // 6 — el gran trueno + reveal
+      1200,  // 7 — logo + loading
+      600,   // 8 — fade
+    ];
+
+    const PHASE_SPAWN_RATE = [2000, 800, 420, 240, 130, 60, 9999, 9999, 9999];
+    const PHASE_MAX_SEGS   = [1,    3,   7,   14,  24,  40, 0,    0,    0   ];
+
+    const logoWrap = el('vtv-logo-wrap');
+    const termEl   = el('vtv-terminal');
+
+    let stabilizationWave = null;
+
+    function startStabilizationWave() {
+      stabilizationWave = { start: null, done: false };
+    }
+
+    function drawStabilizationWave(ts) {
+      if (!stabilizationWave || stabilizationWave.done) return;
+      if (!stabilizationWave.start) stabilizationWave.start = ts;
+      const elapsed = ts - stabilizationWave.start;
+      const duration = 700;
+      const p = Math.min(elapsed / duration, 1);
+
+      const cx2 = W / 2, cy2 = H / 2;
+      const maxR = Math.sqrt(W*W + H*H);
+
+      const rings = [
+        { delay: 0,   color: `rgba(${accentRgb},`, maxAlpha: 0.9 },
+        { delay: 0.1, color: 'rgba(140,80,255,',   maxAlpha: 0.7 },
+        { delay: 0.2, color: 'rgba(255,255,255,',  maxAlpha: 0.6 },
+        { delay: 0.35,color: `rgba(${accentRgb},`, maxAlpha: 0.4 },
+      ];
+
+      ctx.save();
+      rings.forEach(ring => {
+        const rp = clamp((p - ring.delay) / (1 - ring.delay), 0, 1);
+        if (rp <= 0) return;
+        const r = easeOutExpo(rp) * maxR;
+        const alpha = ring.maxAlpha * (1 - rp) * (1 - rp);
+        if (alpha < 0.01) return;
+        ctx.beginPath();
+        ctx.arc(cx2, cy2, r, 0, Math.PI * 2);
+        ctx.strokeStyle = `${ring.color}${alpha})`;
+        ctx.lineWidth = (1 - rp) * 5 + 0.5;
+        ctx.shadowBlur = 30 * (1 - rp);
+        ctx.shadowColor = `${ring.color}${alpha})`;
+        ctx.stroke();
+      });
+      ctx.restore();
+
+      if (p >= 1) stabilizationWave.done = true;
+    }
+
+    // ── GRAN REVEAL: incandescencia + logo ──
+    let revealTriggered = false;
+    async function triggerReveal() {
+      if (revealTriggered) return;
+      revealTriggered = true;
+
+      // 1. Matar spawning de líneas
+      linesKilled = true;
+
+      // 2. Flash masivo de relámpago (incandescencia total)
+      spawnRevealFlash();
+
+      // 3. Chispas masivas por toda la pantalla
+      for (let i = 0; i < 12; i++) {
+        spawnSpark(Math.random() * W, Math.random() * H, 1.0);
+      }
+      // Arcos brillantes cruzando la pantalla
+      for (let i = 0; i < 8; i++) {
+        spawnArc(
+          Math.random() * W, Math.random() * H,
+          Math.random() * W, Math.random() * H,
+          true
+        );
+      }
+
+      // 4. Esperar que el flash empiece a ceder
+      await delay(220);
+
+      // 5. Reveal del logo con máximo brillo
+      if (logoWrap) {
+        logoWrap.style.opacity = '0';
+        logoWrap.style.filter = 'blur(0px) brightness(4)';
+        logoWrap.style.transition = 'none';
+        logoWrap.style.pointerEvents = 'none';
+        await delay(10);
+        logoWrap.style.transition = 'opacity 400ms ease, filter 900ms ease';
+        logoWrap.style.opacity = '1';
+        // brightness baja lentamente de 4 → 1
+        await delay(20);
+        logoWrap.style.filter = 'blur(0px) brightness(1.2)';
+        await delay(500);
+        logoWrap.style.filter = 'blur(0px) brightness(1)';
+      }
+
+      startStabilizationWave();
+
+      // 6. Parpadeos del logo post-reveal (simula carga eléctrica)
+      fatigueActive = true;
+      flickerActive = true;
+    }
+
+    // ── Terminal de status ──
+    async function runTerminal() {
+      if (!termEl) return;
+      termEl.style.opacity = '1';
+      termEl.style.transition = 'opacity 300ms ease';
+
+      const lines = [
+        el('vtl-1'), el('vtl-2'), el('vtl-3'), el('vtl-4')
+      ].filter(Boolean);
+
+      const timings = [0, 280, 540, 820];
+      for (let i = 0; i < lines.length; i++) {
+        await delay(timings[i]);
+        const span = lines[i].querySelector('.vtv-term-txt');
+        if (!span) continue;
+        const fullText = span.textContent;
+        span.textContent = '';
+        lines[i].classList.add('active');
+        for (let c = 0; c < fullText.length; c++) {
+          span.textContent = fullText.slice(0, c + 1);
+          await delay(22 + Math.random() * 15);
+        }
+        if (i < lines.length - 1) {
+          await delay(60);
+          lines[i].classList.remove('active');
+          lines[i].classList.add('done');
+        }
+      }
+      await delay(500);
+    }
+
+    // ── Fatiga post-reveal ──
+    let fatigueActive = false;
+    let fatigueTimer = 0;
+
+    function updateFatigue(dt) {
+      if (!fatigueActive) return;
+      fatigueTimer += dt;
+      if (Math.random() < 0.004) {
+        const edge = Math.floor(Math.random() * 4);
+        let fx, fy;
+        if (edge === 0) { fx = Math.random() * W; fy = 0; }
+        else if (edge === 1) { fx = W; fy = Math.random() * H; }
+        else if (edge === 2) { fx = Math.random() * W; fy = H; }
+        else { fx = 0; fy = Math.random() * H; }
+        spawnSpark(fx, fy, 0.3);
+      }
+      if (Math.random() < 0.002) {
+        const x1 = Math.random() * W, y1 = Math.random() * H;
+        spawnArc(x1, y1, x1 + (Math.random()-0.5)*150, y1 + (Math.random()-0.5)*100, false);
+      }
+    }
+
+    // ── Parpadeo del logo ──
+    let flickerActive = false;
+    let flickerTimer = 0;
+
+    function updateFlicker(dt) {
+      if (!flickerActive || !logoWrap) return;
+      flickerTimer += dt;
+      // Parpadeo cada ~2s
+      if (Math.floor(flickerTimer / 2000) > Math.floor((flickerTimer - dt) / 2000)) {
+        const dip = 0.75 + Math.random() * 0.2;
+        logoWrap.style.opacity = String(dip);
+        setTimeout(() => {
+          if (logoWrap) logoWrap.style.opacity = '1';
+        }, 50 + Math.random() * 100);
+      }
+      // Parpadeo rápido extra ocasional
+      if (Math.random() < 0.001) {
+        logoWrap.style.opacity = '0.5';
+        setTimeout(() => { if (logoWrap) logoWrap.style.opacity = '1'; }, 30);
+      }
+    }
+
+    scheduleNextLightning();
+
+    // ── Loop de render ──
+    function tick(ts) {
+      if (!running) return;
+      const dt = prevTime ? Math.min(ts - prevTime, 50) : 16;
+      prevTime = ts;
+
+      phaseTime += dt;
+      segmentTimer += dt;
+      lightningTimer += dt;
+
+      // ── Relámpagos de fondo periódicos (fases 1-5) ──
+      if (globalPhase >= 1 && globalPhase <= 5 && lightningTimer >= lightningInterval) {
+        lightningTimer = 0;
+        scheduleNextLightning();
+        const type = Math.random() < 0.6 ? 'fast' : 'slow';
+        spawnLightningFlash(type);
+        // Los relámpagos intensos también generan arcos y chispas
+        if (type === 'fast') {
+          const rx = Math.random() * W, ry = Math.random() * H * 0.6;
+          spawnSpark(rx, ry, 0.5);
+          spawnArc(rx, ry, rx + (Math.random()-0.5)*W*0.6, ry + Math.random()*H*0.4, true);
+        }
+      }
+
+      // Avanzar fase
+      if (globalPhase < PHASE_DURATIONS.length - 1 && phaseTime >= PHASE_DURATIONS[globalPhase]) {
+        phaseTime -= PHASE_DURATIONS[globalPhase];
+        globalPhase++;
+
+        if (globalPhase === 5) {
+          // Cortocircuito masivo
+          for (let i = 0; i < 22; i++) {
+            setTimeout(() => {
+              if (!running) return;
+              segments.push(makeSegment(5));
+            }, i * 25);
+          }
+        }
+        if (globalPhase === 6) {
+          // ¡EL GRAN TRUENO!
+          triggerReveal();
+        }
+        if (globalPhase === 7) {
+          runTerminal().then(() => {
+            const introEl2 = el('vtv-intro');
+            if (introEl2) {
+              sessionStorage.setItem('vtv_intro_done', '1');
+              introEl2.style.transition = 'opacity 600ms cubic-bezier(0.4,0,0.2,1)';
+              introEl2.style.opacity = '0';
+              setTimeout(() => {
+                running = false;
+                introEl2.classList.add('hidden');
+              }, 620);
+            }
+          });
+        }
+      }
+
+      // Spawn de nuevos segmentos (solo si no se mató el spawning)
+      const spawnRate = PHASE_SPAWN_RATE[globalPhase] || 99999;
+      const maxSegs   = PHASE_MAX_SEGS[globalPhase] || 0;
+      if (!linesKilled && segmentTimer >= spawnRate && segments.filter(s=>!s.done).length < maxSegs) {
+        segmentTimer = 0;
+        segments.push(makeSegment(globalPhase));
+        if (globalPhase >= 4 && Math.random() < 0.45) segments.push(makeSegment(globalPhase));
+        if (globalPhase >= 5 && Math.random() < 0.35) segments.push(makeSegment(globalPhase));
+      }
+
+      // ── Clear ──
+      ctx.clearRect(0, 0, W, H);
+
+      // ── Relámpagos de fondo (van detrás de todo) ──
+      drawLightningFlashes();
+
+      // ── Trails permanentes ──
+      ctx.drawImage(trailCv, 0, 0);
+
+      // ── Segmentos activos ──
+      for (let i = segments.length - 1; i >= 0; i--) {
+        const seg = segments[i];
+        if (seg.done) continue;
+
+        seg.hx += seg.dx;
+        seg.hy += seg.dy;
+
+        const curLen = Math.hypot(seg.hx - seg.tx, seg.hy - seg.ty);
+        if (curLen > seg.segLen) {
+          const normD = Math.hypot(seg.dx, seg.dy);
+          const burnStep = 10;
+          const bx = seg.tx + (seg.dx / normD) * burnStep;
+          const by = seg.ty + (seg.dy / normD) * burnStep;
+          tCtx.save();
+          tCtx.strokeStyle = `${seg.color}${0.08 + Math.random() * 0.06})`;
+          tCtx.lineWidth = seg.lineW * 0.5;
+          tCtx.lineCap = 'round';
+          tCtx.beginPath();
+          tCtx.moveTo(seg.tx, seg.ty);
+          tCtx.lineTo(bx, by);
+          tCtx.stroke();
+          tCtx.restore();
+          seg.tx = bx;
+          seg.ty = by;
+        }
+
+        const margin = 60;
+        if (seg.hx < -margin || seg.hx > W + margin ||
+            seg.hy < -margin || seg.hy > H + margin) {
+          burnTrail(seg);
+          seg.done = true;
+          continue;
+        }
+
+        // v6: chequeo de cruces más frecuente
+        if (globalPhase >= 1 && Math.random() < 0.10) {
+          checkCrossings(seg, globalPhase);
+        }
+
+        drawSegment(seg);
+      }
+
+      if (segments.length > 120) segments = segments.filter(s => !s.done);
+
+      // ── Sparks ──
+      for (let i = sparks.length - 1; i >= 0; i--) {
+        const s = sparks[i];
+        s.x += s.vx; s.y += s.vy;
+        s.vy += 0.08;
+        s.vx *= 0.96;
+        s.life -= s.decay;
+        if (s.life <= 0) { sparks.splice(i, 1); continue; }
+        ctx.save();
+        ctx.globalAlpha = s.life;
+        ctx.fillStyle = `${s.color}${s.life * 0.9})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `${s.color}0.8)`;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * s.life, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // ── Arcos eléctricos ──
+      for (let i = arcs.length - 1; i >= 0; i--) {
+        const arc = arcs[i];
+        arc.life -= arc.decay;
+        if (arc.life <= 0) { arcs.splice(i, 1); continue; }
+        ctx.save();
+        ctx.globalAlpha = arc.life * 0.9;
+        ctx.strokeStyle = `${arc.color}${arc.life})`;
+        ctx.lineWidth = arc.width;
+        ctx.shadowBlur = 14;
+        ctx.shadowColor = `${arc.color}${arc.life * 0.7})`;
+        ctx.beginPath();
+        ctx.moveTo(arc.x1, arc.y1);
+        for (let s = 1; s <= arc.segments; s++) {
+          const t2 = s / arc.segments;
+          const bx = lerp(arc.x1, arc.x2, t2);
+          const by = lerp(arc.y1, arc.y2, t2);
+          const jitter = 22 * arc.life * (1 - t2 * 0.5);
+          ctx.lineTo(bx + (Math.random()-0.5)*jitter, by + (Math.random()-0.5)*jitter);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+
+      // ── Onda de estabilización ──
+      if (stabilizationWave && !stabilizationWave.done) drawStabilizationWave(ts);
+
+      // ── Fatiga y flicker ──
+      updateFatigue(dt);
+      updateFlicker(dt);
+
+      // ── Interferencia en sobrecarga ──
+      if (globalPhase === 5) {
+        if (Math.random() < 0.14) {
+          ctx.save();
+          ctx.globalAlpha = 0.04 + Math.random() * 0.09;
+          ctx.fillStyle = `${COLORS[Math.floor(Math.random()*COLORS.length)]}1)`;
+          ctx.fillRect(0, 0, W, H);
+          ctx.restore();
+        }
+      }
+
+      animId = requestAnimationFrame(tick);
+    }
+
+    animId = requestAnimationFrame(tick);
+
+    return function stop() {
+      running = false;
+      cancelAnimationFrame(animId);
+    };
+  }
+
+  // ─────────────────────────────────
+  //  ARRANQUE
+  // ─────────────────────────────────
+  function finishIntro(intro) {
+    sessionStorage.setItem('vtv_intro_done', '1');
+    intro.style.transition = 'opacity 600ms cubic-bezier(0.4,0,0.2,1)';
+    intro.style.opacity = '0';
+    setTimeout(() => intro.classList.add('hidden'), 620);
+  }
+
+  async function runIntro() {
+    const intro = el('vtv-intro');
+    if (!intro) return;
+    if (sessionStorage.getItem('vtv_intro_done')) {
+      intro.classList.add('hidden');
+      return;
+    }
+
+    const elementsToHide = [
+      'vtv-particles-canvas','vtv-ambient-glow','vtv-energy-core',
+      'vtv-logo-canvas','vtv-scan-line','vtv-scan-reveal','vtv-distort-overlay'
+    ];
+    elementsToHide.forEach(id => {
+      const e = el(id);
+      if (e) e.style.display = 'none';
+    });
+
+    const termEl = el('vtv-terminal');
+    if (termEl) termEl.style.opacity = '0';
+
+    const logoWrap = el('vtv-logo-wrap');
+    if (logoWrap) { logoWrap.style.opacity = '0'; logoWrap.style.pointerEvents = 'none'; }
+
+    try {
+      const accentRgb = getAccentRgb();
+      const accentHex = getAccentHex();
+      runEnergyAssembly(intro, accentRgb, accentHex, () => finishIntro(intro));
+    } catch(err) {
+      console.warn('VTV intro error:', err);
+      finishIntro(intro);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', runIntro);
+  } else {
+    runIntro();
+  }
+
+})();
 
 // ─── CONTADOR DE VISITAS ───
 // Se llama desde selectProfile, con el perfil ya elegido
