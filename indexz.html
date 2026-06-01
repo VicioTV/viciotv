@@ -128,7 +128,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .btn-create:hover{background:#c00712}
 
   /* ===== NAV ===== */
-  #nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:8px;padding:0 32px;height:64px;background:linear-gradient(to bottom,rgba(0,0,0,.95) 0%,transparent 100%);transition:background .3s}
+  #nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:10px;padding:0 20px;height:64px;background:linear-gradient(to bottom,rgba(0,0,0,.95) 0%,transparent 100%);transition:background .3s}
   #nav.scrolled{background:rgba(10,10,15,.97);backdrop-filter:blur(12px)}
   .logo{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;
     background:linear-gradient(90deg,var(--accent),var(--accent2),#fff,var(--accent2),var(--accent));
@@ -166,8 +166,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .creator-wrap{position:relative}
   .creator-badge{
     display:flex;align-items:center;justify-content:center;
-    border:1px solid rgba(255,255,255,.1);border-radius:8px;
-    padding:5px 16px;cursor:pointer;
+    border:1px solid rgba(255,255,255,.1);border-radius:24px;
+    padding:6px 16px;cursor:pointer;
     background:rgba(255,255,255,.03);
     transition:border-color .2s,background .2s;
     white-space:nowrap;
@@ -213,8 +213,15 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .nav-profile-avatar{width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden}
   .nav-profile-avatar img{width:100%;height:100%;object-fit:cover;border-radius:6px}
   .nav-profile-name{font-size:13px;color:var(--text2)}
-  .nav-search{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:6px 16px;width:220px;transition:width var(--transition),border-color var(--transition)}
-  .nav-search:focus-within{border-color:var(--accent);width:300px}
+  .nav-search{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid rgba(255,255,255,.08);border-radius:24px;padding:7px 16px;width:280px;transition:width var(--transition),border-color var(--transition)}
+  .nav-search:focus-within{border-color:var(--accent);width:360px}
+  /* Personalizar alineado con buscador */
+  .nav-personalizar-btn{display:flex;align-items:center;gap:7px;padding:7px 16px}
+  /* Mobile: ocultar buscador central y personalizar */
+  @media(max-width:640px){
+    #nav-search-bar{display:none}
+    .nav-personalizar-btn{display:none}
+  }
   .nav-search input{background:transparent;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;width:100%}
   .nav-search input::placeholder{color:var(--text3)}
   #search-clear-btn{display:none;background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 0 2px 4px;font-size:16px;line-height:1;transition:color .2s;flex-shrink:0}
@@ -1009,44 +1016,41 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 <!-- ===== NAV ===== -->
 <nav id="nav" style="display:none">
   <div class="logo focusable" tabindex="0" onclick="showHome()">VicioTV</div>
+  <!-- Tabs principales -->
   <div class="nav-tabs">
     <button class="nav-tab focusable active" data-tab="inicio" onclick="switchTab('inicio')">Inicio</button>
     <button class="nav-tab focusable" data-tab="peliculas" onclick="switchTab('peliculas')">Películas</button>
     <button class="nav-tab focusable" data-tab="series" onclick="switchTab('series')">Series</button>
     <button class="nav-tab focusable" data-tab="anime" onclick="switchTab('anime')">Anime</button>
     <button class="nav-tab focusable" data-tab="proximamente" onclick="openSidebarSection('proximamente')">Próximamente</button>
-    <!-- Tab En Vivo deshabilitado temporalmente -->
-    <!-- <button class="nav-tab focusable" data-tab="canales" onclick="switchTab('canales')">En Vivo</button> -->
   </div>
-  <!-- Espacio flexible izquierdo -->
-  <div style="flex:1"></div>
-  <!-- Creator Badge + Theme Picker integrado -->
-  <div class="creator-wrap">
-    <div class="creator-badge" onclick="toggleCreatorPanel(event)" title="Personalización" style="gap:6px;padding:6px 14px">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text2);flex-shrink:0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      <span style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;color:var(--text2);letter-spacing:.5px">Personalizar</span>
-    </div>
-  </div>
-  <!-- Espacio flexible derecho -->
-  <div style="flex:1"></div>
-  <!-- Visitas solo en mobile -->
-  <span id="visit-count-mobile" style="display:none"></span>
-  <!-- Botón settings mobile -->
-  <button id="nav-settings-btn" onclick="toggleCreatorPanel(event)" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer;flex-shrink:0;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text2)"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-  </button>
-  <!-- Spacer mobile: empuja search a la derecha (solo visible en mobile vía CSS) -->
-  <div id="nav-mobile-spacer" style="display:none"></div>
-  <div class="nav-search">
+  <!-- Espacio flexible: empuja buscador + personalizar hacia la derecha -->
+  <div style="flex:1;min-width:32px"></div>
+  <!-- Buscador ancho -->
+  <div class="nav-search" id="nav-search-bar">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="search-input" type="text" placeholder="Buscar..." oninput="onSearch(this.value)" onfocus="openSearchOverlay()" />
     <button id="search-clear-btn" onclick="clearSearch()" title="Cerrar búsqueda">✕</button>
   </div>
-  <button id="pwa-install-btn">⬇ Instalar</button>
+  <!-- Botón Personalizar (misma altura que buscador) -->
+  <div class="creator-wrap">
+    <div class="creator-badge nav-personalizar-btn" onclick="toggleCreatorPanel(event)" title="Personalización">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text2);flex-shrink:0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;color:var(--text2);letter-spacing:.4px">Personalizar</span>
+    </div>
+  </div>
+  <!-- Perfil -->
   <div class="nav-profile focusable" tabindex="0" onclick="goToProfiles()" title="Cambiar perfil">
     <div class="nav-profile-avatar" id="nav-avatar"></div>
     <span class="nav-profile-name" id="nav-name"></span>
   </div>
+  <!-- Elementos solo mobile -->
+  <span id="visit-count-mobile" style="display:none"></span>
+  <button id="nav-settings-btn" onclick="toggleCreatorPanel(event)" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer;flex-shrink:0;transition:background .2s">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text2)"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+  </button>
+  <div id="nav-mobile-spacer" style="display:none"></div>
+  <button id="pwa-install-btn">⬇ Instalar</button>
 </nav>
 
 <!-- ===== PANEL PERSONALIZACIÓN (fuera del nav para que fixed funcione en mobile) ===== -->
