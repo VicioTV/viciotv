@@ -3840,13 +3840,29 @@ async function _hrowRender(key) {
   const row = document.getElementById(`hrow-${key}`);
   if (!row) return;
   if (s.items.length === 0) await _hrowFetch(key);
+
+  // Para "popular" en Inicio: excluir IDs que ya aparecen en nowplaying o tvtrending
+  let items = s.items;
+  if (key === "popular") {
+    const excludeIds = new Set([
+      ..._hrowState.nowplaying.items.map(m => m.id),
+      ..._hrowState.tvtrending.items.map(m => m.id),
+    ]);
+    items = s.items.filter(m => !excludeIds.has(m.id));
+    // Si quedaron muy pocos, traer más páginas hasta tener suficientes
+    while (items.length - s.shown < HROW_BATCH && !s.ended) {
+      await _hrowFetch(key);
+      items = s.items.filter(m => !excludeIds.has(m.id));
+    }
+  }
+
   const start = s.shown;
-  const end   = Math.min(start + HROW_BATCH, s.items.length);
+  const end   = Math.min(start + HROW_BATCH, items.length);
   for (let i = start; i < end; i++) {
-    row.appendChild(buildHeroCard(s.items[i]));
+    row.appendChild(buildHeroCard(items[i]));
   }
   s.shown = end;
-  if (!s.ended && s.items.length - s.shown < HROW_BATCH + HROW_PRELOAD) {
+  if (!s.ended && items.length - s.shown < HROW_BATCH + HROW_PRELOAD) {
     _hrowFetch(key);
   }
 }
@@ -4277,12 +4293,13 @@ function buildTabFiltersBar(tabKey){
 }
 
 async function initHomeHrows() {
-  // Fetch inicial en paralelo para los 3
+  // nowplaying y tvtrending primero: sus IDs deben estar listos
+  // antes de renderizar "popular" para filtrar duplicados en Inicio
   await Promise.all([
-    _hrowRender("popular"),
     _hrowRender("nowplaying"),
     _hrowRender("tvtrending"),
   ]);
+  await _hrowRender("popular");
   // Habilitar scroll infinito táctil en mobile
   _initHrowTouchScroll("popular");
   _initHrowTouchScroll("nowplaying");

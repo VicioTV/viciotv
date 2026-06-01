@@ -3661,6 +3661,8 @@ async function handleDeepLink() {
 const _homePages = { popular:1, nowplaying:1, tvtrending:1 };
 const _homeEnded = { popular:false, nowplaying:false, tvtrending:false };
 const _homeLoading = { popular:false, nowplaying:false, tvtrending:false };
+// IDs ya mostrados en nowplaying/tvtrending — se excluyen de "popular" en Inicio
+const _homeExcludeIds = new Set();
 const _homeConfig = {
   popular:    { endpoint:"/movie/popular",    type:"movie" },
   nowplaying: { endpoint:"/movie/now_playing", type:"movie" },
@@ -3674,18 +3676,41 @@ async function loadMoreHome(key){
   if(btn){ btn.disabled=true; btn.textContent="Cargando..."; }
 
   const cfg = _homeConfig[key];
-  const page = _homePages[key];
+  const grid = document.getElementById(`carousel-${key}`);
   try{
     const sep = cfg.endpoint.includes("?") ? "&" : "?";
-    const data = await fetch(`${API_BASE}${cfg.endpoint}${sep}api_key=${API_KEY}&language=es-MX&page=${page}`).then(r=>r.json());
-    const grid = document.getElementById(`carousel-${key}`);
-    (data.results||[]).slice(0,20).forEach((m,i)=>{ m._type=cfg.type; grid.appendChild(buildCard(m,i)); });
-    _homePages[key]++;
-    if(page >= (data.total_pages||1)){
-      _homeEnded[key] = true;
-      if(btn) btn.style.display="none";
+
+    if(key === "popular"){
+      // Para popular: seguir pidiendo páginas hasta mostrar 20 cards (descartando duplicados)
+      let shown = 0;
+      while(shown < 20 && !_homeEnded[key]){
+        const data = await fetch(`${API_BASE}${cfg.endpoint}${sep}api_key=${API_KEY}&language=es-MX&page=${_homePages[key]}`).then(r=>r.json());
+        const filtered = (data.results||[]).filter(m => !_homeExcludeIds.has(m.id));
+        filtered.forEach(m =>{ m._type=cfg.type; grid.appendChild(buildCard(m, shown++)); });
+        _homePages[key]++;
+        if(_homePages[key] > (data.total_pages||1)){
+          _homeEnded[key] = true;
+          if(btn) btn.style.display="none";
+          break;
+        }
+      }
+      if(!_homeEnded[key]){
+        if(btn){ btn.disabled=false; btn.textContent="Ver más"; }
+      }
     } else {
-      if(btn){ btn.disabled=false; btn.textContent="Ver más"; }
+      // nowplaying / tvtrending: comportamiento original + acumular IDs
+      const data = await fetch(`${API_BASE}${cfg.endpoint}${sep}api_key=${API_KEY}&language=es-MX&page=${_homePages[key]}`).then(r=>r.json());
+      const results = (data.results||[]).slice(0,20);
+      // Acumular IDs para excluirlos de popular
+      results.forEach(m => _homeExcludeIds.add(m.id));
+      results.forEach((m,i)=>{ m._type=cfg.type; grid.appendChild(buildCard(m,i)); });
+      _homePages[key]++;
+      if(_homePages[key] > (data.total_pages||1)){
+        _homeEnded[key] = true;
+        if(btn) btn.style.display="none";
+      } else {
+        if(btn){ btn.disabled=false; btn.textContent="Ver más"; }
+      }
     }
   } catch(e){
     if(btn){ btn.disabled=false; btn.textContent="Ver más"; }
@@ -3962,9 +3987,12 @@ let _contentInited = false;
 function initContent() {
   if (_contentInited) return;
   _contentInited = true;
-  loadMoreHome("popular");
-  loadMoreHome("nowplaying");
-  loadMoreHome("tvtrending");
+  // nowplaying y tvtrending primero: sus IDs deben estar listos
+  // antes de cargar "popular" para filtrar duplicados en Inicio
+  Promise.all([
+    loadMoreHome("nowplaying"),
+    loadMoreHome("tvtrending"),
+  ]).then(() => loadMoreHome("popular"));
   initHero();
   handleDeepLink();
 }
