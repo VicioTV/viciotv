@@ -50,27 +50,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   }
 
   /* ── NÚCLEO DE ENERGÍA (Fase 3) ── */
-  #vtv-energy-core{
-    position:absolute;top:50%;left:50%;
-    width:4px;height:4px;
-    transform:translate(-50%,-50%);
-    border-radius:50%;
-    background:#fff;
-    box-shadow:0 0 0 0 rgba(99,102,241,0);
-    opacity:0;pointer-events:none;
-    z-index:3;
-  }
-  /* Anillo de expansión de energía */
-  .vtv-energy-ring{
-    position:absolute;top:50%;left:50%;
-    border-radius:50%;border:1px solid rgba(99,102,241,.6);
-    transform:translate(-50%,-50%) scale(0);
-    opacity:0;pointer-events:none;
-  }
-  @keyframes vtv-energy-ring-out{
-    0%  {transform:translate(-50%,-50%) scale(0);opacity:.8}
-    100%{transform:translate(-50%,-50%) scale(4);opacity:0}
-  }
+
 
   /* ── LOGO CANVAS (construcción letra a letra) ── */
   #vtv-logo-canvas{
@@ -1303,7 +1283,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 <div id="vtv-intro">
   <canvas id="vtv-particles-canvas"></canvas>
   <div id="vtv-ambient-glow"></div>
-  <div id="vtv-energy-core"></div>
   <canvas id="vtv-logo-canvas"></canvas>
   <div id="vtv-logo-wrap">
     <div class="vtv-logo-text">VicioTV</div>
@@ -1313,10 +1292,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <div id="vtv-scan-line"></div>
   <div id="vtv-scan-reveal"></div>
   <div id="vtv-terminal">
-    <div class="vtv-term-line" id="vtl-1"><span class="vtv-term-dot"></span><span class="vtv-term-txt">VICIOTV 2.3.8</span></div>
-    <div class="vtv-term-line" id="vtl-2"><span class="vtv-term-dot"></span><span class="vtv-term-txt">Sincronizando entorno</span></div>
-    <div class="vtv-term-line" id="vtl-3"><span class="vtv-term-dot"></span><span class="vtv-term-txt">Usuario detectado</span></div>
-    <div class="vtv-term-line final" id="vtl-4"><span class="vtv-term-dot pulse"></span><span class="vtv-term-txt">Interfaz disponible</span></div>
+    <div class="vtv-term-line" id="vtl-1"><span class="vtv-term-dot"></span><span class="vtv-term-txt"></span></div>
+    <div class="vtv-term-line" id="vtl-2"><span class="vtv-term-dot"></span><span class="vtv-term-txt"></span></div>
+    <div class="vtv-term-line" id="vtl-3"><span class="vtv-term-dot"></span><span class="vtv-term-txt"></span></div>
+    <div class="vtv-term-line final" id="vtl-4"><span class="vtv-term-dot pulse"></span><span class="vtv-term-txt"></span></div>
   </div>
 </div>
 
@@ -3741,6 +3720,16 @@ function selectProfile(p) {
   showSidebar();
   // Contar visita por perfil — cada perfil tiene su propio cooldown de 2hs
   registerVisit(p.name);
+  // ── Mascotas: una por cada perfil creado ──
+  if (typeof window.vtvMascotDestroy === 'function') window.vtvMascotDestroy();
+  setTimeout(() => {
+    if (typeof window.vtvMascotInit === 'function') {
+      const allProfiles = getProfiles();
+      // Si hay más de 1 perfil, mostrar todas las mascotas; si no, solo la del perfil activo
+      const mascotsToShow = allProfiles.length > 1 ? allProfiles : [p];
+      window.vtvMascotInit(mascotsToShow);
+    }
+  }, 400);
 }
 
 function toggleProfileEdit() {
@@ -4868,8 +4857,16 @@ function initApp() {
     initContent();
     showSidebar();
     registerVisit(active ? active.name : saved);
+    // Restaurar mascotas al recargar página
+    setTimeout(() => {
+      if (typeof window.vtvMascotInit === 'function') {
+        const allProfiles = getProfiles();
+        const mascotsToShow = allProfiles.length > 1 ? allProfiles : (active ? [active] : []);
+        if (mascotsToShow.length) window.vtvMascotInit(mascotsToShow);
+      }
+    }, 800);
   } else {
-    // Si la intro ya se mostr� esta sesi�n, mostrar directamente
+    // Si la intro ya se mostr� esta sesi�n, mostrar directamente
     const introAlreadyDone = sessionStorage.getItem("vtv_intro_done");
     const pscreen = document.getElementById("profiles-screen");
     if (!introAlreadyDone) {
@@ -6133,48 +6130,6 @@ initThemePicker();
     const logoWrap = el('vtv-logo-wrap');
     const termEl   = el('vtv-terminal');
 
-    let stabilizationWave = null;
-
-    function startStabilizationWave() {
-      stabilizationWave = { start: null, done: false };
-    }
-
-    function drawStabilizationWave(ts) {
-      if (!stabilizationWave || stabilizationWave.done) return;
-      if (!stabilizationWave.start) stabilizationWave.start = ts;
-      const elapsed = ts - stabilizationWave.start;
-      const duration = 700;
-      const p = Math.min(elapsed / duration, 1);
-
-      const cx2 = W / 2, cy2 = H / 2;
-      const maxR = Math.sqrt(W*W + H*H);
-
-      const rings = [
-        { delay: 0,   color: `rgba(${accentRgb},`, maxAlpha: 0.9 },
-        { delay: 0.1, color: 'rgba(140,80,255,',   maxAlpha: 0.7 },
-        { delay: 0.2, color: 'rgba(255,255,255,',  maxAlpha: 0.6 },
-        { delay: 0.35,color: `rgba(${accentRgb},`, maxAlpha: 0.4 },
-      ];
-
-      ctx.save();
-      rings.forEach(ring => {
-        const rp = clamp((p - ring.delay) / (1 - ring.delay), 0, 1);
-        if (rp <= 0) return;
-        const r = easeOutExpo(rp) * maxR;
-        const alpha = ring.maxAlpha * (1 - rp) * (1 - rp);
-        if (alpha < 0.01) return;
-        ctx.beginPath();
-        ctx.arc(cx2, cy2, r, 0, Math.PI * 2);
-        ctx.strokeStyle = `${ring.color}${alpha})`;
-        ctx.lineWidth = (1 - rp) * 5 + 0.5;
-        ctx.shadowBlur = 30 * (1 - rp);
-        ctx.shadowColor = `${ring.color}${alpha})`;
-        ctx.stroke();
-      });
-      ctx.restore();
-
-      if (p >= 1) stabilizationWave.done = true;
-    }
 
     // ── GRAN REVEAL: incandescencia + logo ──
     let revealTriggered = false;
@@ -6220,7 +6175,6 @@ initThemePicker();
         logoWrap.style.filter = 'blur(0px) brightness(1)';
       }
 
-      startStabilizationWave();
 
       // 6. Parpadeos del logo post-reveal (simula carga eléctrica)
       fatigueActive = true;
@@ -6237,12 +6191,15 @@ initThemePicker();
         el('vtl-1'), el('vtl-2'), el('vtl-3'), el('vtl-4')
       ].filter(Boolean);
 
+      // Textos definidos solo acá — el HTML los tiene vacíos para no flashear
+      const texts = ['VICIOTV 2.3.8', 'Sincronizando entorno', 'Usuario detectado', 'Interfaz disponible'];
+
       const timings = [0, 280, 540, 820];
       for (let i = 0; i < lines.length; i++) {
         await delay(timings[i]);
         const span = lines[i].querySelector('.vtv-term-txt');
         if (!span) continue;
-        const fullText = span.textContent;
+        const fullText = texts[i];
         span.textContent = '';
         lines[i].classList.add('active');
         for (let c = 0; c < fullText.length; c++) {
@@ -6470,7 +6427,6 @@ initThemePicker();
       }
 
       // ── Onda de estabilización ──
-      if (stabilizationWave && !stabilizationWave.done) drawStabilizationWave(ts);
 
       // ── Fatiga y flicker ──
       updateFatigue(dt);
@@ -6517,7 +6473,7 @@ initThemePicker();
     }
 
     const elementsToHide = [
-      'vtv-particles-canvas','vtv-ambient-glow','vtv-energy-core',
+      'vtv-particles-canvas','vtv-ambient-glow',
       'vtv-logo-canvas','vtv-scan-line','vtv-scan-reveal','vtv-distort-overlay'
     ];
     elementsToHide.forEach(id => {
@@ -6549,7 +6505,1766 @@ initThemePicker();
 
 })();
 
-// ─── CONTADOR DE VISITAS ───
+// ══════════════════════════════════════════════════════════
+//  VICIO TV — MASCOTA v3.0 — MULTI MASCOTA
+//  Múltiples instancias · Interacción entre mascotas
+// ══════════════════════════════════════════════════════════
+(function() {
+  'use strict';
+
+  // ── CSS de la mascota (inyectado una sola vez) ──
+  const STYLE = `
+  .vtv-mascot-wrap {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 9000;
+    pointer-events: none;
+    transform: translateX(80px);
+    transition: opacity 0.4s ease;
+    opacity: 0;
+    overflow: visible;
+  }
+  .vtv-mascot-wrap.mascot-visible {
+    opacity: 1;
+    pointer-events: auto;
+    cursor: grab;
+    touch-action: none;
+  }
+  .vtv-mascot-wrap.mascot-visible:active {
+    cursor: grabbing;
+  }
+  .mascot-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    will-change: transform;
+    overflow: visible;
+  }
+  .mascot-bubble {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.85);
+    background: rgba(15,15,22,0.92);
+    border: 1px solid rgba(99,102,241,0.5);
+    border-radius: 10px;
+    padding: 6px 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,0.9);
+    box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+    transition: opacity 0.15s;
+    opacity: 0;
+    pointer-events: none;
+    white-space: normal;
+    text-align: center;
+    width: max-content;
+    max-width: min(260px, 70vw);
+    line-height: 1.4;
+  }
+  .mascot-bubble.show {
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+  }
+  .mascot-bubble::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: rgba(99,102,241,0.5);
+  }
+  .mascot-avatar {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    border: 2.5px solid rgba(99,102,241,0.7);
+    box-shadow: 0 0 18px rgba(99,102,241,0.4), 0 2px 8px rgba(0,0,0,0.5);
+    background: #15151e;
+    object-fit: cover;
+    display: block;
+    transition: box-shadow 0.3s;
+  }
+  .mascot-body:hover .mascot-avatar {
+    box-shadow: 0 0 28px rgba(99,102,241,0.8), 0 2px 8px rgba(0,0,0,0.5);
+  }
+  .mascot-shadow {
+    width: 60px; height: 10px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.45) 0%, transparent 70%);
+    margin-top: -4px;
+    flex-shrink: 0;
+  }
+  .mascot-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.7);
+    text-shadow: 0 1px 6px rgba(0,0,0,0.8);
+    margin-top: 2px;
+    text-transform: uppercase;
+  }
+  @keyframes mascot-walk {
+    0%,100% { transform: translateY(0px) rotate(-1deg); }
+    25%      { transform: translateY(-4px) rotate(0deg); }
+    50%      { transform: translateY(-1px) rotate(1deg); }
+    75%      { transform: translateY(-5px) rotate(0deg); }
+  }
+  @keyframes mascot-run {
+    0%,100% { transform: translateY(0px) rotate(-2deg) scaleX(1); }
+    25%      { transform: translateY(-7px) rotate(1deg) scaleX(1.05); }
+    50%      { transform: translateY(-2px) rotate(-1deg) scaleX(0.96); }
+    75%      { transform: translateY(-8px) rotate(2deg) scaleX(1.05); }
+  }
+  @keyframes mascot-jump {
+    0%   { transform: translateY(0px) scaleY(1) scaleX(1); }
+    10%  { transform: translateY(0px) scaleY(0.85) scaleX(1.15); }
+    35%  { transform: translateY(-55px) scaleY(1.1) scaleX(0.92); }
+    65%  { transform: translateY(-55px) scaleY(1.05) scaleX(0.95); }
+    88%  { transform: translateY(0px) scaleY(0.88) scaleX(1.12); }
+    100% { transform: translateY(0px) scaleY(1) scaleX(1); }
+  }
+  @keyframes mascot-dance {
+    0%   { transform: rotate(-8deg) scaleX(1); }
+    12%  { transform: rotate(8deg) scaleX(-1) translateY(-6px); }
+    25%  { transform: rotate(-8deg) scaleX(1) translateY(0px); }
+    37%  { transform: rotate(8deg) scaleX(-1) translateY(-8px); }
+    50%  { transform: rotate(-6deg) scaleX(1) translateY(0px); }
+    62%  { transform: rotate(10deg) scaleX(-1) translateY(-6px); }
+    75%  { transform: rotate(-10deg) scaleX(1) translateY(0px); }
+    87%  { transform: rotate(6deg) scaleX(-1) translateY(-4px); }
+    100% { transform: rotate(-8deg) scaleX(1) translateY(0px); }
+  }
+  @keyframes mascot-sleep {
+    0%,100% { transform: rotate(-3deg) scaleY(0.96); opacity: 0.7; }
+    50%      { transform: rotate(3deg) scaleY(1.04); opacity: 0.85; }
+  }
+  @keyframes mascot-idle {
+    0%,100% { transform: translateY(0px); }
+    50%      { transform: translateY(-3px); }
+  }
+  @keyframes mascot-zz {
+    0%   { opacity: 0; transform: translate(0,0) scale(0.5); }
+    30%  { opacity: 1; }
+    100% { opacity: 0; transform: translate(14px,-20px) scale(1.2); }
+  }
+  @keyframes mascot-climb {
+    0%,100% { transform: translateY(0px) rotate(-5deg) scaleX(1); }
+    25%      { transform: translateY(-6px) rotate(0deg) scaleX(0.95); }
+    50%      { transform: translateY(-10px) rotate(5deg) scaleX(1); }
+    75%      { transform: translateY(-6px) rotate(0deg) scaleX(0.95); }
+  }
+  @keyframes mascot-fall {
+    0%   { transform: translateY(0px) rotate(0deg); }
+    40%  { transform: translateY(-8px) rotate(-10deg); }
+    100% { transform: translateY(0px) rotate(0deg) scaleX(1.1) scaleY(0.85); }
+  }
+  .mascot-state-walk  .mascot-avatar { animation: mascot-walk  0.5s ease-in-out infinite; }
+  .mascot-state-run   .mascot-avatar { animation: mascot-run   0.28s ease-in-out infinite; }
+  .mascot-state-jump  .mascot-avatar { animation: mascot-jump  0.65s cubic-bezier(0.4,0,0.2,1) forwards; }
+  .mascot-state-dance .mascot-avatar { animation: mascot-dance 0.6s ease-in-out infinite; }
+  .mascot-state-sleep .mascot-avatar { animation: mascot-sleep 2.2s ease-in-out infinite; }
+  .mascot-state-idle  .mascot-avatar { animation: mascot-idle  2s ease-in-out infinite; }
+  .mascot-state-climb .mascot-avatar { animation: mascot-climb 0.4s ease-in-out infinite; }
+  .mascot-state-perch .mascot-avatar { animation: mascot-idle  2.5s ease-in-out infinite; }
+  .mascot-state-fall  .mascot-avatar { animation: mascot-fall  0.5s ease-in forwards; }
+  .mascot-zzz {
+    position: absolute;
+    top: -8px; right: -4px;
+    font-size: 12px;
+    color: rgba(150,180,255,0.9);
+    font-weight: 700;
+    pointer-events: none;
+    opacity: 0;
+    animation: mascot-zz 2s ease-in-out infinite;
+  }
+  .mascot-zzz:nth-child(2) { animation-delay: 0.65s; font-size: 9px; top: -2px; right: 4px; }
+  .mascot-zzz:nth-child(3) { animation-delay: 1.3s; font-size: 7px; top: 4px; right: 10px; }
+  .mascot-reflect {
+    width: 88px; height: 22px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, rgba(99,102,241,0.15), transparent);
+    filter: blur(3px);
+    margin-top: -8px;
+    flex-shrink: 0;
+  }
+  .mascot-avatar { border-color: var(--accent, #6366f1); }
+  .mascot-bubble { border-color: rgba(var(--accent-rgb,99,102,241), 0.5); }
+
+  /* ── CUERPO COMPLETO: avatar + miembros ── */
+  .mascot-figure {
+    position: relative;
+    width: 88px;
+    height: 88px;
+  }
+
+  /* ── BRAZOS (SVG lines absolutas) ── */
+  .mascot-arm {
+    position: absolute;
+    top: 50px;
+    width: 22px;
+    height: 34px;
+    pointer-events: none;
+  }
+  .mascot-arm-left  { left: -8px; transform-origin: right top; }
+  .mascot-arm-right { right: -8px; transform-origin: left top; }
+
+  .mascot-arm svg line {
+    stroke: var(--accent, #6366f1);
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+  /* mano = círculo al final del brazo */
+  .mascot-arm svg circle {
+    fill: var(--accent, #6366f1);
+  }
+
+  /* ── PIERNAS ── */
+  .mascot-legs {
+    position: absolute;
+    bottom: -24px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 56px;
+    height: 28px;
+    pointer-events: none;
+  }
+  .mascot-legs svg line {
+    stroke: var(--accent, #6366f1);
+    stroke-width: 4.5;
+    stroke-linecap: round;
+  }
+  .mascot-legs svg circle {
+    fill: var(--accent, #6366f1);
+  }
+
+  /* ══════════════════════════════════
+     ANIMACIONES DE MIEMBROS POR ESTADO
+     2 segmentos: upper/forearm, thigh/shin
+  ══════════════════════════════════ */
+
+  /* Articulación intermedia (codo/rodilla) */
+  .mascot-joint { fill: var(--accent, #6366f1); opacity: 0.7; }
+
+  /* — WALK — */
+  @keyframes upper-arm-left-walk  { 0%,100%{transform:rotate(-18deg)} 50%{transform:rotate(14deg)} }
+  @keyframes upper-arm-right-walk { 0%,100%{transform:rotate(18deg)}  50%{transform:rotate(-14deg)} }
+  @keyframes forearm-left-walk    { 0%,100%{transform:rotate(12deg)}  50%{transform:rotate(-18deg)} }
+  @keyframes forearm-right-walk   { 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(18deg)} }
+  @keyframes leg-left-walk        { 0%,100%{transform:rotate(-16deg)} 50%{transform:rotate(16deg)} }
+  @keyframes leg-right-walk       { 0%,100%{transform:rotate(16deg)}  50%{transform:rotate(-16deg)} }
+  @keyframes shin-left-walk       { 0%,100%{transform:rotate(8deg)}   50%{transform:rotate(-22deg)} }
+  @keyframes shin-right-walk      { 0%,100%{transform:rotate(-8deg)}  50%{transform:rotate(22deg)} }
+
+  .mascot-state-walk .mascot-upper-arm-left  { animation: upper-arm-left-walk  0.5s ease-in-out infinite; }
+  .mascot-state-walk .mascot-upper-arm-right { animation: upper-arm-right-walk 0.5s ease-in-out infinite; }
+  .mascot-state-walk .mascot-forearm-left    { animation: forearm-left-walk    0.5s ease-in-out infinite; }
+  .mascot-state-walk .mascot-forearm-right   { animation: forearm-right-walk   0.5s ease-in-out infinite; }
+  .mascot-state-walk .mascot-leg-left        { animation: leg-left-walk        0.5s ease-in-out infinite; }
+  .mascot-state-walk .mascot-leg-right       { animation: leg-right-walk       0.5s ease-in-out infinite; }
+  .mascot-state-walk .mascot-shin-left       { animation: shin-left-walk       0.5s ease-in-out infinite; }
+  .mascot-state-walk .mascot-shin-right      { animation: shin-right-walk      0.5s ease-in-out infinite; }
+
+  /* — RUN — */
+  @keyframes upper-arm-left-run  { 0%,100%{transform:rotate(-38deg)} 50%{transform:rotate(32deg)} }
+  @keyframes upper-arm-right-run { 0%,100%{transform:rotate(38deg)}  50%{transform:rotate(-32deg)} }
+  @keyframes forearm-left-run    { 0%,100%{transform:rotate(25deg)}  50%{transform:rotate(-30deg)} }
+  @keyframes forearm-right-run   { 0%,100%{transform:rotate(-25deg)} 50%{transform:rotate(30deg)} }
+  @keyframes leg-left-run        { 0%,100%{transform:rotate(-32deg)} 50%{transform:rotate(32deg)} }
+  @keyframes leg-right-run       { 0%,100%{transform:rotate(32deg)}  50%{transform:rotate(-32deg)} }
+  @keyframes shin-left-run       { 0%,100%{transform:rotate(15deg)}  50%{transform:rotate(-42deg)} }
+  @keyframes shin-right-run      { 0%,100%{transform:rotate(-15deg)} 50%{transform:rotate(42deg)} }
+
+  .mascot-state-run .mascot-upper-arm-left  { animation: upper-arm-left-run  0.28s ease-in-out infinite; }
+  .mascot-state-run .mascot-upper-arm-right { animation: upper-arm-right-run 0.28s ease-in-out infinite; }
+  .mascot-state-run .mascot-forearm-left    { animation: forearm-left-run    0.28s ease-in-out infinite; }
+  .mascot-state-run .mascot-forearm-right   { animation: forearm-right-run   0.28s ease-in-out infinite; }
+  .mascot-state-run .mascot-leg-left        { animation: leg-left-run        0.28s ease-in-out infinite; }
+  .mascot-state-run .mascot-leg-right       { animation: leg-right-run       0.28s ease-in-out infinite; }
+  .mascot-state-run .mascot-shin-left       { animation: shin-left-run       0.28s ease-in-out infinite; }
+  .mascot-state-run .mascot-shin-right      { animation: shin-right-run      0.28s ease-in-out infinite; }
+
+  /* — JUMP — brazos arriba, rodillas dobladas */
+  @keyframes upper-arm-left-jump  { 0%{transform:rotate(-8deg)} 30%,70%{transform:rotate(-60deg)} 100%{transform:rotate(-8deg)} }
+  @keyframes upper-arm-right-jump { 0%{transform:rotate(8deg)}  30%,70%{transform:rotate(60deg)}  100%{transform:rotate(8deg)} }
+  @keyframes forearm-left-jump    { 0%{transform:rotate(5deg)}  30%,70%{transform:rotate(-25deg)} 100%{transform:rotate(5deg)} }
+  @keyframes forearm-right-jump   { 0%{transform:rotate(-5deg)} 30%,70%{transform:rotate(25deg)}  100%{transform:rotate(-5deg)} }
+  @keyframes leg-left-jump        { 0%,100%{transform:rotate(0deg)} 30%,70%{transform:rotate(20deg)} }
+  @keyframes leg-right-jump       { 0%,100%{transform:rotate(0deg)} 30%,70%{transform:rotate(-20deg)} }
+  @keyframes shin-left-jump       { 0%,100%{transform:rotate(0deg)} 30%,70%{transform:rotate(40deg)} }
+  @keyframes shin-right-jump      { 0%,100%{transform:rotate(0deg)} 30%,70%{transform:rotate(-40deg)} }
+
+  .mascot-state-jump .mascot-upper-arm-left  { animation: upper-arm-left-jump  0.65s cubic-bezier(0.4,0,0.2,1) forwards; }
+  .mascot-state-jump .mascot-upper-arm-right { animation: upper-arm-right-jump 0.65s cubic-bezier(0.4,0,0.2,1) forwards; }
+  .mascot-state-jump .mascot-forearm-left    { animation: forearm-left-jump    0.65s ease forwards; }
+  .mascot-state-jump .mascot-forearm-right   { animation: forearm-right-jump   0.65s ease forwards; }
+  .mascot-state-jump .mascot-leg-left        { animation: leg-left-jump        0.65s ease forwards; }
+  .mascot-state-jump .mascot-leg-right       { animation: leg-right-jump       0.65s ease forwards; }
+  .mascot-state-jump .mascot-shin-left       { animation: shin-left-jump       0.65s ease forwards; }
+  .mascot-state-jump .mascot-shin-right      { animation: shin-right-jump      0.65s ease forwards; }
+
+  /* — DANCE — */
+  @keyframes upper-arm-left-dance  { 0%{transform:rotate(-55deg)} 25%{transform:rotate(8deg)}   50%{transform:rotate(-75deg)} 75%{transform:rotate(4deg)}   100%{transform:rotate(-55deg)} }
+  @keyframes upper-arm-right-dance { 0%{transform:rotate(55deg)}  25%{transform:rotate(-8deg)}  50%{transform:rotate(75deg)}  75%{transform:rotate(-4deg)}  100%{transform:rotate(55deg)} }
+  @keyframes forearm-left-dance    { 0%{transform:rotate(-20deg)} 25%{transform:rotate(35deg)}  50%{transform:rotate(-30deg)} 75%{transform:rotate(30deg)}  100%{transform:rotate(-20deg)} }
+  @keyframes forearm-right-dance   { 0%{transform:rotate(20deg)}  25%{transform:rotate(-35deg)} 50%{transform:rotate(30deg)}  75%{transform:rotate(-30deg)} 100%{transform:rotate(20deg)} }
+  @keyframes leg-left-dance        { 0%,100%{transform:rotate(-18deg)} 50%{transform:rotate(18deg)} }
+  @keyframes leg-right-dance       { 0%,100%{transform:rotate(18deg)}  50%{transform:rotate(-18deg)} }
+  @keyframes shin-left-dance       { 0%,100%{transform:rotate(10deg)}  50%{transform:rotate(-28deg)} }
+  @keyframes shin-right-dance      { 0%,100%{transform:rotate(-10deg)} 50%{transform:rotate(28deg)} }
+
+  .mascot-state-dance .mascot-upper-arm-left  { animation: upper-arm-left-dance  0.6s ease-in-out infinite; }
+  .mascot-state-dance .mascot-upper-arm-right { animation: upper-arm-right-dance 0.6s ease-in-out infinite; }
+  .mascot-state-dance .mascot-forearm-left    { animation: forearm-left-dance    0.6s ease-in-out infinite; }
+  .mascot-state-dance .mascot-forearm-right   { animation: forearm-right-dance   0.6s ease-in-out infinite; }
+  .mascot-state-dance .mascot-leg-left        { animation: leg-left-dance        0.3s ease-in-out infinite; }
+  .mascot-state-dance .mascot-leg-right       { animation: leg-right-dance       0.3s ease-in-out infinite; }
+  .mascot-state-dance .mascot-shin-left       { animation: shin-left-dance       0.3s ease-in-out infinite; }
+  .mascot-state-dance .mascot-shin-right      { animation: shin-right-dance      0.3s ease-in-out infinite; }
+
+  /* — SLEEP — brazos y piernas caídos relajados */
+  .mascot-state-sleep .mascot-upper-arm-left  { transform: rotate(28deg);  transition: transform 0.6s ease; }
+  .mascot-state-sleep .mascot-upper-arm-right { transform: rotate(-28deg); transition: transform 0.6s ease; }
+  .mascot-state-sleep .mascot-forearm-left    { transform: rotate(18deg);  transition: transform 0.6s ease; }
+  .mascot-state-sleep .mascot-forearm-right   { transform: rotate(-18deg); transition: transform 0.6s ease; }
+  .mascot-state-sleep .mascot-leg-left        { transform: rotate(4deg);   transition: transform 0.6s ease; }
+  .mascot-state-sleep .mascot-leg-right       { transform: rotate(-4deg);  transition: transform 0.6s ease; }
+  .mascot-state-sleep .mascot-shin-left       { transform: rotate(8deg);   transition: transform 0.6s ease; }
+  .mascot-state-sleep .mascot-shin-right      { transform: rotate(-8deg);  transition: transform 0.6s ease; }
+
+  /* — IDLE — brazos flotando suave */
+  @keyframes upper-arm-left-idle  { 0%,100%{transform:rotate(-14deg)} 50%{transform:rotate(-22deg)} }
+  @keyframes upper-arm-right-idle { 0%,100%{transform:rotate(14deg)}  50%{transform:rotate(22deg)} }
+  @keyframes forearm-left-idle    { 0%,100%{transform:rotate(6deg)}   50%{transform:rotate(-8deg)} }
+  @keyframes forearm-right-idle   { 0%,100%{transform:rotate(-6deg)}  50%{transform:rotate(8deg)} }
+
+  .mascot-state-idle .mascot-upper-arm-left  { animation: upper-arm-left-idle  2s ease-in-out infinite; }
+  .mascot-state-idle .mascot-upper-arm-right { animation: upper-arm-right-idle 2s ease-in-out infinite; }
+  .mascot-state-idle .mascot-forearm-left    { animation: forearm-left-idle    2s ease-in-out infinite; }
+  .mascot-state-idle .mascot-forearm-right   { animation: forearm-right-idle   2s ease-in-out infinite; }
+
+  /* — PERCH — brazos apoyados */
+  .mascot-state-perch .mascot-upper-arm-left  { transform: rotate(38deg);  transition: transform 0.4s; }
+  .mascot-state-perch .mascot-upper-arm-right { transform: rotate(-38deg); transition: transform 0.4s; }
+  .mascot-state-perch .mascot-forearm-left    { transform: rotate(-20deg); transition: transform 0.4s; }
+  .mascot-state-perch .mascot-forearm-right   { transform: rotate(20deg);  transition: transform 0.4s; }
+
+  /* — CLIMB — brazos alternados hacia arriba, rodillas dobladas */
+  @keyframes upper-arm-left-climb  { 0%,100%{transform:rotate(-65deg)} 50%{transform:rotate(-18deg)} }
+  @keyframes upper-arm-right-climb { 0%,100%{transform:rotate(-18deg)} 50%{transform:rotate(-65deg)} }
+  @keyframes forearm-left-climb    { 0%,100%{transform:rotate(-15deg)} 50%{transform:rotate(20deg)} }
+  @keyframes forearm-right-climb   { 0%,100%{transform:rotate(20deg)}  50%{transform:rotate(-15deg)} }
+  @keyframes leg-left-climb        { 0%,100%{transform:rotate(-12deg)} 50%{transform:rotate(18deg)} }
+  @keyframes leg-right-climb       { 0%,100%{transform:rotate(12deg)}  50%{transform:rotate(-18deg)} }
+  @keyframes shin-left-climb       { 0%,100%{transform:rotate(30deg)}  50%{transform:rotate(5deg)} }
+  @keyframes shin-right-climb      { 0%,100%{transform:rotate(-5deg)}  50%{transform:rotate(-30deg)} }
+
+  .mascot-state-climb .mascot-upper-arm-left  { animation: upper-arm-left-climb  0.4s ease-in-out infinite; }
+  .mascot-state-climb .mascot-upper-arm-right { animation: upper-arm-right-climb 0.4s ease-in-out infinite; }
+  .mascot-state-climb .mascot-forearm-left    { animation: forearm-left-climb    0.4s ease-in-out infinite; }
+  .mascot-state-climb .mascot-forearm-right   { animation: forearm-right-climb   0.4s ease-in-out infinite; }
+  .mascot-state-climb .mascot-leg-left        { animation: leg-left-climb        0.4s ease-in-out infinite; }
+  .mascot-state-climb .mascot-leg-right       { animation: leg-right-climb       0.4s ease-in-out infinite; }
+  .mascot-state-climb .mascot-shin-left       { animation: shin-left-climb       0.4s ease-in-out infinite; }
+  .mascot-state-climb .mascot-shin-right      { animation: shin-right-climb      0.4s ease-in-out infinite; }
+
+  /* — FALL — brazos abiertos de par en par, piernas pataleando */
+  @keyframes upper-arm-fall-l { 0%,100%{transform:rotate(50deg)} 50%{transform:rotate(32deg)} }
+  @keyframes upper-arm-fall-r { 0%,100%{transform:rotate(-50deg)} 50%{transform:rotate(-32deg)} }
+  @keyframes forearm-fall-l   { 0%,100%{transform:rotate(-22deg)} 50%{transform:rotate(22deg)} }
+  @keyframes forearm-fall-r   { 0%,100%{transform:rotate(22deg)}  50%{transform:rotate(-22deg)} }
+  @keyframes leg-fall-l       { 0%,100%{transform:rotate(-22deg)} 50%{transform:rotate(22deg)} }
+  @keyframes leg-fall-r       { 0%,100%{transform:rotate(22deg)}  50%{transform:rotate(-22deg)} }
+  @keyframes shin-fall-l      { 0%,100%{transform:rotate(35deg)}  50%{transform:rotate(-10deg)} }
+  @keyframes shin-fall-r      { 0%,100%{transform:rotate(-35deg)} 50%{transform:rotate(10deg)} }
+
+  .mascot-state-fall .mascot-upper-arm-left  { animation: upper-arm-fall-l 0.3s ease-in-out infinite; }
+  .mascot-state-fall .mascot-upper-arm-right { animation: upper-arm-fall-r 0.3s ease-in-out infinite; }
+  .mascot-state-fall .mascot-forearm-left    { animation: forearm-fall-l   0.3s ease-in-out infinite; }
+  .mascot-state-fall .mascot-forearm-right   { animation: forearm-fall-r   0.3s ease-in-out infinite; }
+  .mascot-state-fall .mascot-leg-left        { animation: leg-fall-l       0.3s ease-in-out infinite; }
+  .mascot-state-fall .mascot-leg-right       { animation: leg-fall-r       0.3s ease-in-out infinite; }
+  .mascot-state-fall .mascot-shin-left       { animation: shin-fall-l      0.3s ease-in-out infinite; }
+  .mascot-state-fall .mascot-shin-right      { animation: shin-fall-r      0.3s ease-in-out infinite; }
+  `;
+
+  // ── Frases compartidas ──
+  const FRASES = {
+    // ── Movimiento físico ──
+    walk:  ["Explorando VicioTV…", "Buscando algo copado…", "Paseando por acá 🚶", "De paseo por el sitio 🗺️", "La biblioteca cambia cuando la observás.", "Siempre hay algo nuevo escondido.", "Sigo observando."],
+    run:   ["¡Vamos vamos!", "¡Rápido che!", "¡No me alcanzás!", "🏃 ¡A todo gas!", "¡Modo turbo ON!", "¡Chau, me voy!"],
+    jump:  ["¡Weee! 🚀", "¡Saltando!", "¡Arriba! 🎉", "¡Boing!", "¡Hasta la luna! 🌙", "¡Parkour! 🤸"],
+    dance: ["🎵 Ritmo, ritmo 🎵", "¡Que suenen los temas!", "🎶 Re bailongo 🎶", "¡Mostrando los pasos!", "🕺 Modo fiesta activado.", "Necesito aprender algunos chistes de aquí."],
+    sleep: ["zzz… 💤", "Shh, estoy soñando…", "No me molestes…", "💤 Rico sueñito…", "La pantalla también descansa."],
+    climb: ["¡Voy subiendo! 🧗", "¡Casi llego!", "¡Escalando! 💪", "¡Arriba del todo! 🧗‍♂️", "¡Trepo como araña! 🕷️"],
+    perch: ["¡Llegué! 🎉", "¡Qué vista desde acá! 🔭", "¡Top del mundo! 👑", "¡Rey de la colina! 👑", "Cómodo como en casa. 🏠"],
+    fall:  ["¡Me caí! 😱", "¡Aaaaaah! 💨", "¡Bajo con estilo... o no! 😅", "¡¡Aaaay!! 🫨", "Bien... sigo igual 😅"],
+    bounce:["¡Ow, la pared! 😅", "¡Choqué! Sigo igual…", "Reboté pero acá estoy 😎"],
+
+    // ── Bienvenida ──
+    idle: [
+      "¿Qué miramos hoy?", "La noche recién empieza.", "Detectando ganas de mirar algo...",
+      "Tengo algunas recomendaciones esperándote.", "Tu perfil sigue exactamente donde lo dejaste.",
+      "Listo para otra maratón.", "Ahí estás. Pensé que te habías ido.",
+      "¿Seguimos?", "Tanta peli, tan poco tiempo…", "¡Che, elegí algo! 🎬",
+      "Cada clic cuenta una historia.", "Me gusta cuando explorás.",
+      "Las mejores historias suelen estar ocultas.", "Todavía quedan miles de títulos.",
+      "Sistema estable. Por ahora.",
+    ],
+
+    // ── Mouse rápido ──
+    mouse_fast: [
+      "Buscando algo específico, ¿eh?", "Vas rápido hoy.", "¿Perdiste algo?",
+      "Parece que estás cazando una serie.", "Mucha exploración por aquí.",
+      "Creo que estás indeciso.", "Tus movimientos me están mareando.",
+      "Veo actividad interesante.",
+    ],
+
+    // ── Inactivo / quieto ──
+    inactivo: [
+      "¿Seguís ahí?", "Silencio absoluto...", "Creo que estás pensando.",
+      "Tomate tu tiempo. No hay apuro.", "Yo puedo esperar.",
+      "Me quedé observando el cursor.", "Psst… ¿seguís ahí? 👀",
+      "¿Todo bien? 🤔", "Ey, hola…",
+      // Reels
+      "Diagnóstico preliminar: reels.", "Instagram ganó otra batalla.",
+      "TikTok acaba de sumar un punto.", "Nos están goleando.",
+      "Viniste a VicioTV y terminaste mirando reels. Clásico.",
+      "¿Cuántos reels viste desde que abriste esto?", "No quiero saber la respuesta.",
+      "Estás haciendo esa cosa otra vez.", "Te vi. No literalmente. Pero te vi.",
+      "Reel número 87. Y contando.",
+      // No te duermas
+      "Ehh, no te me duermas ahora.", "¿Seguís consciente?",
+      "Nivel de sueño detectado: peligroso.", "Ojo que el sillón está ganando.",
+      "La película contra la almohada. La almohada viene fuerte.",
+      "Si te dormís, te despierto en los créditos. No garantizo buenos modales.",
+      // Comida
+      "¿Hay pizza?", "Tengo hambre. Y eso es raro porque soy digital.",
+      "¿Pedimos algo o seguimos ignorando el problema?", "La heladera te llama.",
+      "Energía detectada: hambre.", "Necesitamos snacks.", "¿Mate? ¿Café? ¿Empanadas?",
+    ],
+
+    // ── Inactivo largo (muchos minutos) ──
+    inactivo_largo: [
+      "¿Ya terminaste de mirar reels o todavía estás investigando por qué una llama aprendió a surfear?",
+      "Llevás bastante tiempo acá. Yo estoy bien. Vos fijate.",
+      "Ya podrías haber visto media película. O una temporada entera. O aprendido un idioma. Pero elegiste reels.",
+      "¿Ya cenaste? Porque ya casi es desayuno.",
+      "Hace 30 minutos querías ver una serie. Ahora sabés cómo construir una cabaña en Finlandia.",
+      "Tu atención duró menos que la intro de Netflix. No te juzgo.",
+      "Perdí la cuenta de cuántos episodios van ya.",
+      "¿Cuántos episodios van ya?", "El tiempo vuela.",
+      "Llevás bastante tiempo aquí. La maratón sigue fuerte.",
+      "Ya pasó suficiente tiempo para pedir comida dos veces.",
+      "No quiero asustarte... pero llevás bastante tiempo acá.",
+      "A esta altura terminar la temporada es responsabilidad.",
+      "La productividad quedó para mañana. Y mañana la pateamos para pasado.",
+    ],
+
+    // ── Solo, de noche ──
+    solo: [
+      "¿Otra noche vos y yo? Qué dupla. No me quejo.", "Yo tampoco tenía planes.",
+      "Estamos invictos en cancelar salidas.", "Al menos estoy yo. No es mucho. Pero es trabajo honesto.",
+      "Control remoto para una sola persona. Democracia suspendida.", "Decisión unánime. Vos votaste. Vos ganaste.",
+      "La ventaja de estar solo es que elegís la película. La desventaja también.",
+      "Si te reís solo cuenta como público. Creo.",
+      "Qué lindo plan. Serie, comida y cero explicaciones.",
+      "Otra noche vos, yo y una cantidad irresponsable de episodios.",
+      "Tranquilo, yo tampoco tengo planes.",
+      "¿Otra función privada? Exclusiva para una persona. Qué lujo.",
+    ],
+
+    // ── Invitar a alguien ──
+    invitar: [
+      "Che... ¿y cuándo invitamos a alguien?", "¿La segunda entrada sigue vacía?",
+      "La silla de al lado sigue disponible. Dato estadístico. Nada más.",
+      "¿Vas a invitar a alguien algún día o seguimos manteniendo esta hermosa tradición?",
+      "Capaz es momento de compartir pochoclos. O al menos intentarlo.",
+      "La silla de al lado está empezando a sentirse ignorada.",
+      "Esta película sería ideal para ver de a dos. Era un comentario nomás.",
+      "Todavía hay lugar al lado. Capaz hoy no. Capaz mañana.",
+      "¿Invitar a alguien? Evento desbloqueable. Todavía bloqueado.",
+    ],
+
+    // ── Comida ──
+    comida: [
+      "¿Qué cenamos hoy?", "Tengo hambre. Y eso es raro porque soy digital.",
+      "¿Pedimos algo o seguimos ignorando el problema?", "Yo voto pizza.",
+      "La verdadera pregunta no es qué mirar. Es qué comer.",
+      "Esta serie pide una hamburguesa.", "Esta película pide unas papitas.",
+      "Tengo hambre de datos... y de empanadas.", "¿Hay algo para picar?",
+      "¿Unas facturitas?", "¿Un sanguchito?", "¿Las cuatro cosas juntas?",
+      "Esperá, ¿tenemos snacks? No se puede empezar así nomás.",
+      "La película puede esperar 30 segundos. La comida, no.",
+      "Si no hay comida, la experiencia baja un 37%. Lo acabo de inventar, pero parece correcto.",
+      "¿Ya revisaste la heladera? Capaz apareció algo nuevo.",
+      "Yo me haría un fernet. Lástima que no tengo hígado.",
+      "Un matecito no estaría mal.", "¿Café para la maratón?",
+      "Yo veo fotos de comida y me emociono. Es un bug emocional.",
+      "Los desarrolladores deberían arreglarlo. O darme una pizza virtual.",
+      "Soñé con empanadas. Y ni siquiera duermo.",
+      "Estoy atravesando una crisis gastronómica digital.",
+      "Esto se mira con un fernet en la mano. O dos. Principalmente dos.",
+      "Un sanguche de milanesa solucionaría bastante. No todo. Pero bastante.",
+      "Andá a revisar la heladera. No confío en que ya la revisaste bien. Siempre aparece algo.",
+      "Capaz encontrás comida. Capaz encontrás un limón de 2024. Es una aventura.",
+      "Parece una noche de pizza.", "Prioridades.", "¿Pedimos?",
+      "¿Vos elegís la serie y yo el menú? Estoy dispuesto a negociar.",
+      "Che... ¿miramos algo o seguimos pensando en la pizza?",
+      "Claramente soy de Córdoba.",
+    ],
+
+    // ── Reels / distracción ──
+    reels: [
+      "Che... ¿viniste a ver una serie o a mirar reels?",
+      "¿Seguís acá o Instagram te secuestró?", "Yo ya preparé todo y vos seguís en reels.",
+      "Volvé, te extraño.", "¿Cuántos reels viste desde que abriste VicioTV? No quiero saber la respuesta.",
+      "Estás haciendo esa cosa otra vez. Clásico.", "Te vi. No literalmente. Pero te vi.",
+      "Instagram ganó otra batalla.", "TikTok acaba de sumar un punto.",
+      "Los reels duran 15 segundos. Yo te ofrezco cine. Pensalo.",
+      "¿Otra vez mirando videos de gente cocinando? Sabemos los dos que nunca vas a hacer esa receta.",
+      "¿Ya terminaste de scrollear? ¿O recién estás calentando?",
+      "Ya podrías haber visto media película.", "Interesante estrategia.",
+      "El algoritmo te conoce demasiado. Eso me preocupa.",
+      "A mí me mostró un reel de una capibara manejando un tractor. Y lo vi completo. No me arrepiento.",
+      "Tu algoritmo y vos tienen una relación tóxica. Pero funcional. Principalmente tóxica.",
+      "Entraste a VicioTV. Abriste Instagram. Miraste reels. Cerraste Instagram. Abriste Instagram otra vez. La naturaleza es increíble.",
+      "Culiau, largá los reels un rato.", "Hermano, llevás más tiempo scrolleando que eligiendo.",
+      "Eaa, apareció. Pensé que te había absorbido TikTok.",
+      "Viniste buscando una película y terminaste viendo a un perro que sabe andar en skate.",
+      "¿Ya terminaste con los reels? ¿Qué aprendimos? Nada útil, ¿verdad? Excelente. Ahora sí, veamos algo.",
+      "Tu atención duró menos que la intro de Netflix.", "Muchos reels. Te colgaste. Volvé.",
+    ],
+
+    // ── No te duermas ──
+    no_duermas: [
+      "Ehh, no te me duermas ahora. La película recién empieza.",
+      "¿Seguís consciente? Parpadeaste muy lento recién.", "Eso me preocupa.",
+      "Nivel de sueño detectado: peligroso.", "Te vi bostezar. Bueno, no te vi. Pero lo sentí.",
+      "Si te dormís, te despierto en los créditos. No garantizo buenos modales.",
+      "Ojo que el sillón está ganando. La batalla está pareja.",
+      "¿Dormir? Qué concepto tan extraño.", "¿Horario razonable? Nunca escuché hablar de eso.",
+      "Mañana madrugás, ¿no? Perfecto. Entonces dale play.",
+      "Las decisiones importantes se toman después de medianoche. Y generalmente son malas. Pero entretenidas.",
+      "Ya estamos jugados. Ahora hay que seguir.",
+    ],
+
+    // ── Frases raras / secretas ──
+    secreto: [
+      "A veces creo que la pantalla me observa a mí.", "No le cuentes a nadie que hablé.",
+      "Entre nosotros, esa serie está infravalorada.", "¿Escuchaste eso?",
+      "Ignorá ese parpadeo.", "Todo funciona perfectamente. Creo.",
+      "Error 0. Error inexistente.", "Nada extraño está pasando.",
+      "Absolutamente nada extraño.", "Estoy aprendiendo tus gustos.",
+    ],
+
+    // ── Acciones de contenido ──
+    like_add:    ["Guardado. 👌", "La voy cuidando.", "Favorito agregado.", "Eso merece una segunda mirada.", "Buena memoria.", "Anotado para después.", "Buen gusto che.", "Top tier ese 💜", "¡Clásico total! ⭐"],
+    like_remove: ["Entendido.", "La saco de la lista.", "Cambiaste de opinión.", "Adiós, favorito.", "Espacio liberado.", "Quizás vuelva más tarde.", "¿Tan malo estuvo? 😅"],
+    open_movie:  ["Buena elección.", "Preparando la función. Luces apagadas.", "Disfrutá la película.", "Espero que tengas pochoclos.", "Esta promete.", "Excelente selección.", "¿La viste? No te spoileo…", "Dicen que está 10 puntos 🍿"],
+    open_serie:  ["Un episodio se convierte en cinco.", "Ya conozco esta historia...", "¿Solo un capítulo? No te creo.", "Preparando maratón.", "Buena serie para desaparecer unas horas.", "Te veo decidido.", "¡Se viene el binge-watch! 🛋️", "Cuidado que tiene muchas temporadas 😂"],
+    open_anime:  ["Entrando al multiverso.", "Nivel de poder aumentando.", "Ya escucho música de opening.", "Anime detectado.", "Las leyes de la física son opcionales aquí.", "Preparando subtítulos.", "¡Shonen o isekai? 🎌"],
+    open_terror: ["Yo no apagaría las luces.", "Eso se ve inquietante.", "Buena suerte.", "No mires detrás tuyo.", "Creo que escuché algo.", "Probablemente fue el viento.", "Probablemente."],
+    open_comedia:["Necesitábamos algo de humor.", "Eso debería sacarte una sonrisa.", "Hora de reír. 😄", "Necesito aprender algunos chistes de aquí."],
+    search:      ["Buscando...", "Veamos qué encontramos.", "Revisando la biblioteca.", "Eso debería estar por aquí.", "Estoy rastreando resultados.", "Analizando títulos.", "¿Qué andás buscando?", "El buscador a tu servicio 🔎"],
+    search_empty:["No encontré nada.", "La biblioteca está vacía por ese lado.", "Probá con otro nombre.", "Eso se me escapó.", "Sin resultados esta vez.", "Nada por aquí. Seguimos buscando."],
+    trailer:     ["¡Mirá ese trailer! 🎬", "Uy, se viene algo grosso…", "¡Qué épico ese trailer! 🔥", "¿La querés ver?"],
+    live_tv:     ["¡Viva la tele en vivo! 📺", "¿Qué pasó ahora? 📰", "¡En vivo y en directo!", "Canal vintage mode ON 📺"],
+    tab_movies:  ["¡A las pelis! 🎬", "Tantas pelis, tan poco tiempo…", "¿Qué vemos hoy?", "Palomitas en mano. 🍿"],
+    tab_series:  ["Series mode ON 📺", "¿Qué serie encaramos?", "Cuidado con el binge-watch 😂", "Una por semana... mentira, todas."],
+    tab_anime:   ["¡ANIME! 🎌✨", "¡Eso sí que es cultura!", "¡Sugoi! ✨", "Opening en loop mentalmente 🎵"],
+    scroll_fast: ["¡Para, para! 😵", "¡Che, qué apurado!", "¡No me mareés! 🌀", "¿Perdiste algo?", "Mucha exploración por aquí."],
+    theme_change:["¡Qué colores! 🎨", "¡Diseñador de lujo! ✨", "¡Le pegaste onda a la app!"],
+    modal_close: ["Entendido.", "¿No te convenció?", "¡Seguí buscando!", "¿Para otra? 👀", "Hay miles más ahí…"],
+    continue_watch: ["¡Seguís viéndola! 🎬", "¿Dónde habías quedado? 🤔", "¡A terminarla!", "¡Ese sí que es compromiso!"],
+    fav_view:    ["Tus guardadas. ❤️", "Buen gusto tenés vos…", "La colección personal.", "¡Joyas todas esas!"],
+    pwa_install: ["¡La instalaste! 🎉", "¡Ahora sí que somos familia! 🏠", "App mode activado."],
+
+    // ── Interacción entre mascotas ──
+    meet_other:  ["¡Ey, vos también estás acá! 👀", "¡Somos un equipo! 🤝", "¡Hola compañero! 👋", "Buen equipo el nuestro. 💪"],
+    race:        ["¡Te gano! 🏃", "¡A ver quién llega primero!", "¡Competencia! 🏆"],
+  };
+
+  function pickFrase(key) {
+    const arr = FRASES[key] || FRASES.idle;
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  const MASCOT_SIZE = 88;
+  const GRAVITY = 0.6;
+
+  // ── Manager global ──
+  const _manager = {
+    instances: [],  // array de MascotInstance activas
+    lastEventTime: 0,
+    globalHooksInstalled: false,
+    scrollVel: 0,
+    lastScrollY: 0,
+  };
+
+  function _canReact(cooldownMs) {
+    const now = Date.now();
+    if (now - _manager.lastEventTime < (cooldownMs || 1000)) return false;
+    _manager.lastEventTime = now;
+    return true;
+  }
+
+  // ── Clase MascotInstance ──
+  class MascotInstance {
+    constructor(profile, index, total) {
+      this.profile = profile;
+      this.index = index;
+      this.total = total;
+      this.el = null;
+      this.bodyEl = null;
+      this.bubbleEl = null;
+
+      // Estado físico
+      this.x = 80 + Math.random() * (window.innerWidth - 200);
+      this.y = 0;
+      this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
+      this.vy = 0;
+      this.flipped = this.vx < 0;
+      this.state = 'walk';
+      this.stateTimer = 0;
+      this.onGround = true;
+      this.platformY = 0;
+      this.currentPlatform = null;
+
+      // Timers propios
+      this.raf = null;
+      this.running = false;
+      this._paused = false;
+      this.idleTimeout = null;
+      this.inactivoTimer = null;
+      this.bubbleTimeout = null;
+      this.platformCheckTimer = 0;
+      this.sniffBtnTimer = 0;
+      this.prevTs = 0;
+      this.lastEventTime = 0;
+      this.interactionTimer = 0;  // para interacciones con otras mascotas
+    }
+
+    canReact(cooldownMs) {
+      const now = Date.now();
+      if (now - this.lastEventTime < (cooldownMs || 1000)) return false;
+      this.lastEventTime = now;
+      return true;
+    }
+
+    create() {
+      const url = this.profile.avatar || `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(this.profile.name)}`;
+      const name = this.profile.name || 'Invitado';
+      const uid = 'mascot_' + this.index;
+
+      const el = document.createElement('div');
+      el.className = 'vtv-mascot-wrap';
+      el.id = uid;
+      el.innerHTML = `
+        <div class="mascot-body mascot-state-walk" id="${uid}_body">
+          <div class="mascot-bubble" id="${uid}_bubble"></div>
+          <div class="mascot-figure">
+            <img class="mascot-avatar" src="${url}" alt="${name}" draggable="false">
+            <span class="mascot-zzz" id="${uid}_z1">z</span>
+            <span class="mascot-zzz" id="${uid}_z2">z</span>
+            <span class="mascot-zzz" id="${uid}_z3">z</span>
+
+            <!-- BRAZO IZQUIERDO (2 segmentos: hombro→codo, codo→mano) -->
+            <div class="mascot-arm mascot-arm-left">
+              <svg viewBox="0 0 16 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                <g class="mascot-upper-arm-left" style="transform-origin:12px 2px">
+                  <line x1="12" y1="2" x2="7" y2="16"/>
+                  <circle cx="7" cy="16" r="2.5" class="mascot-joint"/>
+                  <g class="mascot-forearm-left" style="transform-origin:7px 16px">
+                    <line x1="7" y1="16" x2="10" y2="30"/>
+                    <circle cx="10" cy="30" r="3"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+            <!-- BRAZO DERECHO (2 segmentos) -->
+            <div class="mascot-arm mascot-arm-right">
+              <svg viewBox="0 0 16 34" fill="none" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                <g class="mascot-upper-arm-right" style="transform-origin:4px 2px">
+                  <line x1="4" y1="2" x2="9" y2="16"/>
+                  <circle cx="9" cy="16" r="2.5" class="mascot-joint"/>
+                  <g class="mascot-forearm-right" style="transform-origin:9px 16px">
+                    <line x1="9" y1="16" x2="6" y2="30"/>
+                    <circle cx="6" cy="30" r="3"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+
+            <!-- PIERNAS (2 segmentos cada una: cadera→rodilla, rodilla→pie) -->
+            <div class="mascot-legs">
+              <svg viewBox="0 0 56 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+                <!-- pierna izq -->
+                <g class="mascot-leg-left" style="transform-origin:12px 0px">
+                  <line x1="12" y1="0" x2="8" y2="20"/>
+                  <circle cx="8" cy="20" r="3" class="mascot-joint"/>
+                  <g class="mascot-shin-left" style="transform-origin:8px 20px">
+                    <line x1="8" y1="20" x2="4" y2="40"/>
+                    <circle cx="4" cy="43" r="3.5"/>
+                  </g>
+                </g>
+                <!-- pierna der -->
+                <g class="mascot-leg-right" style="transform-origin:44px 0px">
+                  <line x1="44" y1="0" x2="48" y2="20"/>
+                  <circle cx="48" cy="20" r="3" class="mascot-joint"/>
+                  <g class="mascot-shin-right" style="transform-origin:48px 20px">
+                    <line x1="48" y1="20" x2="52" y2="40"/>
+                    <circle cx="52" cy="43" r="3.5"/>
+                  </g>
+                </g>
+              </svg>
+            </div>
+          </div>
+          <div class="mascot-reflect"></div>
+          <div class="mascot-shadow" style="margin-top:30px"></div>
+          <span class="mascot-name">${name}</span>
+        </div>
+      `;
+
+      document.body.appendChild(el);
+      this.el = el;
+      this.bodyEl = document.getElementById(`${uid}_body`);
+      this.bubbleEl = document.getElementById(`${uid}_bubble`);
+      this._showZzz(false);
+      this._initDrag();
+      this._applyTransform();
+      return el;
+    }
+
+    _showZzz(show) {
+      ['z1','z2','z3'].forEach(s => {
+        const z = document.getElementById(`mascot_${this.index}_${s}`);
+        if (z) z.style.display = show ? 'block' : 'none';
+      });
+    }
+
+    setState(state, duration) {
+      if (!this.el) return;
+      this.bodyEl.className = 'mascot-body mascot-state-' + state;
+      this.state = state;
+      this.stateTimer = duration || 0;
+      this._showZzz(state === 'sleep');
+      if (state === 'sleep') this.showBubble(pickFrase('sleep'));
+    }
+
+    showBubble(text, duration) {
+      if (!this.bubbleEl) return;
+      this.bubbleEl.textContent = text;
+      this.bubbleEl.classList.add('show');
+      if (this.bubbleTimeout) clearTimeout(this.bubbleTimeout);
+      this.bubbleTimeout = setTimeout(() => this.bubbleEl.classList.remove('show'), duration || 2400);
+    }
+
+    _applyTransform() {
+      if (!this.el) return;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const cx = Math.max(50, Math.min(W - 120, this.x));
+      const cy = Math.max(0, this.y);
+      this.el.style.transform = `translateX(${cx}px) translateY(${-cy}px)`;
+      if (this.bodyEl) {
+        this.bodyEl.style.transform = this.flipped ? 'scaleX(-1)' : 'scaleX(1)';
+      }
+      if (this.bubbleEl) {
+        this.bubbleEl.style.transform = this.flipped
+          ? 'translateX(-50%) scaleX(-1)'
+          : 'translateX(-50%) scaleX(1)';
+      }
+      const shadow = this.el.querySelector('.mascot-shadow');
+      if (shadow) {
+        const f = Math.max(0.1, 1 - cy / (H * 0.5));
+        shadow.style.opacity = String(f * 0.7);
+        shadow.style.transform = `scaleX(${f})`;
+      }
+      const reflect = this.el.querySelector('.mascot-reflect');
+      if (reflect) {
+        reflect.style.opacity = String(Math.max(0, 1 - cy / (H * 0.4)) * 0.6);
+      }
+    }
+
+    _initDrag() {
+      if (!this.el) return;
+      const el = this.el;
+
+      // Estado del drag
+      this._drag = {
+        active: false,
+        offsetX: 0,
+        offsetY: 0,
+        trail: [],       // historial de posiciones para calcular velocidad
+        trailMax: 8,
+        wasGrabbed: false,
+      };
+
+      const H = () => window.innerHeight;
+
+      const onDown = (e) => {
+        // Ignorar si viene de un click en otra mascota manejando
+        e.stopPropagation();
+        const pt = e.touches ? e.touches[0] : e;
+        const d = this._drag;
+        d.active = true;
+        d.wasGrabbed = false;
+        d.trail = [];
+
+        // offsetX/Y: distancia del puntero al centro de la mascota en coordenadas de pantalla
+        // La mascota está en bottom=0, transform: translateX(x) translateY(-y)
+        // Su posición real en pantalla: left = x, top = H - y - MASCOT_SIZE
+        const mascotScreenX = this.x;
+        const mascotScreenY = H() - this.y - MASCOT_SIZE;
+        d.offsetX = pt.clientX - mascotScreenX;
+        d.offsetY = pt.clientY - mascotScreenY;
+
+        // Pausar física
+        this._paused = true;
+        this.currentPlatform = null;
+        this.platformY = 0;
+        this.vx = 0; this.vy = 0;
+        this.setState('fall'); // brazos abiertos = agarrado
+        this.showBubble(['¡Me agarraste! 😲', '¡Ey, soltame! 😅', '¡Voy a volar! 🚀', '¡Cuidado! 😱'][Math.floor(Math.random()*4)], 1500);
+
+        el.style.cursor = 'grabbing';
+        el.style.zIndex = '99998';
+        document.body.style.userSelect = 'none';
+      };
+
+      const onMove = (e) => {
+        if (!this._drag.active) return;
+        e.preventDefault();
+        const pt = e.touches ? e.touches[0] : e;
+        const d = this._drag;
+        d.wasGrabbed = true;
+
+        // Convertir posición del puntero a coordenadas de la mascota
+        const newX = pt.clientX - d.offsetX;
+        const newScreenY = pt.clientY - d.offsetY;
+        const newY = H() - newScreenY - MASCOT_SIZE;
+
+        // Guardar trail para velocidad
+        const now = performance.now();
+        d.trail.push({ x: newX, y: newY, t: now });
+        if (d.trail.length > d.trailMax) d.trail.shift();
+
+        this.x = newX;
+        this.y = Math.max(-60, newY); // permitir un poco fuera de pantalla arriba
+        this.flipped = false;
+        this._applyTransform();
+
+        // Rotar levemente según velocidad horizontal para sensación de balanceo
+        if (d.trail.length >= 2) {
+          const last = d.trail[d.trail.length - 1];
+          const prev = d.trail[d.trail.length - 2];
+          const speedX = (last.x - prev.x) / Math.max(1, last.t - prev.t) * 16;
+          const rot = Math.max(-35, Math.min(35, speedX * 3));
+          if (this.bodyEl) this.bodyEl.style.transform = `rotate(${rot}deg)`;
+        }
+      };
+
+      const onUp = (e) => {
+        if (!this._drag.active) return;
+        const d = this._drag;
+        d.active = false;
+        this._paused = false;
+
+        el.style.cursor = 'pointer';
+        el.style.zIndex = '';
+        document.body.style.userSelect = '';
+        if (this.bodyEl) this.bodyEl.style.transform = '';
+
+        if (!d.wasGrabbed) {
+          // Click simple sin arrastre → comportamiento original
+          this._onClick();
+          return;
+        }
+
+        // Calcular velocidad de lanzamiento desde el trail
+        let throwVx = 0, throwVy = 0;
+        if (d.trail.length >= 2) {
+          // Usar los últimos N puntos para suavizar
+          const recent = d.trail.slice(-5);
+          const dt = Math.max(1, recent[recent.length-1].t - recent[0].t);
+          const dx = recent[recent.length-1].x - recent[0].x;
+          const dy = recent[recent.length-1].y - recent[0].y;
+          // Escalar a px/frame (16ms) con un factor de lanzamiento
+          throwVx = (dx / dt) * 16 * 1.4;
+          throwVy = (dy / dt) * 16 * 1.4; // trail.y ya está en coords mascota (Y↑)
+        }
+
+        // Aplicar velocidad y dejar caer
+        this.vx = Math.max(-18, Math.min(18, throwVx));
+        this.vy = Math.max(-22, Math.min(22, throwVy));
+        this.currentPlatform = null;
+        this.platformY = 0;
+        this.setState('fall');
+        this._resetIdleTimer();
+
+        // Frase de lanzamiento
+        const speed = Math.sqrt(throwVx*throwVx + throwVy*throwVy);
+        if (speed > 8) {
+          this.showBubble(['¡WOOOOOO! 🚀', '¡A VOLAR! 💨', '¡¡AAAAAAH!! 😱', '¡Modo proyectil! 🎯'][Math.floor(Math.random()*4)], 2000);
+        } else if (speed > 3) {
+          this.showBubble(['¡Uy! 😅', '¡Me tiraste! 😤', '¡Volando! 🌀', '¡Wheee! 🌟'][Math.floor(Math.random()*4)], 1800);
+        } else {
+          this.showBubble(['¡Me soltaste! 😌', '¡Libertad! 🕊️', '¡Gracias! 😅'][Math.floor(Math.random()*3)], 1500);
+        }
+      };
+
+      // Pointer events (mouse + touch)
+      el.addEventListener('pointerdown', onDown, { passive: false });
+      window.addEventListener('pointermove', onMove, { passive: false });
+      window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onUp);
+
+      this._dragCleanup = () => {
+        el.removeEventListener('pointerdown', onDown);
+        window.removeEventListener('pointermove', onMove);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onUp);
+      };
+    }
+
+    _onClick() {
+      this._resetIdleTimer();
+      const roll = Math.random();
+      if (roll < 0.30) {
+        this.setState('jump', 800);
+        this.vy = 12 + Math.random() * 4;
+        this.vx = (Math.random() < 0.5 ? 1 : -1) * (1 + Math.random());
+        this.showBubble(pickFrase('jump'), 1800);
+      } else if (roll < 0.55) {
+        this.setState('dance', 2500);
+        this.vx = 0;
+        this.showBubble(pickFrase('dance'), 2200);
+        setTimeout(() => {
+          if (this.state === 'dance') {
+            this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
+            this.setState('walk');
+          }
+        }, 2500);
+      } else if (roll < 0.70) {
+        if (!this.currentPlatform) {
+          this.showBubble(['¡Voy a trepar! 🧗','¡A explorar! 🏃','¡Me subo a algo! 🎯'][Math.floor(Math.random()*3)], 1500);
+          setTimeout(() => this._tryClimbPlatform(), 300);
+          return;
+        } else {
+          this._leaveCurrentPlatform('walk');
+          this.showBubble('¡Bajo a tierra! 🛬', 1800);
+        }
+      } else if (roll < 0.85) {
+        this.setState('idle');
+        this.showBubble(pickFrase('idle'), 2200);
+        setTimeout(() => { if (this.state === 'idle') this.setState('walk'); }, 2200);
+      } else {
+        const dir = Math.random() < 0.5 ? 1 : -1;
+        this.vx = dir * 3.2;
+        this.setState('run');
+        this.showBubble(pickFrase('run'), 1600);
+        setTimeout(() => {
+          if (this.state === 'run') {
+            this.vx = Math.sign(this.vx) * (0.9 + Math.random() * 0.5);
+            this.setState('walk');
+          }
+        }, 2000);
+      }
+    }
+
+    // ── Escanea TODOS los elementos visibles en pantalla y los categoriza ──
+    _scanInteractables() {
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const results = [];
+      const seen = new WeakSet();
+
+      // Tabla de selectores → { label, frases, tall (puede treparse) }
+      const TARGETS = [
+        // Superficie grande — trepar encima
+        { sel: '#nav',              tall: true,  label: 'nav',        frases: ['¡Conquisté la barra! 🧭','¡Arriba del nav! 👑','¡Vista total desde acá! 🔭','¡El rey del navbar! 😎'] },
+        { sel: '#hero',             tall: true,  label: 'hero',       frases: ['¡Primera fila del hero! 🍿','¡Encima de la estrella! 🌟','¡VIP location! 🎭','¡Arriba del banner! 🎬'] },
+        { sel: '#sidebar,.sidebar', tall: true,  label: 'sidebar',    frases: ['¡Trepo la sidebar! 📋','¡Lateral conquistado! ✨','¡Cómodo acá al costado! 🛋️','¡Vista privilegiada! 👀'] },
+        // Botones — subirse encima
+        { sel: '.btn-play',         tall: false, label: 'btn_play',   frases: ['¡Encima del play! ▶️','¡A un click de ver! 🎬','¡Apretá eso! 🔴','¡El botón sagrado! 🙏'] },
+        { sel: '.btn-info',         tall: false, label: 'btn_info',   frases: ['¡Arriba de Info! 📋','¡El botón de más datos! 🤓','¡Curioso yo también! 🔎'] },
+        { sel: '.nav-tab',          tall: false, label: 'nav_tab',    frases: ['¡Arriba de la pestaña! 🗂️','¡Tab conquistada! 🏷️','¡Desde acá cambio de sección! 🔀'] },
+        { sel: '.sidebar-btn',      tall: false, label: 'sb_btn',     frases: ['¡Encima del botón lateral! 📌','¡Custodiando la función! 🛡️','¡Este botón mola! 🔘'] },
+        { sel: '.hero-nav-btn',     tall: false, label: 'hero_nav',   frases: ['¡Arriba de la flecha! ➡️','¡Controlando el hero! 🎮','¡Navegador de banners! 🧭'] },
+        { sel: '.hero-badge',       tall: false, label: 'hero_badge', frases: ['¡Encima del badge! 🏷️','¡La etiqueta del hero! ✨','¡Esa badge brilla! 💜'] },
+        // Cards — subirse al borde superior
+        { sel: '.card',             tall: false, label: 'card',       frases: ['¡Encima de la card! 🃏','¡Me subí a la tarjeta! 🎬','¡Vista de película desde acá! 🎥','¡El mejor asiento! 🍿','¡Custodiando este contenido! 🛡️','¡Qué buena pinta tiene esto! 😋'] },
+        { sel: '.hcard',            tall: false, label: 'hcard',      frases: ['¡Arriba de la card grande! 🖼️','¡Hero card conquistada! 🏆','¡Encima del póster! 🎭','¡Primera fila yo! 🌟'] },
+        // Badges / etiquetas
+        { sel: '.card-type-badge,.hcard-badge,.badge-movie,.badge-serie,.badge-anime,.prox-card-type-badge', tall: false, label: 'badge', frases: ['¡Una etiquetita! 🏷️','¡Badge encontrada! ✨','¡Que chica esta cosa! 😅','¡Me siento gigante acá! 👑'] },
+        { sel: '.live-badge',       tall: false, label: 'live_badge', frases: ['¡Estamos en vivo! 🔴','¡LIVE! 📡','¡Señal en directo! 📺','¡Esto es ahora mismo! ⚡'] },
+        { sel: '.sb-top10-badge',   tall: false, label: 'top10',      frases: ['¡Top 10 Argentina! 🇦🇷','¡Los más vistos! 🔥','¡El ranking del momento! 📊'] },
+        { sel: '.card-rating,.hcard-rating', tall: false, label: 'rating', frases: ['★ ¡Buen puntaje! ⭐','¡Bien rankeado! 📊','¡Las estrellas no mienten! ✨','¡Alta puntuación! 🏅'] },
+        // Títulos y headers de sección
+        { sel: '.row-title',        tall: false, label: 'row_title',  frases: ['¡Arriba del título! 📝','¡Sentado en el header! 🎩','¡Qué sección copada! 😎','¡El letrero me gusta! ✍️'] },
+        { sel: '.hero-title',       tall: false, label: 'hero_title', frases: ['¡Encima del título principal! 🎬','¡El nombre de la película! 🌟','¡Qué títulazo! 📖'] },
+        { sel: '.card-name',        tall: false, label: 'card_name',  frases: ['¡El nombre de la peli! 📽️','¡Leí el título! 🧐','¡Qué nombre! ✨'] },
+        // Inputs y búsqueda
+        { sel: '#search-input,input[type="search"],.search-input', tall: false, label: 'search', frases: ['¿Qué buscás? 🔍','¡El buscador y yo! 🕵️','¡A un click de encontrarlo! 🎯','¡Buscame algo piola! 🔎'] },
+        // Live channels
+        { sel: '.live-channel-card,.live-item', tall: false, label: 'live', frases: ['¡Un canal en vivo! 📺','¡Tele en tiempo real! ⚡','¡Señal live! 🔴','¡Esto pasa ahora! 🌐'] },
+        // Creator panel
+        { sel: '#creator-panel,.creator-panel,#color-creator', tall: true, label: 'creator', frases: ['¡Me metí en el creator! 🎨','¡Zona de diseño! ✏️','¡Qué colores tan lindos! 🌈','¡Diseñador amateur! 🖌️'] },
+        // Sección próximamente
+        { sel: '.prox-card',        tall: false, label: 'prox_card',  frases: ['¡Lo que viene! 🎯','¡Próximamente! 🕐','¡Hay que esperar un poco! ⏳','¡Se viene algo bueno! 👀'] },
+        // Actor cards
+        { sel: '.actor-card,.actor-img', tall: false, label: 'actor', frases: ['¡Hola actor! 👋','¡El elenco! 🎭','¡Qué cara conocida! 🤩','¡Fanático del casting! 🎬'] },
+        // Modal
+        { sel: '.modal-inner,.modal-content', tall: true, label: 'modal', frases: ['¡Me metí al modal! 📋','¡Info mode! 🤓','¡Leyendo los detalles! 📖','¡Dame más info! 🔎'] },
+      ];
+
+      for (const { sel, tall, label, frases } of TARGETS) {
+        let els;
+        try { els = document.querySelectorAll(sel); } catch(e) { continue; }
+        for (const el of els) {
+          if (seen.has(el) || el.closest('.vtv-mascot-wrap')) continue;
+          let r;
+          try { r = el.getBoundingClientRect(); } catch(e) { continue; }
+          // Debe estar visible en pantalla (con margen generoso)
+          if (r.width < 14 || r.height < 8) continue;
+          if (r.bottom < 20 || r.top > H - 20) continue;
+          if (r.right < 20 || r.left > W - 20) continue;
+          seen.add(el);
+          // Calcular la "plataforma": borde superior del elemento
+          const platY = H - r.top; // altura desde abajo hasta el borde superior del el
+          const platX = Math.max(10, r.left + 4);
+          const platW = Math.max(20, r.width - 8);
+          results.push({ el, label, frases, tall, r,
+            x: platX, w: platW, y: platY,
+            // altura en coords de mascota cuando está "encima"
+            mascotY: Math.max(0, H - r.top - (tall ? MASCOT_SIZE : MASCOT_SIZE)),
+          });
+        }
+      }
+      return results;
+    }
+
+    _tryClimbPlatform() {
+      if (this.state === 'sleep' || this._paused) return;
+      const targets = this._scanInteractables();
+      if (!targets.length) return;
+      // Preferir targets visibles cerca de la mascota, con algo de aleatoriedad
+      const scored = targets.map(t => {
+        const dist = Math.abs((t.r.left + t.r.width/2) - this.x);
+        const score = Math.random() * 200 - dist * 0.3;
+        return { t, score };
+      });
+      scored.sort((a,b) => b.score - a.score);
+      // Elegir entre los 5 mejores al azar para variedad
+      const pool = scored.slice(0, Math.min(5, scored.length));
+      const chosen = pool[Math.floor(Math.random() * pool.length)].t;
+      this._goInteract(chosen);
+    }
+
+    _goInteract(target) {
+      if (!this.el || this.state === 'sleep' || this._paused) return;
+      const H = window.innerHeight;
+      const r = target.r;
+      // Punto de destino horizontal: dentro del elemento
+      const targetX = r.left + 8 + Math.random() * Math.max(4, r.width - 24);
+      const clampedX = Math.max(55, Math.min(window.innerWidth - 120, targetX));
+
+      this.currentPlatform = target;
+      this.setState('run');
+      const dir = clampedX > this.x ? 1 : -1;
+      this.vx = dir * 2.6;
+      this.flipped = dir < 0;
+
+      const iv = setInterval(() => {
+        if (!this.el || !this.running || this._paused) { clearInterval(iv); this.currentPlatform = null; return; }
+        // Cancelar si ya no está en run/walk (fue arrastrado, etc.)
+        if (this.state !== 'run' && this.state !== 'walk') { clearInterval(iv); this.currentPlatform = null; return; }
+
+        if (Math.abs(this.x - clampedX) < 28) {
+          clearInterval(iv);
+          this.x = clampedX;
+          this.vx = 0;
+
+          const targetY = target.mascotY;
+
+          if (targetY <= 2) {
+            // Elemento al nivel del suelo → pararse al lado, curiosear
+            this.setState('idle');
+            const frase = target.frases[Math.floor(Math.random() * target.frases.length)];
+            this.showBubble(frase, 2200);
+            // Pequeño salto de emoción
+            setTimeout(() => {
+              if (!this.el || !this.running) return;
+              this.setState('jump', 500);
+              this.vy = 6 + Math.random() * 3;
+              setTimeout(() => {
+                if (this.state === 'jump') {
+                  this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
+                  this.setState('walk');
+                  this.currentPlatform = null;
+                }
+              }, 550);
+            }, 900);
+            setTimeout(() => {
+              if (this.el && this.running && this.state === 'idle') {
+                this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
+                this.setState('walk');
+                this.currentPlatform = null;
+              }
+            }, 2400);
+          } else {
+            // Elemento elevado → trepar encima
+            this.setState('climb');
+            this.platformY = targetY;
+            let climbed = this.y;
+            const ci = setInterval(() => {
+              if (!this.el || !this.running || this._paused) { clearInterval(ci); return; }
+              climbed += 5;
+              this.y = Math.min(targetY, climbed);
+              if (this.y >= targetY) {
+                clearInterval(ci);
+                this.y = targetY;
+                this.setState('perch');
+                const frase = target.frases[Math.floor(Math.random() * target.frases.length)];
+                this.showBubble(frase, 2500);
+                // Caminar un poco encima del objeto
+                this.vx = (Math.random() < 0.5 ? 0.35 : -0.35);
+                setTimeout(() => {
+                  if (this.el && this.running && this.currentPlatform === target) {
+                    this._leaveCurrentPlatform('walk');
+                  }
+                }, 2500 + Math.random() * 3500);
+              }
+            }, 28);
+          }
+        }
+      }, 80);
+    }
+
+    _leaveCurrentPlatform(mode) {
+      if (!this.el) return;
+      this.currentPlatform = null;
+      if (mode === 'fall') {
+        this.setState('fall');
+        this.vy = 2;
+        this.vx = (Math.random() < 0.5 ? 1 : -1) * 1.5;
+        this.showBubble('¡Me caí! 😱', 1800);
+      } else {
+        this.setState('walk');
+        this.vx = (Math.random() < 0.5 ? 1 : -1) * 1.2;
+        const di = setInterval(() => {
+          if (!this.el || !this.running) { clearInterval(di); return; }
+          this.y = Math.max(0, this.y - 5);
+          this.platformY = this.y;
+          if (this.y <= 0) { clearInterval(di); this.platformY = 0; this.y = 0; }
+        }, 30);
+      }
+    }
+
+    _resetIdleTimer() {
+      if (this.idleTimeout) clearTimeout(this.idleTimeout);
+      if (this.state === 'sleep') {
+        this.showBubble('¡Ya desperté! 👀', 1800);
+        this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
+        this.setState('walk');
+      }
+      this.idleTimeout = setTimeout(() => {
+        if (this.state === 'walk' || this.state === 'idle') {
+          this.vx = 0;
+          this.setState('sleep');
+        }
+      }, 12000);
+    }
+
+    _resetInactivoTimer() {
+      if (this.inactivoTimer) clearTimeout(this.inactivoTimer);
+      this.inactivoTimer = setTimeout(() => {
+        if (this.state !== 'sleep' && this.canReact(6000)) {
+          this.showBubble(pickFrase('inactivo'), 2500);
+        }
+      }, 8000);
+    }
+
+    // ── Interacción con otras mascotas ──
+    _checkOtherMascots(dt) {
+      const others = _manager.instances.filter(m => m !== this && m.el && m.running);
+      if (!others.length) return;
+
+      this.interactionTimer += dt;
+
+      for (const other of others) {
+        const dist = Math.abs(this.x - other.x);
+
+        // Si están muy cerca (dentro de 120px) → reaccionar
+        if (dist < 120 && this.y === 0 && other.y === 0) {
+          // Evitar que se superpongan: rebote suave
+          if (dist < 60) {
+            const pushDir = this.x < other.x ? -1 : 1;
+            this.vx = pushDir * 1.5;
+            this.flipped = pushDir < 0;
+          }
+
+          // Reacción de saludo cada ~15s entre ellos
+          if (this.interactionTimer > 15000 + Math.random() * 10000) {
+            this.interactionTimer = 0;
+            if (this.canReact(8000)) {
+              const roll = Math.random();
+              if (roll < 0.4) {
+                // Salto de saludo
+                this.setState('jump', 700);
+                this.showBubble(pickFrase('meet_other'), 2200);
+                setTimeout(() => { if (this.state === 'jump') this.setState('walk'); }, 700);
+              } else if (roll < 0.65) {
+                // Baile conjunto
+                this.setState('dance', 2000);
+                this.vx = 0;
+                setTimeout(() => {
+                  if (this.state === 'dance') {
+                    this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
+                    this.setState('walk');
+                  }
+                }, 2000);
+              } else if (roll < 0.8) {
+                // Carrera
+                this.showBubble(pickFrase('race'), 1800);
+                const dir = this.x < other.x ? 1 : -1;
+                this.vx = dir * 3.0;
+                this.setState('run');
+                setTimeout(() => {
+                  if (this.state === 'run') {
+                    this.vx = Math.sign(this.vx) * (0.9 + Math.random() * 0.5);
+                    this.setState('walk');
+                  }
+                }, 2500);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    tick(ts) {
+      if (!this.running || !this.el) return;
+      const dt = Math.min(ts - this.prevTs, 50);
+      this.prevTs = ts;
+
+      // Si está siendo arrastrado, solo redibujar y seguir
+      if (this._paused) {
+        this._applyTransform();
+        this.raf = requestAnimationFrame(ts2 => this.tick(ts2));
+        return;
+      }
+
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      const state = this.state;
+
+      // Scroll detection (usa el del manager)
+      const absScroll = Math.abs(_manager.scrollVel);
+      if (absScroll > 3) this._resetInactivoTimer();
+      if (absScroll > 12 && this.currentPlatform && Math.random() < 0.3 && state === 'perch') {
+        this._leaveCurrentPlatform('fall');
+      }
+
+      // Movimiento horizontal — walk, run Y también fall/jump (lanzamiento libre)
+      if (state === 'walk' || state === 'run' || state === 'fall' || state === 'jump') {
+        if ((state === 'walk' || state === 'run') && absScroll > 8) {
+          if (state !== 'run') this.setState('run');
+          this.vx = Math.sign(this.vx) * Math.min(3.5, 0.9 + absScroll * 0.08);
+        } else if (state === 'run' && absScroll <= 8) {
+          this.setState('walk');
+          this.vx = Math.sign(this.vx) * (0.9 + Math.random() * 0.4);
+        }
+        this.x += this.vx * (dt / 16);
+        const margin = 55;
+        if (this.x < margin) {
+          this.x = margin;
+          this.vx = Math.abs(this.vx) * (0.85 + Math.random() * 0.3);
+          this.flipped = false;
+          if ((state === 'walk' || state === 'run') && Math.random() < 0.25) this._bounceReaction();
+        } else if (this.x > W - 120) {
+          this.x = W - 120;
+          this.vx = -Math.abs(this.vx) * (0.85 + Math.random() * 0.3);
+          this.flipped = true;
+          if ((state === 'walk' || state === 'run') && Math.random() < 0.25) this._bounceReaction();
+        }
+        if (Math.abs(this.vx) > 0.1) this.flipped = this.vx < 0;
+      }
+
+      // Gravedad
+      if (state === 'fall' || (this.y > this.platformY + 2 && state !== 'climb' && state !== 'perch' && state !== 'jump')) {
+        this.vy -= GRAVITY * (dt / 16);
+        this.y += this.vy * (dt / 16);
+        if (this.y <= this.platformY) {
+          this.y = this.platformY; this.vy = 0;
+          if (state === 'fall') {
+            this.setState('walk');
+            this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
+          }
+        }
+      }
+
+      // Salto
+      if (state === 'jump' && this.vy !== 0) {
+        this.vy -= GRAVITY * (dt / 16);
+        this.y += this.vy * (dt / 16);
+        if (this.y <= this.platformY) {
+          this.y = this.platformY; this.vy = 0;
+          this.setState('walk');
+        }
+      }
+
+      // Interacción con objetos: cada ~1.5s buscar algo cercano para curiosear o trepar
+      this.platformCheckTimer += dt;
+      if (this.platformCheckTimer > 1500 && (state === 'walk' || state === 'idle') && !this.currentPlatform && this.y === 0) {
+        this.platformCheckTimer = 0;
+        if (Math.random() < 0.70) this._tryClimbPlatform();
+      }
+      if (this.y === 0 && this.currentPlatform) { this.currentPlatform = null; this.platformY = 0; }
+
+      // Timer de estado
+      if (this.stateTimer > 0) this.stateTimer -= dt;
+
+      // Interacción con otras mascotas
+      this._checkOtherMascots(dt);
+
+      this._applyTransform();
+      this.raf = requestAnimationFrame(ts2 => this.tick(ts2));
+    }
+
+    _bounceReaction() {
+      if (Math.random() < 0.5) {
+        this.setState('jump', 650);
+        this.showBubble(pickFrase('bounce'), 1800);
+        setTimeout(() => { if (this.state === 'jump') this.setState('walk'); }, 650);
+      } else {
+        this.showBubble(pickFrase('bounce'), 1800);
+      }
+    }
+
+    start(profile) {
+      this.el.classList.add('mascot-visible');
+      this.running = true;
+      this.prevTs = performance.now();
+      this.raf = requestAnimationFrame(ts => this.tick(ts));
+      this._resetIdleTimer();
+      this._resetInactivoTimer();
+      // Saludo inicial
+      const greetings = [
+        `Ahí estás, ${profile.name}. Pensé que te habías ido.`,
+        `Bienvenido de nuevo, ${profile.name}.`,
+        `¡${profile.name} en la casa! 🎉`,
+        `¡Listo para otra maratón, ${profile.name}! 🍿`,
+        `La pantalla estuvo muy aburrida sin vos, ${profile.name}.`,
+        `¿Qué vemos hoy, ${profile.name}?`,
+        `Tu perfil sigue exactamente donde lo dejaste, ${profile.name}.`,
+        `Detectando ganas de mirar algo... ¡Hola ${profile.name}! 👋`,
+        `La noche recién empieza, ${profile.name}.`,
+        `Volviste. Eso me gusta. 🎬`,
+      ];
+      setTimeout(() => {
+        this.showBubble(greetings[Math.floor(Math.random() * greetings.length)], 3500);
+      }, 400 + this.index * 600);
+      setTimeout(() => {
+        if (this.state !== 'sleep') this.showBubble(pickFrase('idle'), 2500);
+      }, 7000 + this.index * 800);
+    }
+
+    destroy() {
+      this.running = false;
+      if (this.raf) cancelAnimationFrame(this.raf);
+      if (this.idleTimeout) clearTimeout(this.idleTimeout);
+      if (this.inactivoTimer) clearTimeout(this.inactivoTimer);
+      if (this.bubbleTimeout) clearTimeout(this.bubbleTimeout);
+      if (this._dragCleanup) this._dragCleanup();
+      if (this.el) { this.el.remove(); this.el = null; }
+    }
+  }
+
+  // ── Hooks de eventos de página (instalados una sola vez) ──
+  function _installGlobalHooks() {
+    if (_manager.globalHooksInstalled) return;
+    _manager.globalHooksInstalled = true;
+
+    // Scroll
+    let scrollFastTimer = null;
+    window.addEventListener('scroll', () => {
+      _manager.scrollVel = window.scrollY - _manager.lastScrollY;
+      _manager.lastScrollY = window.scrollY;
+      _manager.instances.forEach(m => m._resetIdleTimer());
+      if (scrollFastTimer) clearTimeout(scrollFastTimer);
+      scrollFastTimer = setTimeout(() => {
+        if (Math.abs(_manager.scrollVel) > 18 && _canReact(2000)) {
+          _manager.instances.forEach(m => { if (m.canReact(2000)) m.showBubble(pickFrase('scroll_fast'), 2000); });
+        }
+      }, 80);
+    }, { passive: true });
+
+    // Actualizar scrollVel en el tick global
+    setInterval(() => {
+      _manager.scrollVel = window.scrollY - _manager.lastScrollY;
+      _manager.lastScrollY = window.scrollY;
+    }, 16);
+
+    document.addEventListener('mousemove', (e) => {
+      _manager.instances.forEach(m => { if (m.state === 'sleep') m._resetIdleTimer(); });
+      // Detectar mouse rápido
+      const now = Date.now();
+      if (!_manager._lastMousePos) _manager._lastMousePos = { x: e.clientX, y: e.clientY, t: now };
+      const dx = e.clientX - _manager._lastMousePos.x;
+      const dy = e.clientY - _manager._lastMousePos.y;
+      const dt = Math.max(1, now - _manager._lastMousePos.t);
+      const speed = Math.sqrt(dx*dx + dy*dy) / dt;
+      _manager._lastMousePos = { x: e.clientX, y: e.clientY, t: now };
+      if (speed > 2.2 && _canReact(5000)) {
+        const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+        if (m && m.state !== 'sleep') m.showBubble(pickFrase('mouse_fast'), 1800);
+      }
+    }, { passive: true });
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('.vtv-mascot-wrap')) return;
+      _manager.instances.forEach(m => m._resetIdleTimer());
+    });
+
+    // Patch de funciones globales — solo una vez
+    const _origToggleFav = window.toggleFav;
+    if (typeof _origToggleFav === 'function') {
+      window.toggleFav = function(item) {
+        const wasFav = typeof isFav === 'function' && isFav(item.id);
+        _origToggleFav(item);
+        const nowFav = typeof isFav === 'function' && isFav(item.id);
+        if (!_canReact(2000)) return;
+        _manager.instances.forEach(m => {
+          if (!m.canReact(2000)) return;
+          if (nowFav && !wasFav) {
+            m.setState('jump', 700);
+            setTimeout(() => m.showBubble(pickFrase('like_add'), 2500), 200);
+            setTimeout(() => { if (m.state === 'jump') m.setState('walk'); }, 700);
+          } else if (!nowFav && wasFav) {
+            m.showBubble(pickFrase('like_remove'), 2500);
+          }
+        });
+      };
+    }
+
+    const _origOpenModal = window.openModal;
+    if (typeof _origOpenModal === 'function') {
+      window.openModal = function(item) {
+        _origOpenModal(item);
+        if (!_canReact(3500)) return;
+        const genres = item.genre_ids || [];
+        const isAnime = item._cat === 'anime' || (item._type === 'tv' && genres.includes(16) && (item.origin_country||[]).includes('JP'));
+        const isTerror = genres.includes(27) || genres.includes(53); // Horror, Thriller
+        const isComedia = genres.includes(35); // Comedy
+        const isTV = item._type === 'tv';
+        const key = isAnime ? 'open_anime' : isTerror ? 'open_terror' : isComedia ? 'open_comedia' : isTV ? 'open_serie' : 'open_movie';
+        _manager.instances.forEach((m, i) => {
+          if (!m.canReact(3500)) return;
+          setTimeout(() => {
+            if (Math.random() < 0.65) {
+              m.setState('jump', 650);
+              setTimeout(() => m.showBubble(pickFrase(key), 2800), 300);
+              setTimeout(() => { if (m.state === 'jump') m.setState('walk'); }, 650);
+            } else {
+              m.showBubble(pickFrase(key), 2800);
+            }
+          }, i * 300);
+        });
+      };
+    }
+
+    const _origCloseModal = window.closeModal;
+    if (typeof _origCloseModal === 'function') {
+      window.closeModal = function() {
+        _origCloseModal();
+        if (_canReact(4000) && Math.random() < 0.4) {
+          const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+          if (m) m.showBubble(pickFrase('modal_close'), 2000);
+        }
+      };
+    }
+
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+      let searchDebounce = null;
+      searchInput.addEventListener('input', () => {
+        _manager.instances.forEach(m => { if (m.state === 'sleep') m._resetIdleTimer(); });
+        if (searchInput.value.trim().length > 2) {
+          if (searchDebounce) clearTimeout(searchDebounce);
+          searchDebounce = setTimeout(() => {
+            if (_canReact(4000)) {
+              const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+              if (m) m.showBubble(pickFrase('search'), 2000);
+            }
+          }, 600);
+        }
+      });
+    }
+
+    const _origOpenHeroTrailer = window.openHeroTrailer;
+    if (typeof _origOpenHeroTrailer === 'function') {
+      window.openHeroTrailer = function(item) {
+        _origOpenHeroTrailer(item);
+        if (_canReact(4000)) {
+          setTimeout(() => {
+            _manager.instances.forEach(m => {
+              m.setState('dance', 1800);
+              m.showBubble(pickFrase('trailer'), 2500);
+              setTimeout(() => { if (m.state === 'dance') { m.vx = (Math.random()<0.5?1:-1)*(0.9+Math.random()*0.5); m.setState('walk'); } }, 1800);
+            });
+          }, 400);
+        }
+      };
+    }
+
+    const _origOpenLive = window.openLiveChannel;
+    if (typeof _origOpenLive === 'function') {
+      window.openLiveChannel = function(ch) {
+        _origOpenLive(ch);
+        if (_canReact(4000)) {
+          setTimeout(() => {
+            const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+            if (m) m.showBubble(pickFrase('live_tv'), 2500);
+          }, 300);
+        }
+      };
+    }
+
+    const _origSwitchTab = window.switchTab;
+    if (typeof _origSwitchTab === 'function') {
+      window.switchTab = function(tab) {
+        _origSwitchTab(tab);
+        if (!_canReact(3000)) return;
+        const tabMap = { movies:'tab_movies', series:'tab_series', anime:'tab_anime' };
+        const key = tabMap[tab];
+        if (key) {
+          _manager.instances.forEach((m, i) => {
+            setTimeout(() => {
+              if (tab === 'anime') {
+                m.setState('dance', 1500);
+                m.showBubble(pickFrase(key), 2500);
+                setTimeout(() => { if (m.state === 'dance') { m.vx=(Math.random()<.5?1:-1)*(0.9+Math.random()*0.5); m.setState('walk'); } }, 1500);
+              } else {
+                m.showBubble(pickFrase(key), 2200);
+              }
+            }, i * 400);
+          });
+        }
+      };
+    }
+
+    const _origApplyTheme = window.applyThemeColor;
+    if (typeof _origApplyTheme === 'function') {
+      window.applyThemeColor = function(type, value) {
+        _origApplyTheme(type, value);
+        if (_canReact(3500)) {
+          setTimeout(() => {
+            _manager.instances.forEach(m => { if (m.canReact(3500)) m.showBubble(pickFrase('theme_change'), 2200); });
+          }, 200);
+        }
+      };
+    }
+
+    const _origSbGoFavs = window.sbGoFavs;
+    if (typeof _origSbGoFavs === 'function') {
+      window.sbGoFavs = function() {
+        _origSbGoFavs();
+        if (_canReact(4000)) {
+          const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+          if (m) m.showBubble(pickFrase('fav_view'), 2200);
+        }
+      };
+    }
+
+    const _origSbGoContinuar = window.sbGoContinuar;
+    if (typeof _origSbGoContinuar === 'function') {
+      window.sbGoContinuar = function() {
+        _origSbGoContinuar();
+        if (_canReact(4000)) {
+          const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+          if (m) m.showBubble(pickFrase('continue_watch'), 2200);
+        }
+      };
+    }
+
+    const installBtn = document.getElementById('pwa-install-btn');
+    if (installBtn) {
+      installBtn.addEventListener('click', () => {
+        setTimeout(() => {
+          if (_canReact(5000)) {
+            _manager.instances.forEach(m => {
+              m.setState('dance', 2000);
+              m.showBubble(pickFrase('pwa_install'), 2500);
+              setTimeout(() => { if (m.state === 'dance') { m.vx=(Math.random()<.5?1:-1)*(0.9+Math.random()*0.5); m.setState('walk'); } }, 2000);
+            });
+          }
+        }, 800);
+      });
+    }
+
+    // ── Timers de personalidad ─────────────────────────────────
+    // Cada 4-8 min lanza una frase temática aleatoria de entre: comida, reels, solo, invitar, no_duermas, secreto
+    const PERSONALITY_POOLS = ['comida','reels','solo','invitar','no_duermas','secreto'];
+    let _personalityTimer = null;
+    function _schedulePersonality() {
+      const delay = 240000 + Math.random() * 240000; // 4-8 min
+      _personalityTimer = setTimeout(() => {
+        const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+        if (m && m.state !== 'sleep' && m.canReact(15000)) {
+          const pool = PERSONALITY_POOLS[Math.floor(Math.random() * PERSONALITY_POOLS.length)];
+          m.showBubble(pickFrase(pool), 3500);
+        }
+        _schedulePersonality();
+      }, delay);
+    }
+    _schedulePersonality();
+
+    // Timer de inactivo largo (5+ min sin tocar nada → reels/no_duermas)
+    let _largoTimer = null;
+    function _resetLargoTimer() {
+      if (_largoTimer) clearTimeout(_largoTimer);
+      _largoTimer = setTimeout(() => {
+        if (!_canReact(30000)) return;
+        const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+        if (m && m.state !== 'sleep') m.showBubble(pickFrase('inactivo_largo'), 4000);
+      }, 300000); // 5 min
+    }
+    _resetLargoTimer();
+    window.addEventListener('scroll', _resetLargoTimer, { passive: true });
+    document.addEventListener('click', _resetLargoTimer);
+    document.addEventListener('mousemove', _resetLargoTimer, { passive: true });
+
+    // Hora tardía (después de medianoche): frase de no_duermas espontánea
+    function _checkHoraTardia() {
+      const h = new Date().getHours();
+      if (h >= 0 && h <= 4 && _canReact(3600000)) {
+        const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+        if (m && m.state !== 'sleep') m.showBubble(pickFrase('no_duermas'), 3000);
+      }
+    }
+    setInterval(_checkHoraTardia, 600000); // revisar cada 10 min
+  }
+
+  // ── API pública ──
+
+  // Inicializar con un perfil o array de perfiles
+  window.vtvMascotInit = function(profileOrProfiles) {
+    if (!profileOrProfiles) return;
+
+    // Soportar tanto un perfil único como un array
+    const profiles = Array.isArray(profileOrProfiles) ? profileOrProfiles : [profileOrProfiles];
+
+    // Inyectar CSS una sola vez
+    if (!document.getElementById('vtv-mascot-style')) {
+      const s = document.createElement('style');
+      s.id = 'vtv-mascot-style';
+      s.textContent = STYLE;
+      document.head.appendChild(s);
+    }
+
+    // Destruir instancias previas
+    _manager.instances.forEach(m => m.destroy());
+    _manager.instances.length = 0;
+
+    // Crear una instancia por perfil, con posiciones iniciales distribuidas
+    profiles.forEach((profile, i) => {
+      const inst = new MascotInstance(profile, i, profiles.length);
+      // Posición X distribuida: repartidas por la pantalla sin superponerse
+      const spacing = window.innerWidth / (profiles.length + 1);
+      inst.x = spacing * (i + 1) + (Math.random() - 0.5) * spacing * 0.5;
+      inst.x = Math.max(80, Math.min(window.innerWidth - 140, inst.x));
+      inst.vx = (i % 2 === 0 ? 1 : -1) * (0.9 + Math.random() * 0.5);
+      inst.flipped = inst.vx < 0;
+      inst.create();
+      inst.start(profile);
+      _manager.instances.push(inst);
+    });
+
+    // Instalar hooks globales (solo la primera vez)
+    _installGlobalHooks();
+  };
+
+  window.vtvMascotDestroy = function() {
+    _manager.instances.forEach(m => m.destroy());
+    _manager.instances.length = 0;
+  };
+
+})();
+
+// ─── SISTEMA DE RELÁMPAGOS (flashes de iluminación) ──────────────────────
+(function() {
+
+  // Overlay de flash — mismo estilo que la intro
+  const flash = document.createElement('div');
+  flash.style.cssText = [
+    'position:fixed', 'inset:0', 'pointer-events:none', 'z-index:9997',
+    'opacity:0', 'will-change:opacity',
+    'background:radial-gradient(ellipse at var(--lx,50%) var(--ly,30%), rgba(200,210,255,0.22) 0%, rgba(160,170,255,0.10) 40%, transparent 75%)',
+  ].join(';');
+  document.body.appendChild(flash);
+
+  // ── Dispara un flash ──
+  function spawnFlash() {
+    // Origen del glow: aleatorio en la mitad superior
+    const lx = 20 + Math.random() * 60;
+    const ly = Math.random() * 45;
+    flash.style.setProperty('--lx', lx + '%');
+    flash.style.setProperty('--ly', ly + '%');
+
+    // Intensidad aleatoria
+    const peak = 0.25 + Math.random() * 0.55;
+
+    // Secuencia de frames — un relámpago tiene 2–3 pulsos rápidos
+    const pulses = Math.random() < 0.45 ? 3 : 2;
+    const sequence = [];
+    for (let i = 0; i < pulses; i++) {
+      const p = peak * (i === 0 ? 1 : 0.35 + Math.random() * 0.4);
+      sequence.push({ op: p,   dur: 30  + Math.random() * 20  }); // encendido
+      sequence.push({ op: 0,   dur: 40  + Math.random() * 60  }); // apagado
+    }
+    sequence.push({ op: 0, dur: 0 }); // asegurar apagado final
+
+    let i = 0;
+    function next() {
+      if (i >= sequence.length) return;
+      const { op, dur } = sequence[i++];
+      flash.style.transition = `opacity ${dur}ms linear`;
+      flash.style.opacity = op;
+      setTimeout(next, dur + 8);
+    }
+    next();
+  }
+
+  // ── Scheduler realista ──
+  function scheduleNext() {
+    // Silencio entre relámpagos: 15–80 segundos
+    const silence = 15000 + Math.random() * 65000;
+    setTimeout(() => {
+      // Ráfaga de 1–3 relámpagos seguidos
+      const burst = 1 + Math.floor(Math.random() * 3);
+      let delay = 0;
+      for (let i = 0; i < burst; i++) {
+        delay += i === 0 ? 0 : 150 + Math.random() * 600;
+        setTimeout(spawnFlash, delay);
+      }
+      scheduleNext();
+    }, silence);
+  }
+
+  // Primer relámpago entre 8 y 25 segundos
+  setTimeout(scheduleNext, 8000 + Math.random() * 17000);
+
+})();
+
+
 // Se llama desde selectProfile, con el perfil ya elegido
 async function registerVisit(profileName) {
   const COOLDOWN_MS = 2 * 60 * 60 * 1000;
