@@ -217,11 +217,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .nav-search:focus-within{border-color:var(--accent);width:360px}
   /* Personalizar alineado con buscador */
   .nav-personalizar-btn{display:flex;align-items:center;gap:7px;padding:7px 16px}
-  /* Mobile: ocultar buscador central y personalizar */
-  @media(max-width:640px){
-    #nav-search-bar{display:none}
-    .nav-personalizar-btn{display:none}
-  }
+
   .nav-search input{background:transparent;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;width:100%}
   .nav-search input::placeholder{color:var(--text3)}
   #search-clear-btn{display:none;background:none;border:none;color:var(--text3);cursor:pointer;padding:2px 0 2px 4px;font-size:16px;line-height:1;transition:color .2s;flex-shrink:0}
@@ -1027,7 +1023,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <!-- Espacio flexible: empuja buscador + personalizar hacia la derecha -->
   <div style="flex:1;min-width:32px"></div>
   <!-- Buscador ancho -->
-  <div class="nav-search" id="nav-search-bar">
+  <div class="nav-search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="search-input" type="text" placeholder="Buscar..." oninput="onSearch(this.value)" onfocus="openSearchOverlay()" />
     <button id="search-clear-btn" onclick="clearSearch()" title="Cerrar búsqueda">✕</button>
