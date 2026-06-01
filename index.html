@@ -1073,6 +1073,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     .tab-infinite-grid{padding:8px 12px 0!important}
     #sec-canales{padding-top:8px!important}
     #sec-netflixtop10,#sec-top100,#sec-mas-populares,#sec-mas-recientes,#sec-mejores-anime,#sec-proximamente{padding-top:8px!important}
+    #sec-netflixtop10 .row-header{padding-left:12px!important}
+    #sec-netflixtop10 .top10-grid{padding-left:12px!important;padding-right:12px!important}
     /* Próximamente: 4 botones en 1 fila */
     .prox-filters{display:flex!important;flex-direction:row!important;padding:0 12px 16px!important;gap:6px!important}
     .prox-filter-group{display:flex!important;flex-direction:row!important;width:100%!important;gap:6px!important}
@@ -1562,7 +1564,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <!-- Top 10 Netflix Argentina -->
   <div id="sec-netflixtop10" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
-      <span class="row-title">🔴 TOP 10 NETFLIX ARGENTINA</span>
+      <span class="row-title">🔴 TOP 10 NETFLIX</span>
     </div>
     <div class="top10-grid" id="grid-netflixtop10"></div>
     <div class="infinite-trigger" id="trigger-top10" style="display:none">
