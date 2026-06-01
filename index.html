@@ -1564,7 +1564,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <!-- Top 10 Netflix Argentina -->
   <div id="sec-netflixtop10" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
-      <span class="row-title">🔴 TOP 10 NETFLIX</span>
+      <span class="row-title">TOP 10 NETFLIX</span>
     </div>
     <div class="top10-grid" id="grid-netflixtop10"></div>
     <div class="infinite-trigger" id="trigger-top10" style="display:none">
@@ -5198,8 +5198,9 @@ async function openTop10Platform(platformKey, providerId, platformName){
 
   _activeTop10Platform = platformKey;
   const titleEl = document.querySelector("#sec-netflixtop10 .row-title");
-  if(titleEl) titleEl.textContent = `TOP 10 ${platformName.toUpperCase()} ARGENTINA`;
-
+  if(titleEl) titleEl.textContent = window.innerWidth <= 640
+  ? `TOP 10 ${platformName.toUpperCase()}`
+  : `TOP 10 ${platformName.toUpperCase()} ARGENTINA`;
   _netflixTop10Loaded = false;
   _currentTop10Provider = providerId;
   const grid = document.getElementById("grid-netflixtop10");
