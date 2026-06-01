@@ -3401,7 +3401,8 @@ function renderProfiles() {
   if (profiles.length < 6) { // máximo 6 perfiles
     const add = document.createElement("div");
     add.className = "profile-item profile-add";
-    add.innerHTML = `<div class="profile-avatar" style="font-size:36px;color:rgba(255,255,255,.3)">＋</div><span class="profile-name">Agregar perfil</span>`;
+    add.style.position = "relative";
+    add.innerHTML = `<div class="profile-avatar" style="font-size:36px;color:rgba(255,255,255,.3)">＋</div><span class="profile-name">Agregar perfil</span><button id="profile-dice-btn" title="Perfil random" onclick="event.stopPropagation();openRandomProfile()" style="position:absolute;top:-8px;right:-8px;width:28px;height:28px;background:var(--accent);border:2px solid var(--bg);border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(99,102,241,.5);transition:transform .15s,box-shadow .15s;z-index:2;line-height:1" onmouseover="this.style.transform='scale(1.2) rotate(-10deg)';this.style.boxShadow='0 4px 18px rgba(99,102,241,.7)'" onmouseout="this.style.transform='';this.style.boxShadow='0 2px 12px rgba(99,102,241,.5)'">&#127922;</button>`;
     add.addEventListener("click", () => openProfileEditor(null));
     grid.appendChild(add);
   }
@@ -3469,6 +3470,39 @@ function openProfileEditor(idx) {
   try { buildAvatarPicker(); } catch(e) { console.error("buildAvatarPicker error:", e); }
   modal.classList.add("open");
   document.getElementById("pe-name-input").focus();
+}
+
+const NOMBRES_RANDOM = [
+  "El más capito","Elver gacorta","El pargo","Bicho boludo",
+  "Teto del fondo","El Turra Mayor","Paco Tortoni","Cheto de mierda",
+  "La Yeta en Persona","El Roto Glorioso","Chamuyero Pro","Cagón Serial",
+  "El Bardero","Moco con patas","El Sota","Pajuerano FC",
+  "Gordo Copado","La Conchuda","Pelotudo Ilustre","El Forro de Siempre",
+  "Nene Villero","La Puta que Parió","Zurdo Tilingo","Grasa Divina",
+  "Don Patotas","Berreta S.A.","El Garrón","Ortiba de Ley",
+  "Manga de Inútiles","El Rata","Tío Facho","El Colgado",
+  "Chanta Supremo","El Bronca","Picky Suelto","Sorete con Visa",
+  "Trucho Forever","Careta & Cia","El Venganza","Boludo con Título",
+];
+
+function openRandomProfile() {
+  const nombre = NOMBRES_RANDOM[Math.floor(Math.random() * NOMBRES_RANDOM.length)];
+  const randAv = ALL_AVATARS[Math.floor(Math.random() * ALL_AVATARS.length)];
+  const avatarUrl = getAvatarUrl(randAv.style, randAv.seed);
+  const profiles = getProfiles();
+  profiles.push({ name: nombre, avatar: avatarUrl });
+  saveProfiles(profiles);
+  renderProfiles();
+  setTimeout(() => {
+    const items = document.querySelectorAll(".profile-item:not(.profile-add)");
+    const last = items[items.length - 1];
+    if (last) {
+      last.style.transition = "transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s";
+      last.style.transform = "scale(1.12)";
+      last.style.boxShadow = "0 0 0 3px var(--accent)";
+      setTimeout(() => { last.style.transform = ""; last.style.boxShadow = ""; }, 400);
+    }
+  }, 50);
 }
 
 function closeProfileEditor() {
