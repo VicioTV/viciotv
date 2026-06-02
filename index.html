@@ -7177,93 +7177,106 @@ initThemePicker();
 
         const offFrac = p.offscreen ? Math.min(p.offscreen / p.len, 0.55) : 0.25;
 
-        if (p.cinematic) {
-          const grd = ctx.createLinearGradient(0, 0, 0, p.len);
-          grd.addColorStop(0,              `hsla(${p.hue+14},100%,92%,0)`);
-          grd.addColorStop(offFrac * 0.6,  `hsla(${p.hue+14},100%,92%,0)`);
-          grd.addColorStop(offFrac,        `hsla(${p.hue+8},100%,78%,${alpha * 0.7})`);
-          grd.addColorStop(offFrac + 0.25, `hsla(${p.hue},95%,62%,${alpha * 0.45})`);
-          grd.addColorStop(0.72,           `hsla(${p.hue-8},88%,50%,${alpha * 0.2})`);
-          grd.addColorStop(1,              `hsla(${p.hue-16},80%,40%,0)`);
-          ctx.fillStyle = grd;
-          ctx.beginPath();
-          ctx.moveTo(-hwTip, 0);
-          ctx.lineTo( hwTip, 0);
-          ctx.lineTo( hw,    p.len);
-          ctx.lineTo(-hw,    p.len);
-          ctx.closePath();
-          ctx.filter = 'blur(38px)';
-          ctx.fill();
-
-          const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.75);
-          grd2.addColorStop(0,             `hsla(${p.hue+18},100%,97%,0)`);
-          grd2.addColorStop(offFrac * 0.7, `hsla(${p.hue+18},100%,97%,0)`);
-          grd2.addColorStop(offFrac,       `hsla(${p.hue+5},100%,78%,${alpha * 0.5})`);
-          grd2.addColorStop(0.65,          `hsla(${p.hue},90%,62%,${alpha * 0.2})`);
-          grd2.addColorStop(1,             `hsla(${p.hue},90%,62%,0)`);
-          ctx.fillStyle = grd2;
-          const hw2 = hw * 0.32, hwTip2 = hwTip * 0.55;
-          ctx.beginPath();
-          ctx.moveTo(-hwTip2, 0);
-          ctx.lineTo( hwTip2, 0);
-          ctx.lineTo( hw2,    p.len * 0.75);
-          ctx.lineTo(-hw2,    p.len * 0.75);
-          ctx.closePath();
-          ctx.filter = 'blur(16px)';
-          ctx.fill();
-
-        } else {
-          const isMobileRender = w < 600;
-          const grd = ctx.createLinearGradient(0, 0, 0, p.len);
-          grd.addColorStop(0,              `hsla(${p.hue+14},100%,88%,0)`);
-          grd.addColorStop(offFrac * 0.55, `hsla(${p.hue+14},100%,88%,0)`);
-          grd.addColorStop(offFrac,        `hsla(${p.hue+8},100%,72%,${alpha*0.85})`);
-          grd.addColorStop(offFrac + 0.28, `hsla(${p.hue},95%,60%,${alpha*0.65})`);
-          grd.addColorStop(0.72,           `hsla(${p.hue-10},90%,50%,${alpha*0.3})`);
-          grd.addColorStop(1,              `hsla(${p.hue-16},85%,42%,0)`);
-          ctx.fillStyle = grd;
-          ctx.beginPath();
-          ctx.moveTo(-hwTip, 0);
-          ctx.lineTo( hwTip, 0);
-          ctx.lineTo( hw, p.len);
-          ctx.lineTo(-hw, p.len);
-          ctx.closePath();
-          ctx.filter = isMobileRender ? 'blur(34px)' : 'blur(22px)';
-          ctx.fill();
-
-          const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.75);
-          grd2.addColorStop(0,             `hsla(${p.hue+18},100%,95%,0)`);
-          grd2.addColorStop(offFrac * 0.6, `hsla(${p.hue+18},100%,95%,0)`);
-          grd2.addColorStop(offFrac,       `hsla(${p.hue+5},100%,75%,${alpha*0.6})`);
-          grd2.addColorStop(0.6,           `hsla(${p.hue},90%,60%,${alpha*0.3})`);
-          grd2.addColorStop(1,             `hsla(${p.hue},90%,60%,0)`);
-          ctx.fillStyle = grd2;
-          ctx.beginPath();
-          ctx.moveTo(-hwTip*0.55, 0);
-          ctx.lineTo( hwTip*0.55, 0);
-          ctx.lineTo( hw*0.38, p.len*0.75);
-          ctx.lineTo(-hw*0.38, p.len*0.75);
-          ctx.closePath();
-          ctx.filter = isMobileRender ? 'blur(16px)' : 'blur(10px)';
-          ctx.fill();
-
-          /* Capa extra de núcleo luminoso — solo en mobile para profundidad 3D */
-          if (isMobileRender) {
-            const grd3 = ctx.createLinearGradient(0, 0, 0, p.len * 0.5);
-            grd3.addColorStop(0,             `hsla(${p.hue+22},100%,99%,0)`);
-            grd3.addColorStop(offFrac * 0.7, `hsla(${p.hue+22},100%,99%,0)`);
-            grd3.addColorStop(offFrac,       `hsla(${p.hue+10},100%,92%,${alpha*0.45})`);
-            grd3.addColorStop(0.55,          `hsla(${p.hue},95%,70%,${alpha*0.18})`);
-            grd3.addColorStop(1,             `hsla(${p.hue},90%,60%,0)`);
-            ctx.fillStyle = grd3;
+        /* En desktop usamos ctx.filter (blur gaussiano real).
+           En mobile Safari/WebView ctx.filter no funciona → fake blur por capas. */
+        function drawRayFakeBlur(hwBase, hwTipBase, lenBase, stops, layers) {
+          for (let li = 0; li < layers.length; li++) {
+            const lhw    = hwBase    * layers[li].wMul;
+            const lhwTip = hwTipBase * layers[li].wMul;
+            const grd = ctx.createLinearGradient(0, 0, 0, lenBase);
+            stops.forEach(function(s) {
+              grd.addColorStop(s[0], 'hsla('+s[1]+','+s[2]+'%,'+s[3]+'%,'+(s[4]*layers[li].aMul)+')');
+            });
+            ctx.fillStyle = grd;
             ctx.beginPath();
-            ctx.moveTo(-hwTip*0.22, 0);
-            ctx.lineTo( hwTip*0.22, 0);
-            ctx.lineTo( hw*0.14, p.len*0.5);
-            ctx.lineTo(-hw*0.14, p.len*0.5);
-            ctx.closePath();
-            ctx.filter = 'blur(6px)';
-            ctx.fill();
+            ctx.moveTo(-lhwTip, 0); ctx.lineTo(lhwTip, 0);
+            ctx.lineTo(lhw, lenBase); ctx.lineTo(-lhw, lenBase);
+            ctx.closePath(); ctx.fill();
+          }
+        }
+
+        const isMobileRender = w < 600;
+
+        if (p.cinematic) {
+          if (isMobileRender) {
+            drawRayFakeBlur(hw, hwTip, p.len, [
+              [0,            p.hue+14,100,92,0],
+              [offFrac*0.6,  p.hue+14,100,92,0],
+              [offFrac,      p.hue+8, 100,78,alpha*0.7],
+              [offFrac+0.25, p.hue,   95, 62,alpha*0.45],
+              [0.72,         p.hue-8, 88, 50,alpha*0.2],
+              [1,            p.hue-16,80, 40,0],
+            ], [{wMul:4.0,aMul:0.08},{wMul:2.8,aMul:0.18},{wMul:2.0,aMul:0.32},{wMul:1.4,aMul:0.55},{wMul:1.0,aMul:1.00}]);
+            drawRayFakeBlur(hw*0.32, hwTip*0.55, p.len*0.75, [
+              [0,           p.hue+18,100,97,0],
+              [offFrac*0.7, p.hue+18,100,97,0],
+              [offFrac,     p.hue+5, 100,78,alpha*0.5],
+              [0.65,        p.hue,   90, 62,alpha*0.2],
+              [1,           p.hue,   90, 62,0],
+            ], [{wMul:2.5,aMul:0.18},{wMul:1.5,aMul:0.50},{wMul:1.0,aMul:1.00}]);
+          } else {
+            const grd = ctx.createLinearGradient(0, 0, 0, p.len);
+            grd.addColorStop(0,              `hsla(${p.hue+14},100%,92%,0)`);
+            grd.addColorStop(offFrac * 0.6,  `hsla(${p.hue+14},100%,92%,0)`);
+            grd.addColorStop(offFrac,        `hsla(${p.hue+8},100%,78%,${alpha * 0.7})`);
+            grd.addColorStop(offFrac + 0.25, `hsla(${p.hue},95%,62%,${alpha * 0.45})`);
+            grd.addColorStop(0.72,           `hsla(${p.hue-8},88%,50%,${alpha * 0.2})`);
+            grd.addColorStop(1,              `hsla(${p.hue-16},80%,40%,0)`);
+            ctx.fillStyle = grd;
+            ctx.beginPath();
+            ctx.moveTo(-hwTip,0); ctx.lineTo(hwTip,0); ctx.lineTo(hw,p.len); ctx.lineTo(-hw,p.len);
+            ctx.closePath(); ctx.filter = 'blur(38px)'; ctx.fill();
+            const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.75);
+            grd2.addColorStop(0,             `hsla(${p.hue+18},100%,97%,0)`);
+            grd2.addColorStop(offFrac * 0.7, `hsla(${p.hue+18},100%,97%,0)`);
+            grd2.addColorStop(offFrac,       `hsla(${p.hue+5},100%,78%,${alpha * 0.5})`);
+            grd2.addColorStop(0.65,          `hsla(${p.hue},90%,62%,${alpha * 0.2})`);
+            grd2.addColorStop(1,             `hsla(${p.hue},90%,62%,0)`);
+            ctx.fillStyle = grd2;
+            const hw2 = hw*0.32, hwTip2 = hwTip*0.55;
+            ctx.beginPath();
+            ctx.moveTo(-hwTip2,0); ctx.lineTo(hwTip2,0); ctx.lineTo(hw2,p.len*0.75); ctx.lineTo(-hw2,p.len*0.75);
+            ctx.closePath(); ctx.filter = 'blur(16px)'; ctx.fill();
+          }
+        } else {
+          if (isMobileRender) {
+            drawRayFakeBlur(hw, hwTip, p.len, [
+              [0,            p.hue+14,100,88,0],
+              [offFrac*0.55, p.hue+14,100,88,0],
+              [offFrac,      p.hue+8, 100,72,alpha*0.85],
+              [offFrac+0.28, p.hue,   95, 60,alpha*0.65],
+              [0.72,         p.hue-10,90, 50,alpha*0.3],
+              [1,            p.hue-16,85, 42,0],
+            ], [{wMul:3.5,aMul:0.07},{wMul:2.4,aMul:0.16},{wMul:1.7,aMul:0.32},{wMul:1.2,aMul:0.60},{wMul:1.0,aMul:1.00}]);
+            drawRayFakeBlur(hw*0.38, hwTip*0.55, p.len*0.75, [
+              [0,           p.hue+18,100,95,0],
+              [offFrac*0.6, p.hue+18,100,95,0],
+              [offFrac,     p.hue+5, 100,75,alpha*0.6],
+              [0.6,         p.hue,   90, 60,alpha*0.3],
+              [1,           p.hue,   90, 60,0],
+            ], [{wMul:2.2,aMul:0.16},{wMul:1.5,aMul:0.45},{wMul:1.0,aMul:1.00}]);
+          } else {
+            const grd = ctx.createLinearGradient(0, 0, 0, p.len);
+            grd.addColorStop(0,              `hsla(${p.hue+14},100%,88%,0)`);
+            grd.addColorStop(offFrac * 0.55, `hsla(${p.hue+14},100%,88%,0)`);
+            grd.addColorStop(offFrac,        `hsla(${p.hue+8},100%,72%,${alpha*0.85})`);
+            grd.addColorStop(offFrac + 0.28, `hsla(${p.hue},95%,60%,${alpha*0.65})`);
+            grd.addColorStop(0.72,           `hsla(${p.hue-10},90%,50%,${alpha*0.3})`);
+            grd.addColorStop(1,              `hsla(${p.hue-16},85%,42%,0)`);
+            ctx.fillStyle = grd;
+            ctx.beginPath();
+            ctx.moveTo(-hwTip,0); ctx.lineTo(hwTip,0); ctx.lineTo(hw,p.len); ctx.lineTo(-hw,p.len);
+            ctx.closePath(); ctx.filter = 'blur(22px)'; ctx.fill();
+            const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.75);
+            grd2.addColorStop(0,             `hsla(${p.hue+18},100%,95%,0)`);
+            grd2.addColorStop(offFrac * 0.6, `hsla(${p.hue+18},100%,95%,0)`);
+            grd2.addColorStop(offFrac,       `hsla(${p.hue+5},100%,75%,${alpha*0.6})`);
+            grd2.addColorStop(0.6,           `hsla(${p.hue},90%,60%,${alpha*0.3})`);
+            grd2.addColorStop(1,             `hsla(${p.hue},90%,60%,0)`);
+            ctx.fillStyle = grd2;
+            ctx.beginPath();
+            ctx.moveTo(-hwTip*0.55,0); ctx.lineTo(hwTip*0.55,0); ctx.lineTo(hw*0.38,p.len*0.75); ctx.lineTo(-hw*0.38,p.len*0.75);
+            ctx.closePath(); ctx.filter = 'blur(10px)'; ctx.fill();
           }
         }
 
