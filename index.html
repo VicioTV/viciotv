@@ -6480,6 +6480,7 @@ initThemePicker();
   }
 
   const W = () => cv.width, H = () => cv.height;
+  const isMobileViewport = () => window.innerWidth < 600;
 
 
   function makeLeaf() {
@@ -6551,7 +6552,7 @@ initThemePicker();
 
   function makeSunRay() {
     const w = W(), h = H();
-    const isMobile = w < 600;
+    const isMobile = isMobileViewport();
 
     const isCinematic = !isMobile && Math.random() < 0.15;
 
@@ -6755,7 +6756,7 @@ initThemePicker();
       function scheduleNext() {
         const delay = 800 + Math.random() * 4200;
         const t = setTimeout(() => {
-          const isMob = W() < 600;
+          const isMob = isMobileViewport();
           const active = particles.filter(p => p.type === 'sunray').length;
           if (active < (isMob ? MAX_MOBILE : MAX_ACTIVE)) {
             particles.push(makeSunRay());
@@ -6766,7 +6767,7 @@ initThemePicker();
       }
       for (let i = 0; i < MIN_ACTIVE + 1; i++) {
         const t = setTimeout(() => {
-          const isMob = W() < 600;
+          const isMob = isMobileViewport();
           if (particles.filter(p => p.type === 'sunray').length < (isMob ? MAX_MOBILE : MAX_ACTIVE)) {
             particles.push(makeSunRay());
           }
@@ -6778,7 +6779,7 @@ initThemePicker();
     (function cinematicLoop() {
       const t = setTimeout(() => {
         if (activeMode !== 'soleado') return;
-        if (W() < 600) { cinematicLoop(); return; }
+        if (isMobileViewport()) { cinematicLoop(); return; }
         const w = W(), h = H();
         const side = Math.random() < 0.6 ? 'top' : (Math.random() < 0.5 ? 'left' : 'right');
         let x0, y0, angle;
@@ -7167,6 +7168,7 @@ initThemePicker();
         ctx.restore();
       }
       else if (p.type === 'sunray') {
+        if (isMobileViewport()) { particles.splice(i,1); continue; }
         p.elapsed += dt;
         const t = p.elapsed / p.duration;
         if (t >= 1) { particles.splice(i,1); continue; }
