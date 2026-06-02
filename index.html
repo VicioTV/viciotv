@@ -7177,11 +7177,12 @@ initThemePicker();
         const offFrac = p.offscreen ? Math.min(p.offscreen / p.len, 0.55) : 0.25;
 
         if (w < 600) {
-          /* ── MOBILE: glow radial + 1 rayo limpio ── */
-          const glowR = Math.max(w, h) * 0.75;
+          /* ── MOBILE: version liviana del render desktop ── */
+          const mobileAlpha = alpha * 0.88;
+          const glowR = Math.max(w, h) * 0.82;
           const glow = ctx.createRadialGradient(p.x0, p.y0, 0, p.x0, p.y0, glowR);
-          glow.addColorStop(0,   `hsla(${p.hue+5},100%,72%,${alpha * 0.13})`);
-          glow.addColorStop(0.3, `hsla(${p.hue},95%,60%,${alpha * 0.06})`);
+          glow.addColorStop(0,   `hsla(${p.hue+10},100%,78%,${mobileAlpha * 0.15})`);
+          glow.addColorStop(0.32,`hsla(${p.hue},95%,62%,${mobileAlpha * 0.07})`);
           glow.addColorStop(1,   `hsla(${p.hue},90%,50%,0)`);
           ctx.fillStyle = glow;
           ctx.fillRect(0, 0, w, h);
@@ -7189,16 +7190,39 @@ initThemePicker();
           ctx.save();
           ctx.translate(p.x0, p.y0);
           ctx.rotate(p.angle - Math.PI/2);
-          const rw = hw * 0.5;
-          const rayGrd = ctx.createLinearGradient(0, 0, 0, p.len);
-          rayGrd.addColorStop(0,   `hsla(${p.hue+10},100%,88%,${alpha * 0.85})`);
-          rayGrd.addColorStop(0.6, `hsla(${p.hue},95%,65%,${alpha * 0.35})`);
-          rayGrd.addColorStop(1,   `hsla(${p.hue-10},85%,48%,0)`);
-          ctx.fillStyle = rayGrd;
+
+          const mobileOff = p.offscreen ? Math.min(p.offscreen / p.len, 0.48) : 0.18;
+          const softHw = hw * (p.cinematic ? 0.92 : 0.78);
+          const softTip = hwTip * (p.cinematic ? 0.95 : 0.8);
+          const soft = ctx.createLinearGradient(0, 0, 0, p.len);
+          soft.addColorStop(0,                 `hsla(${p.hue+14},100%,92%,0)`);
+          soft.addColorStop(mobileOff * 0.58,  `hsla(${p.hue+14},100%,92%,0)`);
+          soft.addColorStop(mobileOff,         `hsla(${p.hue+8},100%,76%,${mobileAlpha * 0.55})`);
+          soft.addColorStop(mobileOff + 0.28,  `hsla(${p.hue},95%,62%,${mobileAlpha * 0.36})`);
+          soft.addColorStop(0.78,              `hsla(${p.hue-10},88%,50%,${mobileAlpha * 0.14})`);
+          soft.addColorStop(1,                 `hsla(${p.hue-16},80%,40%,0)`);
+          ctx.fillStyle = soft;
           ctx.beginPath();
-          ctx.moveTo(-rw, 0); ctx.lineTo(rw, 0);
-          ctx.lineTo(rw, p.len); ctx.lineTo(-rw, p.len);
-          ctx.closePath(); ctx.fill();
+          ctx.moveTo(-softTip, 0); ctx.lineTo(softTip, 0);
+          ctx.lineTo(softHw, p.len); ctx.lineTo(-softHw, p.len);
+          ctx.closePath(); ctx.filter = 'blur(14px)'; ctx.fill();
+
+          const coreHw = hw * 0.26;
+          const coreTip = hwTip * 0.42;
+          const coreLen = p.len * 0.78;
+          const core = ctx.createLinearGradient(0, 0, 0, coreLen);
+          core.addColorStop(0,                 `hsla(${p.hue+18},100%,96%,0)`);
+          core.addColorStop(mobileOff * 0.65,  `hsla(${p.hue+18},100%,96%,0)`);
+          core.addColorStop(mobileOff,         `hsla(${p.hue+5},100%,78%,${mobileAlpha * 0.46})`);
+          core.addColorStop(0.62,              `hsla(${p.hue},92%,62%,${mobileAlpha * 0.18})`);
+          core.addColorStop(1,                 `hsla(${p.hue},90%,60%,0)`);
+          ctx.fillStyle = core;
+          ctx.beginPath();
+          ctx.moveTo(-coreTip, 0); ctx.lineTo(coreTip, 0);
+          ctx.lineTo(coreHw, coreLen); ctx.lineTo(-coreHw, coreLen);
+          ctx.closePath(); ctx.filter = 'blur(6px)'; ctx.fill();
+
+          ctx.filter = 'none';
           ctx.restore();
 
         } else {
