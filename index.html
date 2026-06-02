@@ -6472,15 +6472,17 @@ initThemePicker();
   function spawnLoop(factory, interval, max) {
     (function loop() {
       const t = setTimeout(() => {
-        if (particles.filter(p => p.type === factory.type).length < max) particles.push(factory());
+        const limit = typeof max === 'function' ? max() : max;
+        if (particles.filter(p => p.type === factory.type).length < limit) particles.push(factory());
         loop();
       }, interval[0] + Math.random() * (interval[1] - interval[0]));
       spawnerTmrs.push(t);
     })();
   }
 
-  const W = () => cv.width, H = () => cv.height;
+  const W = () => window.innerWidth, H = () => window.innerHeight;
   const isMobileViewport = () => window.innerWidth < 600;
+  const mobileMax = (desktopMax, mobileMaxValue) => isMobileViewport() ? mobileMaxValue : desktopMax;
 
 
   function makeLeaf() {
@@ -6733,7 +6735,7 @@ initThemePicker();
 
 
   function startOtono() {
-    spawnLoop(makeLeaf,     [400, 1200], 22);
+    spawnLoop(makeLeaf,     [400, 1200], () => mobileMax(22, 14));
     (function squirrelLoop() {
       const delay = particles.filter(p => p.type === 'squirrel').length === 0
         ? 2000 + Math.random() * 2000     // primera vez: 2-4s
@@ -6806,7 +6808,7 @@ initThemePicker();
     // Seed initial 3 staggered
     for (let _i = 0; _i < 3; _i++) {
       const _t = setTimeout(() => {
-        if (activeMode === 'soleado' && particles.filter(p => p.type === 'butterfly').length < 5)
+        if (activeMode === 'soleado' && particles.filter(p => p.type === 'butterfly').length < mobileMax(5, 3))
           particles.push(makeButterfly());
       }, _i * 1200);
       spawnerTmrs.push(_t);
@@ -6816,7 +6818,7 @@ initThemePicker();
       const delay = count < 3 ? 800 + Math.random() * 400 : 3000 + Math.random() * 4000;
       const t = setTimeout(() => {
         if (activeMode !== 'soleado') { fireflyLoop(); return; }
-        if (particles.filter(p => p.type === 'butterfly').length < 5)
+        if (particles.filter(p => p.type === 'butterfly').length < mobileMax(5, 3))
           particles.push(makeButterfly());
         fireflyLoop();
       }, delay);
@@ -6861,8 +6863,11 @@ initThemePicker();
     setTimeout(doStormFlash, 600);
 
     if (stormType === 'rayos') {
-      spawnLoop(makeLightningSeg, [600, 2200], 8);
-      setTimeout(() => { for(let i=0;i<3;i++) setTimeout(()=>particles.push(makeLightningSeg()),i*120); }, 400);
+      spawnLoop(makeLightningSeg, [600, 2200], () => mobileMax(8, 5));
+      setTimeout(() => {
+        const burst = mobileMax(3, 1);
+        for(let i=0;i<burst;i++) setTimeout(()=>particles.push(makeLightningSeg()),i*120);
+      }, 400);
     }
   }
 
@@ -6877,8 +6882,8 @@ initThemePicker();
   };
 
   function startNieve() {
-    spawnLoop(makeSnowflake, [200, 700], 55);
-    spawnLoop(makeSnowball, [12000, 28000], 2);
+    spawnLoop(makeSnowflake, [200, 700], () => mobileMax(55, 32));
+    spawnLoop(makeSnowball, [12000, 28000], () => mobileMax(2, 1));
   }
 
   function doStormFlash() {
@@ -6909,14 +6914,14 @@ initThemePicker();
   let lastTs = 0;
   // Caps per particle type — mirrors the limits in spawnLoop / spawner logic
   const PARTICLE_CAPS = {
-    sunray:    4,
-    leaf:     22,
+    sunray:    () => mobileMax(4, 2),
+    leaf:      () => mobileMax(22, 14),
     squirrel:  1,
-    butterfly: 5,
+    butterfly: () => mobileMax(5, 3),
     dragonfly: 1,
-    snowflake: 55,
-    snowball:  2,
-    lightning: 8,
+    snowflake: () => mobileMax(55, 32),
+    snowball:  () => mobileMax(2, 1),
+    lightning: () => mobileMax(8, 5),
   };
 
   document.addEventListener('visibilitychange', () => {
@@ -6925,12 +6930,13 @@ initThemePicker();
       lastTs = 0;
       // Flush any excess particles that piled up while the tab was hidden
       for (const [type, cap] of Object.entries(PARTICLE_CAPS)) {
+        const limit = typeof cap === 'function' ? cap() : cap;
         const indices = [];
         for (let i = 0; i < particles.length; i++) {
           if (particles[i].type === type) indices.push(i);
         }
-        if (indices.length > cap) {
-          const toRemove = new Set(indices.slice(0, indices.length - cap));
+        if (indices.length > limit) {
+          const toRemove = new Set(indices.slice(0, indices.length - limit));
           particles = particles.filter((_, idx) => !toRemove.has(idx));
         }
       }
