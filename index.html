@@ -7177,7 +7177,7 @@ initThemePicker();
         const offFrac = p.offscreen ? Math.min(p.offscreen / p.len, 0.55) : 0.25;
 
         if (w < 600) {
-          /* ── MOBILE: glow radial + rayo simple en coords absolutas ── */
+          /* ── MOBILE: glow radial + 1 rayo limpio ── */
           const glowR = Math.max(w, h) * 0.75;
           const glow = ctx.createRadialGradient(p.x0, p.y0, 0, p.x0, p.y0, glowR);
           glow.addColorStop(0,   `hsla(${p.hue+5},100%,72%,${alpha * 0.13})`);
@@ -7189,16 +7189,16 @@ initThemePicker();
           ctx.save();
           ctx.translate(p.x0, p.y0);
           ctx.rotate(p.angle - Math.PI/2);
+          const rw = hw * 0.5; // ancho único para todo el rayo
           const rayGrd = ctx.createLinearGradient(0, 0, 0, p.len);
-          rayGrd.addColorStop(0,           `hsla(${p.hue+14},100%,92%,0)`);
-          rayGrd.addColorStop(offFrac,     `hsla(${p.hue+8},100%,82%,${alpha * 0.9})`);
-          rayGrd.addColorStop(offFrac+0.3, `hsla(${p.hue},95%,65%,${alpha * 0.55})`);
-          rayGrd.addColorStop(0.8,         `hsla(${p.hue-8},88%,52%,${alpha * 0.15})`);
-          rayGrd.addColorStop(1,           `hsla(${p.hue-14},80%,42%,0)`);
+          rayGrd.addColorStop(0,    `hsla(${p.hue+10},100%,88%,0)`);
+          rayGrd.addColorStop(0.08, `hsla(${p.hue+10},100%,88%,${alpha * 0.85})`);
+          rayGrd.addColorStop(0.5,  `hsla(${p.hue},95%,65%,${alpha * 0.45})`);
+          rayGrd.addColorStop(1,    `hsla(${p.hue-10},85%,48%,0)`);
           ctx.fillStyle = rayGrd;
           ctx.beginPath();
-          ctx.moveTo(-hwTip, 0); ctx.lineTo(hwTip, 0);
-          ctx.lineTo(hw, p.len); ctx.lineTo(-hw, p.len);
+          ctx.moveTo(-rw, 0); ctx.lineTo(rw, 0);
+          ctx.lineTo(rw, p.len); ctx.lineTo(-rw, p.len);
           ctx.closePath(); ctx.fill();
           ctx.restore();
 
