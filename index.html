@@ -7207,21 +7207,6 @@ initThemePicker();
           ctx.lineTo(softHw, p.len); ctx.lineTo(-softHw, p.len);
           ctx.closePath(); ctx.filter = 'blur(14px)'; ctx.fill();
 
-          const coreHw = hw * 0.26;
-          const coreTip = hwTip * 0.42;
-          const coreLen = p.len * 0.78;
-          const core = ctx.createLinearGradient(0, 0, 0, coreLen);
-          core.addColorStop(0,                 `hsla(${p.hue+18},100%,96%,0)`);
-          core.addColorStop(mobileOff * 0.65,  `hsla(${p.hue+18},100%,96%,0)`);
-          core.addColorStop(mobileOff,         `hsla(${p.hue+5},100%,78%,${mobileAlpha * 0.46})`);
-          core.addColorStop(0.62,              `hsla(${p.hue},92%,62%,${mobileAlpha * 0.18})`);
-          core.addColorStop(1,                 `hsla(${p.hue},90%,60%,0)`);
-          ctx.fillStyle = core;
-          ctx.beginPath();
-          ctx.moveTo(-coreTip, 0); ctx.lineTo(coreTip, 0);
-          ctx.lineTo(coreHw, coreLen); ctx.lineTo(-coreHw, coreLen);
-          ctx.closePath(); ctx.filter = 'blur(6px)'; ctx.fill();
-
           ctx.filter = 'none';
           ctx.restore();
 
