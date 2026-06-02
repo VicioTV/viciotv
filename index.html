@@ -6382,31 +6382,18 @@ initThemePicker();
   }
   makeLeaf.type = 'leaf';
 
-  function makeAcorn() {
-    const w = W();
-    return { type: 'acorn',
-      x: w * (0.05 + Math.random() * 0.9), y: -16,
-      vy: 1.2 + Math.random() * 1.4, vx: (Math.random() - 0.5) * 0.4,
-      rot: 0, rotV: (Math.random() - 0.5) * 0.05,
-      size: 7 + Math.random() * 4,
-      life: 1, alpha: 0, fadeIn: true,
-    };
-  }
-  makeAcorn.type = 'acorn';
-
   function makeSquirrel() {
     const h = H(), w = W();
     const fromLeft = Math.random() < 0.5;
-    const spd = 1.8 + Math.random() * 1.0;
-    const peekFrac = 0.18 + Math.random() * 0.20;
-    const turnX = fromLeft ? w * peekFrac : w * (1 - peekFrac);
+    const spd = 1.2 + Math.random() * 0.8;
+    const turnX = fromLeft ? w * (0.15 + Math.random() * 0.25) : w * (0.6 + Math.random() * 0.25);
     return { type: 'squirrel',
-      x: fromLeft ? -60 : w + 60,
-      y: h * (0.6 + Math.random() * 0.35),
+      x: fromLeft ? -20 : w + 20,
+      y: h * (0.72 + Math.random() * 0.22),
       vx: fromLeft ? spd : -spd,
       fromLeft,
       turnX,
-      returning: false,  // false = entrando, true = volviendo al borde
+      returning: false,
       frame: 0, frameTimer: 0, life: 1,
       flipped: !fromLeft,
     };
@@ -6415,21 +6402,30 @@ initThemePicker();
 
   function makeButterfly() {
     const w = W(), h = H();
-    const side = Math.random() < 0.5 ? 'left' : 'right';
-    const x = side === 'left' ? -10 : w + 10;
-    const y = h * (0.1 + Math.random() * 0.8);
-    const spd = 0.4 + Math.random() * 0.5;
+    // Spawn anywhere on screen (fireflies float freely, not edge-to-edge)
+    const x = w * (0.05 + Math.random() * 0.9);
+    const y = h * (0.15 + Math.random() * 0.75);
+    const spd = 0.18 + Math.random() * 0.22;
+    const angle = Math.random() * Math.PI * 2;
     return { type: 'butterfly',
       x, y,
-      vx: side === 'left' ? spd : -spd,
-      vy: (Math.random() - 0.5) * 0.3,
-      wobble: Math.random() * Math.PI * 2, wobbleV: 0.025 + Math.random() * 0.02,
-      wingPhase: Math.random() * Math.PI * 2,
-      size: 7 + Math.random() * 6,
-      hue: [30, 50, 200, 280, 340][Math.floor(Math.random() * 5)],
+      vx: Math.cos(angle) * spd,
+      vy: Math.sin(angle) * spd,
+      wobble: Math.random() * Math.PI * 2,
+      wobbleV: 0.018 + Math.random() * 0.015,
+      // direction change timer
+      dirTimer: 0,
+      dirInterval: 2500 + Math.random() * 3500,
+      // glow pulse
+      glowPhase: Math.random() * Math.PI * 2,
+      glowSpeed: 0.04 + Math.random() * 0.03,
+      // trail
+      trail: [],
+      size: 2.5 + Math.random() * 2,
       life: 1, alpha: 0, fadeIn: true,
-      maxX: w * 0.25, // no pasa del 25% desde el borde
-      startX: x,
+      // lifetime in ms
+      maxLife: 14000 + Math.random() * 10000,
+      age: 0,
     };
   }
   makeButterfly.type = 'butterfly';
@@ -6618,11 +6614,10 @@ initThemePicker();
 
   function startOtono() {
     spawnLoop(makeLeaf,     [400, 1200], 22);
-    spawnLoop(makeAcorn,    [8000, 22000], 3);
     (function squirrelLoop() {
       const delay = particles.filter(p => p.type === 'squirrel').length === 0
-        ? 10000 + Math.random() * 8000    // primera vez: ~10-18s
-        : 35000 + Math.random() * 25000;  // siguientes: ~35-60s
+        ? 2000 + Math.random() * 2000     // primera vez: 2-4s
+        : 8000 + Math.random() * 7000;    // siguientes: 8-15s
       const t = setTimeout(() => {
         if (activeMode !== 'otono') return;
         if (particles.filter(p => p.type === 'squirrel').length < 1) {
@@ -6683,8 +6678,27 @@ initThemePicker();
       }, 14000 + Math.random() * 22000);  // cada 14-36s
       spawnerTmrs.push(t);
     })();
-    spawnLoop(makeButterfly,[2000, 5000], 8);
-    spawnLoop(makeDragonfly,[8000,18000], 3);
+    // Luciérnagas: mínimo 3 activas, máximo 5
+    // Seed initial 3 staggered
+    for (let _i = 0; _i < 3; _i++) {
+      const _t = setTimeout(() => {
+        if (activeMode === 'soleado' && particles.filter(p => p.type === 'butterfly').length < 5)
+          particles.push(makeButterfly());
+      }, _i * 1200);
+      spawnerTmrs.push(_t);
+    }
+    (function fireflyLoop() {
+      const count = particles.filter(p => p.type === 'butterfly').length;
+      const delay = count < 3 ? 800 + Math.random() * 400 : 3000 + Math.random() * 4000;
+      const t = setTimeout(() => {
+        if (activeMode !== 'soleado') { fireflyLoop(); return; }
+        if (particles.filter(p => p.type === 'butterfly').length < 5)
+          particles.push(makeButterfly());
+        fireflyLoop();
+      }, delay);
+      spawnerTmrs.push(t);
+    })();
+    spawnLoop(makeDragonfly,[8000,18000], 1);
     (function sunFlashLoop() {
       const t = setTimeout(() => {
         if (activeMode !== 'soleado') return;
@@ -6769,8 +6783,42 @@ initThemePicker();
   }
 
   let lastTs = 0;
+  // Caps per particle type — mirrors the limits in spawnLoop / spawner logic
+  const PARTICLE_CAPS = {
+    sunray:    4,
+    leaf:     22,
+    squirrel:  1,
+    butterfly: 5,
+    dragonfly: 1,
+    snowflake: 55,
+    snowball:  2,
+    lightning: 8,
+  };
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      // Reset timestamp so the first frame after returning doesn't produce a huge dt
+      lastTs = 0;
+      // Flush any excess particles that piled up while the tab was hidden
+      for (const [type, cap] of Object.entries(PARTICLE_CAPS)) {
+        const indices = [];
+        for (let i = 0; i < particles.length; i++) {
+          if (particles[i].type === type) indices.push(i);
+        }
+        if (indices.length > cap) {
+          const toRemove = new Set(indices.slice(0, indices.length - cap));
+          particles = particles.filter((_, idx) => !toRemove.has(idx));
+        }
+      }
+      // Also remove any orphaned sunFlash DOM overlays (CSS-only, not in particles[])
+      document.querySelectorAll('[style*="z-index:9994"]').forEach(el => el.remove());
+    } else {
+      // Tab going hidden: clear stale timestamp
+      lastTs = 0;
+    }
+  });
   function tick(ts) {
-    const dt = Math.min(ts - lastTs, 50); lastTs = ts;
+    const dt = Math.min((lastTs ? ts - lastTs : 16), 50); lastTs = ts;
     const w = W(), h = H();
     ctx.clearRect(0, 0, w, h);
 
@@ -6800,80 +6848,153 @@ initThemePicker();
         ctx.restore();
       }
 
-      else if (p.type === 'acorn') {
-        p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.rot += p.rotV;
-        if (p.y > h + 20) { particles.splice(i,1); continue; }
-        ctx.save(); ctx.globalAlpha = p.alpha * 0.88;
-        ctx.translate(p.x, p.y); ctx.rotate(p.rot);
-        const s = p.size;
-        ctx.beginPath(); ctx.ellipse(0, s*.2, s*.55, s*.65, 0, 0, Math.PI*2);
-        ctx.fillStyle = '#8B5E3C'; ctx.fill();
-        ctx.beginPath(); ctx.ellipse(0, -s*.3, s*.62, s*.35, 0, 0, Math.PI*2);
-        ctx.fillStyle = '#5C3D1E'; ctx.fill();
-        ctx.strokeStyle='#4a3020'; ctx.lineWidth=1.5; ctx.lineCap='round';
-        ctx.beginPath(); ctx.moveTo(0,-s*.6); ctx.lineTo(0,-s*1.1); ctx.stroke();
-        ctx.restore();
-      }
-
       else if (p.type === 'squirrel') {
+        // Ant
         p.frameTimer += dt;
-        if (p.frameTimer > 120) { p.frame = (p.frame+1)%4; p.frameTimer=0; }
+        if (p.frameTimer > 55) { p.frame = (p.frame + 1) % 6; p.frameTimer = 0; }
 
         if (!p.returning) {
           if ((p.fromLeft && p.x >= p.turnX) || (!p.fromLeft && p.x <= p.turnX)) {
             p.returning = true;
-            p.vx = -p.vx;           // invertir dirección
-            p.flipped = !p.flipped; // dar vuelta el sprite
+            p.vx = -p.vx;
+            p.flipped = !p.flipped;
           }
         }
-
         p.x += p.vx;
-
         if (p.returning) {
-          if ((p.fromLeft && p.x < -80) || (!p.fromLeft && p.x > w + 80)) {
+          if ((p.fromLeft && p.x < -30) || (!p.fromLeft && p.x > w + 30)) {
             particles.splice(i,1); continue;
           }
         }
 
-        const s = 22;
-        ctx.save(); ctx.globalAlpha = 0.88;
+        const s = 5; // tiny — much smaller than squirrel (was 22)
+        ctx.save();
+        ctx.globalAlpha = 0.92;
         ctx.translate(p.x, p.y);
-        if (p.flipped) { ctx.scale(-1,1); }
-        ctx.fillStyle = '#C47A2F';
-        ctx.beginPath(); ctx.ellipse(-2,0,s*.55,s*.38,-.2,0,Math.PI*2); ctx.fill();
-        ctx.beginPath(); ctx.ellipse(s*.5,-s*.15,s*.32,s*.28,0.3,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle='#1a0a00'; ctx.beginPath(); ctx.arc(s*.68,-s*.2,2,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle='#C47A2F'; ctx.beginPath(); ctx.ellipse(s*.45,-s*.4,4,6,.3,0,Math.PI*2); ctx.fill();
-        ctx.strokeStyle='#A0601C'; ctx.lineWidth=7; ctx.lineCap='round';
-        ctx.beginPath(); ctx.moveTo(-s*.5,0); ctx.quadraticCurveTo(-s*.8,-s*.5,-s*.3,-s*.7); ctx.stroke();
-        const legOff = Math.sin(p.frame*Math.PI/2)*5;
-        ctx.strokeStyle='#8B4513'; ctx.lineWidth=3;
-        ctx.beginPath(); ctx.moveTo(0,s*.3); ctx.lineTo(-6,s*.65+legOff); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(s*.2,s*.3); ctx.lineTo(s*.3,s*.65-legOff); ctx.stroke();
+        if (p.flipped) ctx.scale(-1, 1);
+
+        const bodyColor = '##000000';
+        const legColor  = '#1a0a00';
+
+        // 6 legs — 3 pairs, alternating gait
+        ctx.strokeStyle = legColor;
+        ctx.lineWidth = 0.8;
+        ctx.lineCap = 'round';
+        const legPhase = (p.frame / 6) * Math.PI * 2;
+        const legDefs = [
+          // [attachX, attachY, side, swingAmp]
+          [-s * 0.6, s * 0.1,  1, 1.2],
+          [ 0,       s * 0.1,  1, 1.0],
+          [ s * 0.6, s * 0.1,  1, 1.2],
+          [-s * 0.6, s * 0.1, -1, 1.2],
+          [ 0,       s * 0.1, -1, 1.0],
+          [ s * 0.6, s * 0.1, -1, 1.2],
+        ];
+        legDefs.forEach(([lx, ly, side, amp], idx) => {
+          const phase = legPhase + (idx < 3 ? 0 : Math.PI); // alternate tripods
+          const swing = Math.sin(phase + idx * 0.4) * amp * s * 0.55;
+          ctx.beginPath();
+          ctx.moveTo(lx, ly);
+          ctx.lineTo(lx + swing * 0.6, ly + side * s * 1.1);
+          ctx.stroke();
+        });
+
+        // Abdomen (rear, larger oval)
+        ctx.fillStyle = bodyColor;
+        ctx.beginPath();
+        ctx.ellipse(-s * 0.55, 0, s * 0.72, s * 0.48, 0.15, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Thorax (middle, smaller)
+        ctx.beginPath();
+        ctx.ellipse(s * 0.1, -s * 0.05, s * 0.38, s * 0.32, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Head
+        ctx.beginPath();
+        ctx.arc(s * 0.72, -s * 0.05, s * 0.32, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eye
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(s * 0.84, -s * 0.14, s * 0.10, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Antennae
+        ctx.strokeStyle = bodyColor;
+        ctx.lineWidth = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(s * 0.88, -s * 0.2);
+        ctx.quadraticCurveTo(s * 1.1, -s * 0.9, s * 0.85, -s * 1.1);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(s * 0.78, -s * 0.22);
+        ctx.quadraticCurveTo(s * 1.25, -s * 0.7, s * 1.3, -s * 0.45);
+        ctx.stroke();
+
         ctx.restore();
       }
 
       else if (p.type === 'butterfly') {
-        p.wobble += p.wobbleV; p.wingPhase += 0.18;
-        p.x += p.vx + Math.sin(p.wobble) * 0.5;
-        p.y += p.vy + Math.cos(p.wobble * 0.7) * 0.3;
-        const distFromEdge = p.vx > 0 ? p.x : w - p.x;
-        if (distFromEdge > p.maxX) { p.life -= 0.02; }
-        p.life -= 0.0015;
-        if (p.life <= 0 || p.y < -20 || p.y > h + 20) { particles.splice(i,1); continue; }
-        ctx.save(); ctx.globalAlpha = Math.min(p.alpha, p.life) * 0.85;
-        ctx.translate(p.x, p.y);
-        const flap = Math.abs(Math.sin(p.wingPhase));
-        for (let w2=0;w2<4;w2++) {
-          const mir=w2<2?1:-1, top=w2%2===0;
+        // Update
+        p.age += dt;
+        p.wobble += p.wobbleV;
+        p.glowPhase += p.glowSpeed;
+        p.dirTimer += dt;
+        // Gently change direction every few seconds
+        if (p.dirTimer >= p.dirInterval) {
+          p.dirTimer = 0;
+          p.dirInterval = 2500 + Math.random() * 3500;
+          const newAngle = Math.atan2(p.vy, p.vx) + (Math.random() - 0.5) * Math.PI * 1.1;
+          const spd = 0.18 + Math.random() * 0.22;
+          p.vx = Math.cos(newAngle) * spd;
+          p.vy = Math.sin(newAngle) * spd;
+        }
+        // Organic drift
+        p.x += p.vx + Math.sin(p.wobble) * 0.3;
+        p.y += p.vy + Math.cos(p.wobble * 0.8) * 0.25;
+        // Bounce softly off edges
+        if (p.x < w * 0.03 || p.x > w * 0.97) p.vx *= -1;
+        if (p.y < h * 0.08 || p.y > h * 0.92) p.vy *= -1;
+        // Fade out near end of life
+        if (p.age > p.maxLife * 0.8) p.life -= 0.008;
+        if (p.life <= 0) { particles.splice(i,1); continue; }
+
+        // Trail: keep last 10 positions
+        p.trail.push({ x: p.x, y: p.y });
+        if (p.trail.length > 10) p.trail.shift();
+
+        // Glow pulse: 0..1
+        const glow = 0.5 + 0.5 * Math.sin(p.glowPhase);
+        const baseAlpha = Math.min(p.alpha, p.life);
+
+        ctx.save();
+        // Draw trail
+        for (let t = 0; t < p.trail.length - 1; t++) {
+          const tr = p.trail[t];
+          const ta = (t / p.trail.length) * baseAlpha * glow * 0.35;
           ctx.beginPath();
-          ctx.ellipse(mir*(p.size*.5+flap*p.size*.4), top?-p.size*.35:p.size*.28, p.size*.5*flap+.5, p.size*(top?.48:.32), mir*Math.PI*.22, 0, Math.PI*2);
-          ctx.fillStyle=`hsla(${p.hue+w2*12},85%,58%,${Math.min(p.alpha,p.life)*.75})`;
-          ctx.shadowColor=`hsla(${p.hue},70%,65%,.3)`; ctx.shadowBlur=5;
+          ctx.arc(tr.x, tr.y, p.size * 0.4 * (t / p.trail.length), 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(180,220,255,${ta})`;
           ctx.fill();
         }
-        ctx.fillStyle=`rgba(20,10,5,${Math.min(p.alpha,p.life)*.8})`;
-        ctx.beginPath(); ctx.ellipse(0,0,1,p.size*.42,0,0,Math.PI*2); ctx.fill();
+        // Outer soft halo
+        const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * (3 + glow * 2.5));
+        grad.addColorStop(0,   `rgba(200,230,255,${baseAlpha * (0.28 + glow * 0.32)})`);
+        grad.addColorStop(0.4, `rgba(140,190,255,${baseAlpha * (0.10 + glow * 0.14)})`);
+        grad.addColorStop(1,   `rgba(80,140,255,  0)`);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * (3 + glow * 2.5), 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        // Core bright dot
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * (0.7 + glow * 0.5), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(220,240,255,${baseAlpha * (0.6 + glow * 0.4)})`;
+        ctx.shadowColor = `rgba(160,210,255,${glow * 0.9})`;
+        ctx.shadowBlur = 8 + glow * 10;
+        ctx.fill();
         ctx.restore();
       }
 
