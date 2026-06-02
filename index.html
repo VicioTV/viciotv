@@ -7179,39 +7179,26 @@ initThemePicker();
         const offFrac = p.offscreen ? Math.min(p.offscreen / p.len, 0.55) : 0.25;
 
         if (isMobileViewport()) {
-          /* ── MOBILE: render tipo desktop, escalado para viewport chico ── */
+          /* ── MOBILE: haz unico inspirado en desktop, sin nucleo superpuesto ── */
           ctx.save();
           ctx.translate(p.x0, p.y0);
           ctx.rotate(p.angle - Math.PI/2);
 
-          const mobileAlpha = alpha * (p.cinematic ? 0.78 : 0.68);
+          const mobileAlpha = alpha * (p.cinematic ? 0.8 : 0.72);
           const mobileOff = p.offscreen ? Math.min(p.offscreen / p.len, 0.52) : 0.22;
 
           const outer = ctx.createLinearGradient(0, 0, 0, p.len);
           outer.addColorStop(0,                   `hsla(${p.hue+14},100%,92%,0)`);
           outer.addColorStop(mobileOff * 0.6,     `hsla(${p.hue+14},100%,92%,0)`);
-          outer.addColorStop(mobileOff,           `hsla(${p.hue+8},100%,76%,${mobileAlpha * 0.58})`);
-          outer.addColorStop(mobileOff + 0.28,    `hsla(${p.hue},95%,62%,${mobileAlpha * 0.4})`);
-          outer.addColorStop(0.74,                `hsla(${p.hue-8},88%,50%,${mobileAlpha * 0.18})`);
+          outer.addColorStop(mobileOff,           `hsla(${p.hue+8},100%,76%,${mobileAlpha * 0.46})`);
+          outer.addColorStop(mobileOff + 0.3,     `hsla(${p.hue},95%,62%,${mobileAlpha * 0.34})`);
+          outer.addColorStop(0.76,                `hsla(${p.hue-8},88%,50%,${mobileAlpha * 0.16})`);
           outer.addColorStop(1,                   `hsla(${p.hue-16},80%,40%,0)`);
           ctx.fillStyle = outer;
           ctx.beginPath();
-          ctx.moveTo(-hwTip * 0.85, 0); ctx.lineTo(hwTip * 0.85, 0);
-          ctx.lineTo(hw * 0.9, p.len); ctx.lineTo(-hw * 0.9, p.len);
-          ctx.closePath(); ctx.filter = 'blur(22px)'; ctx.fill();
-
-          const innerLen = p.len * 0.76;
-          const inner = ctx.createLinearGradient(0, 0, 0, innerLen);
-          inner.addColorStop(0,                   `hsla(${p.hue+18},100%,96%,0)`);
-          inner.addColorStop(mobileOff * 0.65,    `hsla(${p.hue+18},100%,96%,0)`);
-          inner.addColorStop(mobileOff,           `hsla(${p.hue+5},100%,78%,${mobileAlpha * 0.42})`);
-          inner.addColorStop(0.62,                `hsla(${p.hue},90%,62%,${mobileAlpha * 0.18})`);
-          inner.addColorStop(1,                   `hsla(${p.hue},90%,62%,0)`);
-          ctx.fillStyle = inner;
-          ctx.beginPath();
-          ctx.moveTo(-hwTip * 0.38, 0); ctx.lineTo(hwTip * 0.38, 0);
-          ctx.lineTo(hw * 0.28, innerLen); ctx.lineTo(-hw * 0.28, innerLen);
-          ctx.closePath(); ctx.filter = 'blur(9px)'; ctx.fill();
+          ctx.moveTo(-hwTip * 0.95, 0); ctx.lineTo(hwTip * 0.95, 0);
+          ctx.lineTo(hw * 1.05, p.len); ctx.lineTo(-hw * 1.05, p.len);
+          ctx.closePath(); ctx.filter = 'blur(24px)'; ctx.fill();
 
           ctx.filter = 'none';
           ctx.restore();
