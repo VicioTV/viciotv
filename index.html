@@ -11,9 +11,6 @@
 <meta name="theme-color" content="#6366f1">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════════════════
-   VICIO TV — COMPLETE REDESIGN 2.0
-   ═══════════════════════════════════════════════════════════ */
 :root {
   --bg:#0a0a0f; --bg2:#0f0f16; --bg3:#15151e;
   --bg4:#1c1c2e; --surface:rgba(255,255,255,.04);
@@ -25,16 +22,12 @@
   --border:rgba(255,255,255,.07);
   --border-bright:rgba(255,255,255,.14);
 }
-*{margin:0;padding:0;box-sizing:border-box}
-html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--bg3) transparent}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;min-height:100dvh;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--bg3) transparent}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
 
-  /* ═══════════════════════════════════════════════════════════
-     VICIO TV — DIGITAL AWAKENING INTRO v3.0
-     10 fases cinematográficas: vacío → materialización
-  ═══════════════════════════════════════════════════════════ */
   #vtv-intro{
     position:fixed;inset:0;z-index:99999;
     background:#000;
@@ -50,7 +43,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   }
 
   /* ── NÚCLEO DE ENERGÍA (Fase 3) ── */
-
 
   /* ── LOGO CANVAS (construcción letra a letra) ── */
   #vtv-logo-canvas{
@@ -70,6 +62,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     font-family:'Bebas Neue',cursive;
     font-size:clamp(56px,10vw,96px);
     letter-spacing:10px;
+    background:linear-gradient(90deg,var(--accent,#6366f1),#a5a7f7,#fff,#a5a7f7,var(--accent,#6366f1));
     background:linear-gradient(90deg,
       var(--accent,#6366f1),
       color-mix(in srgb,var(--accent,#6366f1) 40%,#fff),
@@ -185,7 +178,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
   /* ===== PROFILE SCREEN ===== */
   /* ── PROFILES SCREEN ── */
-  #profiles-screen{position:fixed;inset:0;z-index:5000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;overflow:hidden}
+  #profiles-screen{position:fixed;inset:0;z-index:5000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;overflow:hidden;padding-bottom:env(safe-area-inset-bottom,0px)}
   /* Fondo animado */
   #profiles-screen::before{content:'';position:absolute;inset:-50%;background:
     radial-gradient(ellipse at 20% 50%,rgba(var(--accent-rgb),.12) 0%,transparent 50%),
@@ -194,7 +187,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     animation:profiles-bg 12s ease-in-out infinite alternate;pointer-events:none}
   @keyframes profiles-bg{0%{transform:scale(1) rotate(0deg)}100%{transform:scale(1.1) rotate(3deg)}}
   .profiles-logo{font-family:'Bebas Neue',cursive;font-size:72px;letter-spacing:8px;
-    background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 40%,#fff),color-mix(in srgb,var(--accent) 15%,#fff),color-mix(in srgb,var(--accent) 40%,#fff),var(--accent));
+    background:linear-gradient(90deg,var(--accent),#a5a7f7,#d8d9fb,#a5a7f7,var(--accent));background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 40%,#fff),color-mix(in srgb,var(--accent) 15%,#fff),color-mix(in srgb,var(--accent) 40%,#fff),var(--accent));
     background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
     animation:logo-shimmer 8s linear infinite;
     filter:drop-shadow(0 0 30px rgba(var(--accent-rgb),.4));
@@ -218,8 +211,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   #profiles-edit-btn:hover{border-color:rgba(255,255,255,.4);color:#fff}
 
   /* ── PROFILE EDITOR MODAL ── */
-  #profile-editor-modal{display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.88);backdrop-filter:blur(12px);align-items:center;justify-content:center}
-  .pe-confirm{display:none;position:absolute;inset:0;z-index:7000;background:rgba(10,10,15,.92);border-radius:20px;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center;backdrop-filter:blur(6px)}
+  #profile-editor-modal{display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);align-items:center;justify-content:center}
+  .pe-confirm{display:none;position:absolute;inset:0;z-index:7000;background:rgba(10,10,15,.92);border-radius:20px;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:32px;text-align:center;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
   .pe-confirm.open{display:flex}
   .pe-confirm-text{font-size:15px;color:var(--text2);line-height:1.6}
   .pe-confirm-name{font-size:18px;font-weight:700;color:var(--text);margin-bottom:4px}
@@ -238,7 +231,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .pe-avatar-btn:hover .pe-av-overlay{opacity:1}
   .pe-header-info{flex:1;display:flex;flex-direction:column;gap:8px}
   .pe-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:2px;color:var(--text)}
-  .pe-name-input{background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 16px;color:#fff;font-family:'Outfit',sans-serif;font-size:15px;outline:none;transition:border-color .2s;width:100%}
+  .pe-name-input{background:var(--bg3);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:12px 16px;color:#fff;font-family:'Outfit',sans-serif;font-size:16px;outline:none;transition:border-color .2s;width:100%}
   .pe-name-input:focus{border-color:var(--accent)}
   .pe-name-input::placeholder{color:var(--text3)}
   /* Avatar picker */
@@ -271,7 +264,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .emoji-opt{width:44px;height:44px;border-radius:8px;background:var(--bg3);border:2px solid transparent;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
   .emoji-opt:hover{border-color:var(--text2)}
   .emoji-opt.selected{border-color:var(--accent);background:var(--accent-subtle)}
-  .create-input{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:14px 16px;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;outline:none;margin-bottom:20px;transition:border-color var(--transition)}
+  .create-input{width:100%;background:var(--bg3);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:14px 16px;color:var(--text);font-family:'Outfit',sans-serif;font-size:16px;outline:none;margin-bottom:20px;transition:border-color var(--transition)}
   .create-input:focus{border-color:var(--accent)}
   .create-btns{display:flex;gap:10px}
   .btn-cancel{flex:1;background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:12px;font-family:'Outfit',sans-serif;font-size:14px;cursor:pointer;transition:background var(--transition)}
@@ -281,9 +274,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
   /* ===== NAV ===== */
   #nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;gap:8px;padding:0 32px;height:64px;background:linear-gradient(to bottom,rgba(0,0,0,.95) 0%,transparent 100%);transition:background .3s}
-  #nav.scrolled{background:rgba(10,10,15,.97);backdrop-filter:blur(12px)}
+  #nav.scrolled{background:rgba(10,10,15,.97);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
   .logo{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;
-    background:linear-gradient(90deg,var(--accent),var(--accent2),color-mix(in srgb,var(--accent) 20%,#fff),var(--accent2),var(--accent));
+    background:linear-gradient(90deg,var(--accent),var(--accent2),#cccef9,var(--accent2),var(--accent));background:linear-gradient(90deg,var(--accent),var(--accent2),color-mix(in srgb,var(--accent) 20%,#fff),var(--accent2),var(--accent));
     background-size:300% auto;
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     margin-right:12px;cursor:pointer;flex-shrink:0;
@@ -551,7 +544,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     #sidebar.mob-expanded .sb-top10-open .sb-chevron { transform:rotate(90deg); }
   }
 
-  
   /* Margen para el contenido cuando el sidebar está visible */
   body.sidebar-open #hero,
   body.sidebar-open #main { margin-left:44px; transition:margin-left .25s ease; }
@@ -599,7 +591,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .prox-card-type-badge.movie{background:rgba(10,10,20,.78);color:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.14)}
   .prox-card-type-badge.tv{background:rgba(99,102,241,.88);color:#fff;border:none}
   .prox-card-type-badge.anime{background:rgba(245,197,24,.95);color:#111}
-  .prox-card-country{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);color:#fff;font-size:.65rem;font-weight:600;padding:3px 7px;border-radius:4px;letter-spacing:.5px;backdrop-filter:blur(4px)}
+  .prox-card-country{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.65);color:#fff;font-size:.65rem;font-weight:600;padding:3px 7px;border-radius:4px;letter-spacing:.5px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
   .prox-card-info{padding:14px;text-align:center}
   .prox-card-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;text-align:center}
   .prox-card-meta{font-size:11px;color:var(--text3);margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap}
@@ -692,7 +684,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .hero-btns{display:flex;gap:12px}
   .hero-dots{position:absolute;bottom:24px;left:48px;display:flex;gap:8px;z-index:3;align-items:center}
   /* Botones prev/next del hero — ahora inline junto a los dots */
-  .hero-nav-btn{position:static;transform:none;z-index:4;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.18);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .22s;backdrop-filter:blur(6px);flex-shrink:0}
+  .hero-nav-btn{position:static;transform:none;z-index:4;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.18);color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .22s;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);flex-shrink:0}
   .hero-nav-btn:hover{background:rgba(99,102,241,.55);border-color:rgba(99,102,241,.7);transform:scale(1.12)}
   .hero-nav-prev{order:-1}
   .hero-nav-next{order:999}
@@ -764,8 +756,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .hcard-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:2rem;color:var(--text3)}
   .hcard-grad{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0) 15%,rgba(0,0,0,.3) 40%,rgba(0,0,0,.75) 65%,rgba(0,0,0,.97) 100%)}
   .hcard-badge{position:absolute;top:12px;left:12px;font-size:.58rem;font-weight:800;letter-spacing:.8px;padding:3px 8px;border-radius:5px;text-transform:uppercase;z-index:4}
-  .hcard-badge.badge-movie{background:rgba(10,10,20,.78);color:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(6px)}
-  .hcard-badge.badge-serie{background:rgba(99,102,241,.88);color:#fff;border:none;backdrop-filter:blur(4px)}
+  .hcard-badge.badge-movie{background:rgba(10,10,20,.78);color:rgba(255,255,255,.88);border:1px solid rgba(255,255,255,.14);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .hcard-badge.badge-serie{background:rgba(99,102,241,.88);color:#fff;border:none;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
   .hcard-badge.badge-anime{background:rgba(245,197,24,.92);color:#111;border:none}
   .hcard-info{position:absolute;bottom:0;left:0;right:0;padding:14px 14px 12px;z-index:3}
   .hcard-title{font-size:15px;font-weight:700;line-height:1.2;margin-bottom:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
@@ -794,7 +786,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
     display:flex;align-items:center;justify-content:center;
     cursor:pointer;transition:all .2s;position:static;
-    backdrop-filter:none;font-size:0;letter-spacing:0;padding:0;
+    -webkit-backdrop-filter:none;backdrop-filter:none;font-size:0;letter-spacing:0;padding:0;
     color:rgba(255,255,255,.7);
   }
   .hcard-trailer svg{width:15px;height:15px;flex-shrink:0;stroke:rgba(255,255,255,.7);stroke-width:2;fill:none}
@@ -814,7 +806,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 }
 .load-more-btn:hover{background:var(--accent-subtle);color:var(--accent);border-color:rgba(var(--accent-rgb),.3)}
 .load-more-btn:disabled{opacity:.3;pointer-events:none}
-
 
   /* ===== CARDS ===== */
   .card{flex-shrink:0;width:var(--card-w);border-radius:var(--radius);overflow:hidden;cursor:pointer;position:relative;background:var(--bg3);transition:transform .3s cubic-bezier(.34,1.56,.64,1),box-shadow .3s;scroll-snap-align:start}
@@ -864,7 +855,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;
     cursor:pointer;white-space:nowrap;
     letter-spacing:.6px;text-transform:uppercase;
-    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
     display:none;align-items:center;gap:5px;
     transition:background .18s,color .18s;
     z-index:6;
@@ -887,7 +878,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     background:rgba(0,0,0,.5);border:none;
     display:none;align-items:center;justify-content:center;
     cursor:pointer;transition:all .2s;
-    font-size:14px;backdrop-filter:blur(4px);z-index:5;
+    font-size:14px;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);z-index:5;
   }
   .card-fav-btn svg{width:14px;height:14px;transition:all .2s}
   .card-fav-btn.is-fav svg{fill:var(--accent);stroke:var(--accent)}
@@ -920,7 +911,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .live-badge{font-size:10px;background:var(--accent);color:#fff;padding:2px 6px;border-radius:3px;font-weight:700;letter-spacing:.5px;margin-left:auto;flex-shrink:0}
 
   /* ===== MODAL ===== */
-  #modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.88);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 16px}
+  #modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 16px;padding-bottom:max(24px,env(safe-area-inset-bottom))}
   #modal-overlay.open{display:flex}
   #modal{background:var(--bg2);border-radius:16px;width:100%;max-width:960px;position:relative;animation:modalIn .3s cubic-bezier(.34,1.56,.64,1)}
   @keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -997,7 +988,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .cast-role{font-size:10px;color:var(--text3);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   /* ── FILMOGRAFÍA OVERLAY ── */
-  #actor-overlay{display:none;position:fixed;inset:0;z-index:1500;background:var(--bg);overflow-y:auto;padding:80px 16px 60px}
+  #actor-overlay{display:none;position:fixed;inset:0;z-index:1500;background:var(--bg);overflow-y:auto;padding:80px 16px 60px;padding-bottom:max(60px,env(safe-area-inset-bottom))}
   #actor-overlay.open{display:block}
   .actor-header{max-width:960px;margin:0 auto 28px;display:flex;align-items:flex-start;gap:20px}
   .actor-header-back{background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text2);border-radius:8px;padding:8px 16px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;white-space:nowrap;flex-shrink:0}
@@ -1044,7 +1035,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .similar-card-title{padding:8px;font-size:12px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
   /* ===== SEARCH OVERLAY ===== */
-  #search-overlay{display:none;position:fixed;inset:0;z-index:900;background:rgba(10,10,15,.98);padding:80px 32px 32px;overflow-y:auto}
+  #search-overlay{display:none;position:fixed;inset:0;z-index:900;background:rgba(10,10,15,.98);padding:80px 32px 32px;padding-bottom:max(32px,env(safe-area-inset-bottom));overflow-y:auto}
   #search-overlay > div:first-child{position:sticky;top:0;z-index:2;background:rgba(10,10,15,.98);padding-bottom:12px;margin-bottom:4px}
   #search-overlay.open{display:block}
   .search-results-grid{display:flex;flex-wrap:wrap;gap:16px;margin-top:24px}
@@ -1104,6 +1095,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     /* ── NAV MOBILE: 2 filas ── */
     #nav{
       padding:0 12px;
+      padding-top:env(safe-area-inset-top,0px);
       height:auto;
       flex-wrap:wrap;
       align-items:center;
@@ -1144,7 +1136,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       transition:none;
     }
     .nav-search:focus-within{width:160px}
-    .nav-search input{font-size:13px!important}
+    .nav-search input{font-size:16px!important}
 
     /* Ocultar: creator badge, spacers flex desktop, pwa, visitas */
     .creator-wrap{display:none}
@@ -1243,7 +1235,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
     /* Modal */
     #modal-overlay{padding:0}
-    #modal{border-radius:0;min-height:100vh}
+    #modal{border-radius:0;min-height:100vh;min-height:100dvh}
     .modal-body{padding:12px}
     .modal-topbar{padding:8px 12px}
     .modal-actions{flex-wrap:wrap;gap:8px;padding:0 12px 12px}
@@ -1257,7 +1249,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
     /* Perfiles */
     .profiles-logo{font-size:48px;letter-spacing:5px;
-      background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 40%,#fff),color-mix(in srgb,var(--accent) 15%,#fff),color-mix(in srgb,var(--accent) 40%,#fff),var(--accent));
+      background:linear-gradient(90deg,var(--accent),#a5a7f7,#d8d9fb,#a5a7f7,var(--accent));background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 40%,#fff),color-mix(in srgb,var(--accent) 15%,#fff),color-mix(in srgb,var(--accent) 40%,#fff),var(--accent));
       background-size:300% auto;-webkit-background-clip:text;-webkit-text-fill-color:transparent;
       animation:logo-shimmer 8s linear infinite;
       filter:drop-shadow(0 0 20px rgba(var(--accent-rgb),.4));
@@ -1282,7 +1274,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 </head>
 <body>
 
-<!-- ══ VICIO TV INTRO ══ -->
 <div id="vtv-intro">
   <canvas id="vtv-particles-canvas"></canvas>
   <div id="vtv-ambient-glow"></div>
@@ -1302,7 +1293,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 </div>
 
-<!-- ===== PANTALLA DE PERFILES ===== -->
 <div id="profiles-screen">
   <div class="profiles-logo">VicioTV</div>
   <p class="profiles-subtitle">Streaming · Películas · Series · Anime</p>
@@ -1311,7 +1301,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <button id="profiles-edit-btn" onclick="toggleProfileEdit()">Editar perfiles</button>
 </div>
 
-<!-- ===== PROFILE EDITOR MODAL ===== -->
 <div id="profile-editor-modal">
   <div class="profile-editor-box">
     <div class="pe-header">
@@ -1337,7 +1326,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <button class="pe-btn-cancel" onclick="closeProfileEditor()">Cancelar</button>
       <button class="pe-btn-save" onclick="saveProfileEditor()">Guardar</button>
     </div>
-    <!-- Confirm eliminar -->
     <div class="pe-confirm" id="pe-confirm">
       <div class="pe-confirm-name" id="pe-confirm-name"></div>
       <div class="pe-confirm-text">¿Eliminar este perfil?<br>Se borrarán sus favoritos y progreso.</div>
@@ -1349,7 +1337,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 </div>
 
-<!-- ===== NAV ===== -->
 <nav id="nav" style="display:none">
   <div class="logo focusable" tabindex="0" onclick="showHome()">VicioTV</div>
   <div class="nav-tabs">
@@ -1359,27 +1346,22 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <button class="nav-tab focusable" data-tab="anime" onclick="switchTab('anime')">Anime</button>
     <button class="nav-tab focusable" data-tab="proximamente" onclick="openSidebarSection('proximamente')">Próximamente</button>
   </div>
-  <!-- Espacio flexible: separa tabs del buscador, empuja todo hacia la derecha -->
   <div style="flex:1;min-width:32px"></div>
-  <!-- Buscador -->
   <div class="nav-search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="search-input" type="text" placeholder="Buscar..." oninput="onSearch(this.value)" onfocus="openSearchOverlay()" />
     <button id="search-clear-btn" onclick="clearSearch()" title="Cerrar búsqueda">✕</button>
   </div>
-  <!-- Personalizar -->
   <div class="creator-wrap">
     <div class="creator-badge" onclick="toggleCreatorPanel(event)" title="Personalización" style="gap:6px;padding:6px 14px">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text2);flex-shrink:0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       <span style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;color:var(--text2);letter-spacing:.5px">Personalizar</span>
     </div>
   </div>
-  <!-- Perfil -->
   <div class="nav-profile focusable" tabindex="0" onclick="goToProfiles()" title="Cambiar perfil">
     <div class="nav-profile-avatar" id="nav-avatar"></div>
     <span class="nav-profile-name" id="nav-name"></span>
   </div>
-  <!-- Elementos solo mobile -->
   <span id="visit-count-mobile" style="display:none"></span>
   <button id="nav-settings-btn" onclick="toggleCreatorPanel(event)" style="display:none;align-items:center;justify-content:center;width:36px;height:36px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;cursor:pointer;flex-shrink:0;transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.12)'" onmouseout="this.style.background='rgba(255,255,255,.06)'">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text2)"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -1388,11 +1370,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <button id="pwa-install-btn">⬇ Instalar</button>
 </nav>
 
-<!-- ===== CREATOR PANEL (direct body child so position:fixed works on mobile) ===== -->
 <div class="creator-panel" id="creator-panel">
   <div class="creator-panel-title" style="font-size:13px;letter-spacing:1px;color:var(--text2);font-family:'Outfit',sans-serif;font-weight:600;-webkit-text-fill-color:unset;background:none;animation:none;text-align:center;padding-bottom:0px">Personalización</div>
 
-  <!-- Switch de versión -->
   <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px">
     <span style="font-size:11px;color:#a78bfa;letter-spacing:.5px;text-transform:uppercase;text-align:center;display:block;width:100%">Versiones distintas de Interfaz</span>
     <div style="display:flex;background:rgba(0,0,0,.3);border-radius:8px;padding:3px;gap:3px">
@@ -1401,10 +1381,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
   </div>
 
-  <!-- Divider -->
   <div style="height:1px;background:rgba(255,255,255,.07);margin:2px 0"></div>
 
-  <!-- Theme picker -->
   <span style="font-size:11px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase">Colores</span>
   <div class="tp-selector">
     <div class="tp-option" onclick="selectThemeTarget('accent')" id="tp-opt-accent">
@@ -1420,10 +1398,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
   <div class="theme-colors" id="theme-colors"></div>
   <button class="theme-reset" onclick="resetTheme()">↺ Restaurar por defecto</button>
-  <!-- Divider -->
   <div style="height:1px;background:rgba(255,255,255,.07);margin:2px 0"></div>
 
-  <!-- Ambiente -->
   <span style="font-size:11px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase">Ambiente</span>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" id="weather-btns">
     <button onclick="setWeatherMode('otono')"    id="wb-otono"   class="wb-btn">🍂 Otoño</button>
@@ -1431,7 +1407,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <button onclick="setWeatherMode('tormenta')" id="wb-tormenta" class="wb-btn">⛈️ Tormenta</button>
     <button onclick="setWeatherMode('nieve')"    id="wb-nieve"   class="wb-btn">❄️ Nieve</button>
   </div>
-  <!-- Sub-switch de Tormenta -->
   <div id="storm-switch-wrap" style="display:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:6px 8px">
     <div style="display:flex;background:rgba(0,0,0,.3);border-radius:7px;padding:3px;gap:3px">
       <button onclick="setStormType('relampagos')" id="st-relampagos" style="flex:1;padding:6px 4px;border-radius:5px;border:none;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .18s;background:var(--accent);color:#fff">⚡ Relámpagos</button>
@@ -1444,17 +1419,14 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 </div>
 
-<!-- ===== SIDEBAR IZQUIERDO ===== -->
 <div id="sidebar">
 
-  <!-- BOTÓN X (solo mobile): oculta/muestra el resto del sidebar -->
   <button class="sidebar-btn focusable sb-x-btn" id="sb-x-btn" onclick="sbToggleHide()" style="display:none">
     <span class="sb-icon" id="sb-x-icon">
       <svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </span>
   </button>
 
-  <!-- TOP 10 — badge rojo + chevron, submenu al costado -->
   <button class="sidebar-btn focusable" id="sb-top10" onclick="togglePlatformMenu(event)">
     <span class="sb-top10-badge"><span>TOP<br>10</span></span>
     <span class="sb-text">
@@ -1466,7 +1438,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <span class="sb-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
   </button>
 
-  <!-- MÁS POPULARES -->
   <button class="sidebar-btn focusable" id="sb-populares" onclick="openSidebarSection('mas-populares')">
     <span class="sb-icon">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
@@ -1479,7 +1450,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
   </button>
 
-  <!-- MÁS RECIENTES -->
   <button class="sidebar-btn focusable" id="sb-recientes" onclick="openSidebarSection('mas-recientes')">
     <span class="sb-icon">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -1492,7 +1462,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
   </button>
 
-  <!-- MEJORES ANIME -->
   <button class="sidebar-btn focusable" id="sb-anime" onclick="openSidebarSection('mejores-anime')">
     <span class="sb-icon">
       <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -1505,7 +1474,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
   </button>
 
-  <!-- PRÓXIMAMENTE -->
   <button class="sidebar-btn focusable" id="sb-proximamente" onclick="openSidebarSection('proximamente')">
     <span class="sb-icon">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -1518,10 +1486,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
   </button>
 
-  <!-- SEPARADOR -->
   <div class="sb-divider"></div>
 
-  <!-- MIS FAVORITOS -->
   <button class="sidebar-btn focusable" id="sb-favs" onclick="sbGoFavs()">
     <span class="sb-icon">
       <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
@@ -1533,7 +1499,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
   </button>
 
-  <!-- CONTINUAR VIENDO -->
   <button class="sidebar-btn focusable" id="sb-cw" onclick="sbGoContinuar()">
     <span class="sb-icon">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
@@ -1545,10 +1510,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
   </button>
 
-  <!-- SEPARADOR -->
   <div class="sb-divider"></div>
 
-  <!-- MI PERFIL -->
   <button class="sidebar-btn focusable" id="sb-perfil" onclick="goToProfiles()">
     <span class="sb-icon">
       <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -1560,7 +1523,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
   </button>
 
-  <!-- EXPANDIR (mobile) / SALIR (desktop) -->
   <button class="sidebar-btn focusable" id="sb-salir" onclick="sbToggleExpand()">
     <span class="sb-icon" id="sb-expand-icon">
       <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
@@ -1574,7 +1536,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
 </div>
 
-<!-- Submenu plataformas — fuera del sidebar, posicionado por JS -->
 <div class="sb-submenu" id="sb-platform-menu">
   <div class="sb-submenu-header">Seleccioná plataforma</div>
   <button class="sb-submenu-item" onclick="openTop10Platform('netflix','8','Netflix')">
@@ -1600,7 +1561,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </button>
 </div>
 
-<!-- ===== SEARCH OVERLAY ===== -->
 <div id="search-overlay">
   <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
     <p class="search-header-txt" id="search-header-txt" style="margin:0">Resultados</p>
@@ -1609,7 +1569,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <div class="search-results-grid" id="search-results-grid"></div>
 </div>
 
-<!-- ===== HERO ===== -->
 <div id="hero" style="display:none">
   <div class="hero-bg"></div>
   <img class="hero-img" id="hero-img" src="" alt="">
@@ -1635,13 +1594,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 </div>
 
-<!-- ===== MAIN ===== -->
 <main id="main" style="display:none">
 
-  <!-- Continuar Viendo -->
   <div id="viciotv-cw-container"></div>
 
-  <!-- Mi Lista -->
   <div class="row-section" id="section-favs" style="display:none">
     <div class="row-header">
       <span class="row-title">Mis Favoritos</span>
@@ -1650,7 +1606,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
     <div class="hero-row hero-row-wrap" id="carousel-favs"></div>
   </div>
-  <!-- Inicio -->
   <div id="sec-popular" class="row-section">
     <div class="row-header">
       <span class="row-title">Películas Populares</span>
@@ -1682,7 +1637,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <div class="hero-row hero-row-wrap" id="hrow-tvtrending"></div>
   </div>
 
-  <!-- Películas — sección unificada con scroll infinito -->
   <div id="sec-movies-filters" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header" style="padding-bottom:8px;padding-left:22px;padding-right:22px">
       <span class="row-title">PELÍCULAS</span>
@@ -1697,7 +1651,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
   </div>
 
-  <!-- Series — sección unificada con scroll infinito -->
   <div id="sec-series-filters" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header" style="padding-bottom:8px;padding-left:22px;padding-right:22px">
       <span class="row-title">SERIES</span>
@@ -1712,7 +1665,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
   </div>
 
-  <!-- Anime — sección unificada con scroll infinito -->
   <div id="sec-anime-filters" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header" style="padding-bottom:8px;padding-left:22px;padding-right:22px">
       <span class="row-title">ANIME</span>
@@ -1727,13 +1679,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
   </div>
 
-  <!-- Canales en vivo -->
   <div id="sec-canales" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header"><span class="row-title">Canales en Vivo</span></div>
     <div class="live-grid" id="live-grid"></div>
   </div>
 
-  <!-- Catálogo infinito (películas / series / anime con filtros) -->
   <div id="sec-catalog" class="row-section" style="display:none">
     <div class="row-header">
       <span class="row-title" id="catalog-title">Catálogo</span>
@@ -1746,15 +1696,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
   </div>
 
-  <!-- Search results -->
   <div id="sec-search" class="row-section" style="display:none">
     <div class="row-header"><span class="row-title" id="search-label">Resultados</span></div>
     <div class="search-results-grid" id="search-grid" style="padding:0 40px"></div>
   </div>
 
-  <!-- ── SIDEBAR SECTIONS ── -->
 
-  <!-- Top 10 Netflix Argentina -->
   <div id="sec-netflixtop10" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
       <span class="row-title">TOP 10 NETFLIX</span>
@@ -1769,7 +1716,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
   </div>
 
-  <!-- Top 100 Popular (mix) -->
   <div id="sec-top100" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
       <span class="row-title">🏆 TOP 100 MÁS POPULARES</span>
@@ -1778,7 +1724,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <div id="load-more-top100" style="height:10px"></div>
   </div>
 
-  <!-- Más Populares (scroll infinito) -->
   <div id="sec-mas-populares" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
       <span class="row-title">MÁS POPULARES</span>
@@ -1790,7 +1735,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
   </div>
 
-  <!-- Más Recientes (scroll infinito) -->
   <div id="sec-mas-recientes" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
       <span class="row-title">MÁS RECIENTES</span>
@@ -1802,7 +1746,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
   </div>
 
-  <!-- Mejores Anime (scroll infinito por puntuación) -->
   <div id="sec-mejores-anime" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header">
       <span class="row-title">MEJORES ANIME</span>
@@ -1814,7 +1757,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
   </div>
 
-  <!-- Próximamente -->
   <div id="sec-proximamente" class="row-section" style="display:none;padding-top:80px">
     <div class="row-header" style="padding-left:22px;padding-right:22px">
       <span class="row-title">PRÓXIMAMENTE</span>
@@ -1830,7 +1772,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <div class="prox-grid" id="prox-grid"></div>
   </div>
 
-<!-- ===== MODAL ===== -->
 <div id="modal-overlay">
   <div id="modal">
     <div class="modal-topbar">
@@ -1857,7 +1798,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
     <div class="provider-bar" id="provider-bar"><span class="provider-label">🖥️ Ver en:</span></div>
 
-    <!-- TV Selectors -->
     <div id="tv-selectors">
       <select class="tv-select focusable" id="sel-season"></select>
       <select class="tv-select focusable" id="sel-episode"></select>
@@ -1888,13 +1828,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       </div>
     </div>
 
-    <!-- Cast — debajo de los botones, arriba de episodios -->
     <div id="modal-cast-section" style="display:none">
       <div class="modal-section-title">Actores Principales</div>
       <div class="cast-scroll" id="cast-scroll"></div>
     </div>
 
-    <!-- Episodes Panel -->
     <div id="episodes-panel">
       <div class="episodes-header" style="padding:0 24px">
         <div class="episodes-title-text">Episodios</div>
@@ -1903,7 +1841,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <div style="padding:0 24px 4px"><div class="episode-list" id="episode-list"></div></div>
     </div>
 
-    <!-- Similar -->
     <div id="modal-similar-section" style="display:none">
       <div class="modal-section-title">Contenido similar</div>
       <div class="similar-grid" id="similar-grid"></div>
@@ -1915,8 +1852,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
 <div id="toast"></div>
 
-<!-- TRAILER MODAL -->
-<div id="trailer-modal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column;gap:16px">
+<div id="trailer-modal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column;gap:16px">
   <button onclick="closeTrailer()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
   <div id="trailer-title" style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;color:#fff;text-align:center;padding:0 60px"></div>
   <div style="width:90vw;max-width:900px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.8)">
@@ -1924,7 +1860,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 </div>
 
-<!-- ACTOR / FILMOGRAFÍA OVERLAY -->
 <div id="actor-overlay">
   <div class="actor-header">
     <button class="actor-header-back" onclick="closeActorOverlay()">← Volver</button>
@@ -1962,7 +1897,6 @@ const PROVIDERS = [
     tv:(t,i,s,e)=>i?`https://embedmaster.link/tv/${i}/${s}/${e}`:null,
     sandbox:null },
 
-  // ── Servidores Directos extraídos ──
   
   { id:"vixsrc",
     name:"Server #2", flag:"🟠", note:"Servidor directo", hidden:true,
@@ -2114,10 +2048,9 @@ function renderContinueWatching() {
   history.slice().reverse().forEach((item) => {
     const card = buildHeroCard(item);
     card.style.position = "relative";
-    // Botón X — quitar de Continuar Viendo
     const delBtn = document.createElement("button");
     delBtn.title = "Quitar de Continuar Viendo";
-    delBtn.style.cssText = "position:absolute;top:10px;right:10px;z-index:20;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .15s;backdrop-filter:blur(4px)";
+    delBtn.style.cssText = "position:absolute;top:10px;right:10px;z-index:20;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,.72);border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.85);font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .15s;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)";
     delBtn.innerHTML = "✕";
     delBtn.addEventListener("mouseenter", () => { delBtn.style.background="var(--accent)"; delBtn.style.transform="scale(1.1)"; });
     delBtn.addEventListener("mouseleave", () => { delBtn.style.background="rgba(0,0,0,.72)"; delBtn.style.transform="scale(1)"; });
@@ -2232,15 +2165,12 @@ function toggleFav(item) {
   updateFavBtn(item);
   if (activeTab === "inicio" && !_activeSidebarSection) renderFavs();
   const nowFav = isFav(item.id);
-  // Actualizar todos los corazones de small-cards visibles con este id
   document.querySelectorAll('.card-fav-btn[data-id="' + item.id + '"]').forEach(btn => {
     btn.classList.toggle("is-fav", nowFav);
   });
-  // Actualizar todos los corazones de hcards visibles con este id
   document.querySelectorAll('.hcard-fav[data-id="' + item.id + '"]').forEach(btn => {
     btn.classList.toggle("is-fav", nowFav);
   });
-  // Sincronizar corazones cw-remove (Continuar Viendo)
   document.querySelectorAll('.cw-remove[data-id="' + item.id + '"]').forEach(btn => {
     const c = nowFav ? 'var(--accent)' : 'rgba(255,255,255,.3)';
     const svg = btn.querySelector('svg');
@@ -2264,7 +2194,6 @@ function renderFavs() {
   _favsShown = 0;
   sec.style.display = "";
   car.innerHTML = "";
-  // Mostrar solo el primer batch igual que las otras secciones
   const end = Math.min(HROW_BATCH, favs.length);
   for (let i = 0; i < end; i++) car.appendChild(buildHeroCard(favs[i]));
   _favsShown = end;
@@ -2363,14 +2292,12 @@ function buildCard(m, i) {
     </button>`;
   card.addEventListener("click", () => openModal(m));
 
-  // Botón mobile play
   const mobilePlayBtn = card.querySelector(".card-mobile-play");
   if (mobilePlayBtn) {
     mobilePlayBtn.addEventListener("click", (e) => { e.stopPropagation(); openModal(m); });
     mobilePlayBtn.addEventListener("touchend", (e) => { e.stopPropagation(); e.preventDefault(); openModal(m); }, { passive: false });
   }
 
-  // Corazón favorito
   const favBtn = card.querySelector(".card-fav-btn");
   if (favBtn) {
     const _favHandler = (e) => {
@@ -2384,7 +2311,6 @@ function buildCard(m, i) {
     favBtn.addEventListener("touchend", _favHandler, { passive: false });
   }
 
-  // Botones trailer — verificar disponibilidad y conectar
   const trailerBtns = card.querySelectorAll(".trailer-btn, .card-trailer-btn");
   if (trailerBtns.length) {
     fetch(`${API_BASE}/${m._type||'movie'}/${m.id}/videos?api_key=${API_KEY}&language=es-MX`)
@@ -2396,7 +2322,6 @@ function buildCard(m, i) {
           else b.classList.add("no-trailer");
         });
         if (!has) {
-          // Sin trailer en TMDB → botón YouTube idéntico al trailer-btn
           const ytBtn = document.createElement("a");
           ytBtn.className = "trailer-btn yt-fallback visible";
           const t = m.title || m.name || "";
@@ -2419,7 +2344,6 @@ function buildCard(m, i) {
       b.addEventListener("touchend", _trailerHandler, { passive: false });
     });
   }
-  // Cargar visitas — referencia directa al elemento de esta card
   const _viewsEl = card.querySelector(".card-views");
   if (_viewsEl) {
     (async () => {
@@ -2427,12 +2351,10 @@ function buildCard(m, i) {
         const cacheKey = `viciotv_views_${m.id}`;
         const CACHE_TTL = 30 * 1000; // 30 segundos
         const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
-        // Mostrar caché instantáneo siempre
         if (cached) {
           _viewsEl.textContent = `👁 ${Number(cached.v).toLocaleString("es")}`;
           _viewsEl.classList.add("loaded");
         }
-        // Solo consultar la API si el caché expiró
         if (!cached || Date.now() - cached.ts > CACHE_TTL) {
           const r = await fetch(`https://countapi.mileshilliard.com/api/v1/get/viciotv-item-${m.id}`);
           const d = await r.json();
@@ -2442,7 +2364,6 @@ function buildCard(m, i) {
           _viewsEl.classList.add("loaded");
         }
       } catch {
-        // silencioso si falla
       }
       _viewsEl.classList.add("loaded");
     })();
@@ -2494,7 +2415,6 @@ async function initHero() {
 function buildHeroDots() {
   const container = document.getElementById("hero-dots");
   if (!container) return;
-  // Remove only existing dots (keep nav buttons)
   container.querySelectorAll(".hero-dot").forEach(d => d.remove());
   const nextBtn = container.querySelector(".hero-nav-next");
   _heroItems.forEach((_, i) => {
@@ -2523,11 +2443,9 @@ async function showHeroItem(index) {
   heroItem = featured;
   updateHeroDots(index);
 
-  // Fade out suave
   const heroContent = document.querySelector(".hero-content");
   if (heroContent) heroContent.style.opacity = "0";
 
-  // Logo
   let logoUrl = null;
   try {
     const imgData = await fetch(`${API_BASE}/${featured._type}/${featured.id}?api_key=${API_KEY}&append_to_response=images`).then(r=>r.json());
@@ -2549,10 +2467,8 @@ async function showHeroItem(index) {
     <span>${featured._type === "tv" ? "SERIE" : "PELÍCULA"}</span>`;
   document.getElementById("hero-overview").textContent = featured.overview || "";
 
-  // Fade in
   if (heroContent) { heroContent.style.transition = "opacity .5s"; heroContent.style.opacity = "1"; }
 
-  // Verificar si hay trailer disponible
   const trailerBtn = document.getElementById("hero-trailer-btn");
   if (trailerBtn) {
     trailerBtn.style.display = "none";
@@ -2587,7 +2503,6 @@ function heroNext() {
   startHeroAutoplay();
 }
 
-// Alias para compatibilidad con el initContent existente
 function loadHeroFeatured() { initHero(); }
 
 /* ─── MODAL ─── */
@@ -2595,16 +2510,13 @@ async function openModal(item) {
   activeProvider = "streamimdb"; // Reset al servidor principal en cada película
   currentItem = item;
   currentType = item._type || "movie";
-  // Registrar visita al contenido
   (async () => {
     try {
       const r = await fetch(`https://countapi.mileshilliard.com/api/v1/hit/viciotv-item-${item.id}`);
       const d = await r.json();
       const v = d.value ?? d.count;
       if (v != null) {
-        // Actualizar caché local con el nuevo valor
         localStorage.setItem(`viciotv_views_${item.id}`, JSON.stringify({ v, ts: Date.now() }));
-        // Actualizar todos los badges visibles
         document.querySelectorAll(`.card-views[data-id="${item.id}"]`).forEach(el => {
           el.textContent = `👁 ${Number(v).toLocaleString("es")}`;
           el.classList.add("loaded");
@@ -2640,7 +2552,6 @@ async function openModal(item) {
   currentImdbId = null; currentSeasons = 1;
   updateFavBtn(item);
 
-  // Trailer en modal: verificar si hay en TMDB, si no → YouTube
   const _mTrailerBtn   = document.getElementById("modal-trailer-btn");
   const _mTrailerYtBtn = document.getElementById("modal-trailer-yt-btn");
   _mTrailerBtn.style.display   = "none";
@@ -2663,7 +2574,6 @@ async function openModal(item) {
       }
     }).catch(() => {});
 
-  // Guardar en Continuar Viendo apenas abre el contenido
   if (item && item.id) {
     window.viciotvTrackContinueWatching(item);
     renderContinueWatching();
@@ -2671,24 +2581,19 @@ async function openModal(item) {
 
   const modalAlreadyOpen = document.getElementById("modal-overlay").classList.contains("open");
   document.getElementById("modal-overlay").classList.add("open");
-  // Scroll al top del overlay al abrir/cambiar contenido
   const _ov = document.getElementById("modal-overlay");
   if (_ov) _ov.scrollTop = 0;
-  // Mostrar tip de subtítulos si no fue cerrado antes
   const subTipBar = document.getElementById("sub-tip-bar");
   if(subTipBar){
     subTipBar.style.display = localStorage.getItem("viciotv_sub_tip_seen") ? "none" : "flex";
   }
   document.body.style.overflow = "hidden";
-  // Solo pushear al historial si el modal no estaba abierto ya
-  // (evita que navegar entre similar/actores cierre el modal)
   if (!modalAlreadyOpen) history.pushState({ modal: true }, "");
 
   try {
     const resDetail = await fetch(`${API_BASE}/${currentType}/${item.id}?api_key=${API_KEY}&language=es-MX&append_to_response=credits,recommendations`);
     const detail    = await resDetail.json();
 
-    // Runtime
     const rtEl = document.getElementById("modal-runtime");
     if (currentType === "movie" && detail.runtime) {
       const h = Math.floor(detail.runtime / 60), m = detail.runtime % 60;
@@ -2697,7 +2602,6 @@ async function openModal(item) {
       rtEl.textContent = `~${detail.episode_run_time[0]}m/ep`;
     } else { rtEl.remove(); }
 
-    // Cast
     const cast = detail.credits?.cast?.slice(0, 15) || [];
     const crew = detail.credits?.crew?.filter(c => ["Director","Creator","Screenplay"].includes(c.job)).slice(0,2) || [];
     const allPeople = [...crew, ...cast];
@@ -2715,13 +2619,11 @@ async function openModal(item) {
           <div class="cast-avatar-placeholder" ${imgSrc ? 'style="display:none"' : ""}>👤</div>
           <div class="cast-name">${p.name}</div>
           <div class="cast-role">${p.character || p.job || ""}</div>`;
-        // Click → abrir filmografía
         div.addEventListener("click", () => openActorOverlay(p.id, p.name, imgSrc));
         scroll.appendChild(div);
       });
     }
 
-    // Similar
     const similar = detail.recommendations?.results?.slice(0, 12) || [];
     const totalSimilar = detail.recommendations?.total_pages || 1;
     if (similar.length) {
@@ -2729,7 +2631,6 @@ async function openModal(item) {
       sec.style.display = "block";
       const grid = document.getElementById("similar-grid");
       _appendSimilarCards(similar, grid);
-      // Guardar estado para paginación
       window._similarItemId   = currentItem?.id;
       window._similarType     = currentType;
       window._similarPage     = 1;
@@ -2906,7 +2807,6 @@ document.getElementById("play-next-btn").addEventListener("click", () => {
 });
 
 /* ─── CERRAR MODAL ─── */
-// movieFrame se referencia via window.movieFrame (ver arriba)
 function closeSubTip() {
   localStorage.setItem("viciotv_sub_tip_seen", "1");
   const bar = document.getElementById("sub-tip-bar");
@@ -2920,7 +2820,6 @@ function closeModal() {
 function _doCloseModal() {
   document.getElementById("modal-overlay").classList.remove("open");
   document.getElementById("modal").classList.remove("forced-fullscreen");
-  // Parar audio: reemplazar iframe por uno nuevo vacío
   const frame = document.getElementById("movie-frame");
   if (frame) {
     const blank = document.createElement("iframe");
@@ -2964,32 +2863,25 @@ function _resetMovieFrame() {
   newFrame.style.height = "100%";
   newFrame.style.border = "none";
   newFrame.style.display = "block";
-  // Sandbox se aplica después via applyProviderSandbox()
   old.replaceWith(newFrame);
-  // Actualizar la referencia global
   window.movieFrame = newFrame;
 }
 document.getElementById("close-btn").addEventListener("click", closeModal);
 document.getElementById("modal-overlay").addEventListener("click", e => {
-  // Cerrar si el click es en el overlay o en el padding (fuera del modal blanco)
   const modal = document.getElementById("modal");
   if (!modal.contains(e.target)) closeModal();
 });
 window.addEventListener("popstate", e => {
   const actorOverlay = document.getElementById("actor-overlay");
-  // 1. Cerrar overlay de actor
   if (actorOverlay && actorOverlay.classList.contains("open")) {
     closeActorOverlay();
     return;
   }
-  // 2. Salir de fullscreen forzado
   if (document.getElementById("modal").classList.contains("forced-fullscreen")) {
     document.getElementById("modal").classList.remove("forced-fullscreen");
     try { screen.orientation?.unlock?.(); } catch {}
     return;
   }
-  // 3. Cerrar modal solo si el estado anterior NO tenía modal
-  // (si venimos de un pushState de modal, no cerrar)
   if (document.getElementById("modal-overlay").classList.contains("open")) {
     if (!e.state?.modal) {
       _doCloseModal();
@@ -3017,7 +2909,6 @@ document.getElementById("share-btn").addEventListener("click", () => {
 });
 
 /* ─── FULLSCREEN ─── */
-// fullscreen via player nativo
 async function toggleCustomFullscreen() {
   const target = document.querySelector(".player-wrap");
   try {
@@ -3033,7 +2924,6 @@ async function toggleCustomFullscreen() {
       try { screen.orientation?.unlock?.(); } catch {}
     }
   } catch (err) {
-    // Fallback CSS fullscreen para Android Chrome
     const modal = document.getElementById("modal");
     modal.classList.toggle("forced-fullscreen");
     document.getElementById("fs-btn").textContent = modal.classList.contains("forced-fullscreen") ? "✕" : "⛶";
@@ -3066,7 +2956,6 @@ async function openHeroTrailer(item) {
     const data = await fetch(`${API_BASE}/${type}/${item.id}/videos?api_key=${API_KEY}&language=es-MX`).then(r=>r.json());
     let key = (data.results||[]).find(v=>v.type==="Trailer"&&v.site==="YouTube")?.key
            || (data.results||[]).find(v=>v.site==="YouTube")?.key;
-    // Si no hay en español, buscar en inglés
     if (!key) {
       const en = await fetch(`${API_BASE}/${type}/${item.id}/videos?api_key=${API_KEY}&language=en-US`).then(r=>r.json());
       key = (en.results||[]).find(v=>v.type==="Trailer"&&v.site==="YouTube")?.key
@@ -3075,7 +2964,6 @@ async function openHeroTrailer(item) {
     if (!key) { showToast("Trailer no disponible"); return; }
     document.getElementById("trailer-title").textContent = item.title || item.name || "";
     document.getElementById("trailer-iframe").src = `https://www.youtube.com/embed/${key}?autoplay=1`;
-    // Pausar el reproductor principal guardando y vaciando su src
     const movieFrame = document.getElementById("movie-frame");
     if (movieFrame && movieFrame.src && movieFrame.src !== location.href) {
       movieFrame.dataset.pausedSrc = movieFrame.src;
@@ -3093,7 +2981,6 @@ function closeTrailer() {
   document.getElementById("trailer-modal").style.display = "none";
   document.getElementById("trailer-iframe").src = "";
   document.body.style.overflow = "";
-  // Restaurar el reproductor principal si estaba corriendo
   const movieFrame = document.getElementById("movie-frame");
   if (movieFrame && movieFrame.dataset.pausedSrc) {
     movieFrame.src = movieFrame.dataset.pausedSrc;
@@ -3101,7 +2988,6 @@ function closeTrailer() {
   }
 }
 
-// Restaurar reproductor al volver de YouTube (pestaña nueva)
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     const f = document.getElementById("movie-frame");
@@ -3112,13 +2998,11 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
-// Cerrar trailer con Escape
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" && document.getElementById("trailer-modal").style.display === "flex") {
     closeTrailer();
   }
 });
-// Cerrar al clickear fuera del video
 document.getElementById("trailer-modal").addEventListener("click", e => {
   if (e.target === document.getElementById("trailer-modal")) closeTrailer();
 });
@@ -3126,7 +3010,6 @@ document.getElementById("trailer-modal").addEventListener("click", e => {
 /* ─── BUSCADOR ─── */
 let searchTimeout;
 function openSearchOverlay() {
-  // Al hacer focus en el input, mostramos resultados
 }
 function onSearch(val) {
   clearTimeout(searchTimeout);
@@ -3183,7 +3066,6 @@ document.addEventListener("click", e => {
 
 /* ─── TABS ─── */
 function switchTab(tab) {
-  // Destruir iframe al cambiar de tab — para el audio
   try { _destroyMovieFrame(); } catch(e) {}
   document.getElementById("modal-overlay").classList.remove("open");
   document.body.style.overflow = "";
@@ -3199,7 +3081,6 @@ function switchTab(tab) {
     "section-favs","viciotv-cw-container",
     "sec-netflixtop10","sec-top100","sec-mas-populares","sec-mas-recientes","sec-mejores-anime","sec-proximamente"
   ];
-  // Limpiar estado de sección activa del sidebar al cambiar de tab
   _activeSidebarSection = null;
   document.querySelectorAll(".sidebar-btn").forEach(b=>b.classList.remove("active"));
   allSections.forEach(id => {
@@ -3207,7 +3088,6 @@ function switchTab(tab) {
     if (el) el.style.display = "none";
   });
 
-  // Continuar viendo y favoritos siempre visibles en inicio
   if (tab === "inicio") {
     document.getElementById("hero").style.display = "block";
     ["section-favs","viciotv-cw-container","sec-popular","sec-nowplaying","sec-tvtrending"].forEach(id => {
@@ -3243,7 +3123,6 @@ const tabContentLoaded = {};
 function loadTabContent(secId) {
   if (tabContentLoaded[secId]) return;
   tabContentLoaded[secId] = true;
-  // Secciones que usan hrow (hero cards) igual que Inicio
   const hrowMap = {
     "sec-movies-popular": ["movies-popular", "/movie/popular",                                                                          "movie"],
     "sec-movies-top":     ["movies-top",     "/movie/top_rated",                                                                        "movie"],
@@ -3278,7 +3157,6 @@ async function cachedFetch(url){
 function openCatalogTab(tabKey){
   const cfg=CATALOG_TABS[tabKey]; if(!cfg) return;
 
-  // Siempre reset completo, aunque sea el mismo tab
   _catalogSession++;
   catalogState={tab:tabKey,page:1,totalPages:1,loading:false,ended:false,filters:{genre:null,year:null,sort:null,platform:null}};
 
@@ -3293,10 +3171,8 @@ function openCatalogTab(tabKey){
   document.getElementById("load-spinner").style.display="none";
   buildFiltersBar(cfg);
 
-  // Desconectar observer viejo antes de cargar
   if(catalogObserver){ catalogObserver.disconnect(); catalogObserver=null; }
 
-  // requestAnimationFrame: esperar que el DOM sea visible
   requestAnimationFrame(async ()=>{
     await loadCatalogPage();  // Esperar que termine la primera página
     setupInfiniteScroll();    // Luego activar el observer
@@ -3307,32 +3183,27 @@ function buildFiltersBar(cfg){
   const bar=document.getElementById("filters-bar"); bar.innerHTML="";
   const selStyle="background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;outline:none;transition:border-color .2s;width:160px;box-sizing:border-box";
 
-  // Género
   const genres=cfg.type==="movie"?MOVIE_GENRES:TV_GENRES;
   const gs=document.createElement("select"); gs.style.cssText=selStyle;
   gs.innerHTML=`<option value="">Género</option>`+Object.entries(genres).map(([id,n])=>`<option value="${id}">${n}</option>`).join("");
   gs.addEventListener("change",()=>{catalogState.filters.genre=gs.value||null;_resetCatalog();});
   bar.appendChild(gs);
 
-  // Plataforma
   const ps=document.createElement("select"); ps.style.cssText=selStyle;
   ps.innerHTML=`<option value="">Plataforma</option>`+STREAMING_PLATFORMS.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
   ps.addEventListener("change",()=>{catalogState.filters.platform=ps.value||null;_resetCatalog();});
   bar.appendChild(ps);
 
-  // Año
   const ys=document.createElement("select"); ys.style.cssText=selStyle;
   ys.innerHTML=`<option value="">Año</option>`+Array.from({length:36},(_,i)=>2026-i).map(y=>`<option value="${y}">${y}</option>`).join("");
   ys.addEventListener("change",()=>{catalogState.filters.year=ys.value||null;_resetCatalog();});
   bar.appendChild(ys);
 
-  // Orden
   const ss=document.createElement("select"); ss.style.cssText=selStyle;
   ss.innerHTML=[["","Ordenar"],["popularity.desc","Más popular"],["vote_average.desc","Mejor valorado"],["release_date.desc","Más reciente"],["revenue.desc","Mayor taquilla"]].map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
   ss.addEventListener("change",()=>{catalogState.filters.sort=ss.value||null;_resetCatalog();});
   bar.appendChild(ss);
 
-  // País
   const cs=document.createElement("select"); cs.style.cssText=selStyle;
   const COUNTRIES=[
     ["","País"],
@@ -3365,7 +3236,6 @@ function buildFiltersBar(cfg){
   cs.addEventListener("change",()=>{catalogState.filters.country=cs.value||null;_resetCatalog();});
   bar.appendChild(cs);
 
-  // Limpiar
   const rb=document.createElement("button");
   rb.style.cssText="background:transparent;color:var(--text3);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap";
   rb.textContent="Limpiar";
@@ -3404,7 +3274,6 @@ async function loadCatalogPage(){
   const cfg = CATALOG_TABS[catalogState.tab];
   if(!cfg){ catalogState.loading=false; spinner.style.display="none"; return; }
 
-  // Skeletons solo en página 1
   if(catalogState.page === 1){
     grid.innerHTML = "";
     for(let i=0; i<20; i++){
@@ -3445,7 +3314,6 @@ async function loadCatalogPage(){
     const res  = await fetch(url);
     const data = await res.json();
 
-    // Si el usuario cambió filtros mientras esperábamos, descartar resultado
     if(mySession !== _catalogSession){
       catalogState.loading = false;
       return;
@@ -3530,7 +3398,6 @@ function renderLiveChannels(filter) {
   if (!grid) return;
   grid.innerHTML = "";
 
-  // Tabs estilo nav-tab — solo Todos y Argentina
   const cats = [
     { id:"ALL", label:"Todos" },
     { id:"AR",  label:"🇦🇷 Argentina" },
@@ -3552,7 +3419,6 @@ function renderLiveChannels(filter) {
     filterBar.appendChild(btn);
   });
 
-  // Canales filtrados
   const filtered = LIVE_CHANNELS.filter(ch => filter === "ALL" || ch.cat === filter);
   filtered.forEach(ch => {
     const card = document.createElement("div");
@@ -3586,7 +3452,6 @@ function openLiveChannel(ch) {
     frame.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
     frame.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
     frame.allowFullscreen = true;
-    // Sensa o YouTube
     if (ch.sensa) {
       frame.src = ch.sensa;
     } else {
@@ -3612,9 +3477,7 @@ window.addEventListener("scroll", () => {
 ═══════════════════════════════════════ */
 
 /* Avatares: dicebear con variedad de estilos */
-// Todos los avatares mezclados — se cargan de a 20 con scroll infinito
 const ALL_AVATARS = [
-  // Personajes masculinos
   {seed:"Carlos",    style:"adventurer"},{seed:"Miguel",     style:"adventurer"},
   {seed:"Diego",     style:"adventurer"},{seed:"Lucas",      style:"adventurer"},
   {seed:"Mateo",     style:"adventurer"},{seed:"Thiago",     style:"adventurer"},
@@ -3623,7 +3486,6 @@ const ALL_AVATARS = [
   {seed:"Bruno",     style:"adventurer"},{seed:"Valentín",   style:"adventurer"},
   {seed:"Tomás",     style:"adventurer"},{seed:"Ramiro",     style:"adventurer"},
   {seed:"Alejandro", style:"adventurer"},{seed:"Fernando",   style:"adventurer"},
-  // Personajes femeninos
   {seed:"Valentina", style:"adventurer-neutral"},{seed:"Camila",  style:"adventurer-neutral"},
   {seed:"Martina",   style:"adventurer-neutral"},{seed:"Luciana", style:"adventurer-neutral"},
   {seed:"Florencia", style:"adventurer-neutral"},{seed:"Sofía",   style:"adventurer-neutral"},
@@ -3632,7 +3494,6 @@ const ALL_AVATARS = [
   {seed:"Rocío",     style:"adventurer-neutral"},{seed:"Julieta", style:"adventurer-neutral"},
   {seed:"Natalia",   style:"adventurer-neutral"},{seed:"Paula",   style:"adventurer-neutral"},
   {seed:"Celeste",   style:"adventurer-neutral"},{seed:"Renata",  style:"adventurer-neutral"},
-  // Emojis / Animales con personalidad
   {seed:"Zorro-Cool",     style:"fun-emoji"},{seed:"Gato-Lentes",    style:"fun-emoji"},
   {seed:"Lobo-Sombrero",  style:"fun-emoji"},{seed:"Oso-Chill",      style:"fun-emoji"},
   {seed:"Panda-Pro",      style:"fun-emoji"},{seed:"Sapo-Vibes",     style:"fun-emoji"},
@@ -3647,7 +3508,6 @@ const ALL_AVATARS = [
   {seed:"Unicornio-Magic",style:"fun-emoji"},{seed:"Rana-Jump",      style:"fun-emoji"},
   {seed:"Mapache-Trash",  style:"fun-emoji"},{seed:"Capibara-Chill", style:"fun-emoji"},
   {seed:"Nutria-Water",   style:"fun-emoji"},{seed:"Axolotl-Pink",   style:"fun-emoji"},
-  // Pixel Art
   {seed:"PixelHero",    style:"pixel-art"},{seed:"PixelNinja",   style:"pixel-art"},
   {seed:"PixelWizard",  style:"pixel-art"},{seed:"PixelKnight",  style:"pixel-art"},
   {seed:"PixelRogue",   style:"pixel-art"},{seed:"PixelMage",    style:"pixel-art"},
@@ -3656,7 +3516,6 @@ const ALL_AVATARS = [
   {seed:"PixelKing",    style:"pixel-art"},{seed:"PixelQueen",   style:"pixel-art"},
   {seed:"PixelDruid",   style:"pixel-art"},{seed:"PixelBard",    style:"pixel-art"},
   {seed:"PixelMonk",    style:"pixel-art"},{seed:"PixelRanger",  style:"pixel-art"},
-  // Cartoon
   {seed:"Sunny-Face",   style:"big-smile"},{seed:"Happy-Vibes",  style:"big-smile"},
   {seed:"Cool-Dude",    style:"big-smile"},{seed:"Chill-Mode",   style:"big-smile"},
   {seed:"Party-Time",   style:"big-smile"},{seed:"Smile-King",   style:"big-smile"},
@@ -3665,7 +3524,6 @@ const ALL_AVATARS = [
   {seed:"Star-Power",   style:"big-smile"},{seed:"Moon-Child",   style:"big-smile"},
   {seed:"Wave-Rider",   style:"big-smile"},{seed:"Sky-High",     style:"big-smile"},
   {seed:"Deep-Blue",    style:"big-smile"},{seed:"Fire-Soul",    style:"big-smile"},
-  // Robots
   {seed:"RoboAlpha",   style:"bottts"},{seed:"RoboBeta",    style:"bottts"},
   {seed:"RoboGamma",   style:"bottts"},{seed:"RoboDelta",   style:"bottts"},
   {seed:"RoboEpsilon", style:"bottts"},{seed:"RoboZeta",    style:"bottts"},
@@ -3675,7 +3533,6 @@ const ALL_AVATARS = [
   {seed:"RoboNu",      style:"bottts"},{seed:"RoboXi",      style:"bottts"},
   {seed:"RoboOmicron", style:"bottts"},{seed:"RoboPi",      style:"bottts"},
 ];
-// Mezclar para que queden intercalados (Fisher-Yates)
 (function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}})(ALL_AVATARS);
 
 const BG_COLORS = ["b6e3f4","c0aede","d1d4f9","ffd5dc","ffdfbf","f4d150","aefef4","c3f4c8"];
@@ -3703,13 +3560,11 @@ function renderProfiles() {
         <div class="profile-edit-overlay">✏️</div>
       </div>
       <span class="profile-name">${p.name}</span>`;
-    // Click en overlay de edición — SOLO editar
     item.querySelector(".profile-edit-overlay").addEventListener("click", e => {
       e.stopPropagation();
       e.preventDefault();
       openProfileEditor(idx);
     });
-    // Click en item — seleccionar siempre que no sea modo edición
     item.addEventListener("click", e => {
       if (e.target.closest(".profile-edit-overlay")) return; // ya lo maneja overlay
       if (profileEditMode) { openProfileEditor(idx); return; }
@@ -3717,7 +3572,6 @@ function renderProfiles() {
     });
     grid.appendChild(item);
   });
-  // Botón agregar — siempre visible
   if (profiles.length < 6) { // máximo 6 perfiles
     const add = document.createElement("div");
     add.className = "profile-item profile-add";
@@ -3740,14 +3594,11 @@ function selectProfile(p) {
   renderContinueWatching();
   initContent();
   showSidebar();
-  // Contar visita por perfil — cada perfil tiene su propio cooldown de 2hs
   registerVisit(p.name);
-  // ── Mascotas: una por cada perfil creado ──
   if (typeof window.vtvMascotDestroy === 'function') window.vtvMascotDestroy();
   setTimeout(() => {
     if (typeof window.vtvMascotInit === 'function') {
       const allProfiles = getProfiles();
-      // Si hay más de 1 perfil, mostrar todas las mascotas; si no, solo la del perfil activo
       const mascotsToShow = allProfiles.length > 1 ? allProfiles : [p];
       window.vtvMascotInit(mascotsToShow);
     }
@@ -3791,7 +3642,6 @@ function openProfileEditor(idx) {
   } else {
     document.getElementById("pe-modal-title").textContent = "Nuevo perfil";
     document.getElementById("pe-name-input").value = "";
-    // Avatar random por defecto
     const randAv = ALL_AVATARS[Math.floor(Math.random() * ALL_AVATARS.length)];
     _pendingAvatarUrl = getAvatarUrl(randAv.style, randAv.seed);
     document.getElementById("pe-avatar-img").src = _pendingAvatarUrl;
@@ -3818,18 +3668,14 @@ const NOMBRES_RANDOM = [
 ];
 
 function randomizeProfile() {
-  // Nombre random
   const nombre = NOMBRES_RANDOM[Math.floor(Math.random() * NOMBRES_RANDOM.length)];
   document.getElementById("pe-name-input").value = nombre;
-  // Avatar random
   const randAv = ALL_AVATARS[Math.floor(Math.random() * ALL_AVATARS.length)];
   _pendingAvatarUrl = getAvatarUrl(randAv.style, randAv.seed);
   document.getElementById("pe-avatar-img").src = _pendingAvatarUrl;
-  // Sacudida al dado para feedback
   const btn = document.getElementById("pe-random-btn");
   btn.style.transform = "rotate(20deg) scale(1.3)";
   setTimeout(() => { btn.style.transform = ""; btn.style.transition = "all .2s"; }, 200);
-  // Highlight input
   const input = document.getElementById("pe-name-input");
   input.style.borderColor = "var(--accent)";
   setTimeout(() => { input.style.borderColor = ""; }, 800);
@@ -3868,7 +3714,6 @@ function saveProfileEditor() {
     const old = profiles[_editingProfileIdx];
     const oldName = old.name;
     profiles[_editingProfileIdx] = { ...old, name, avatar };
-    // Si cambió el nombre, actualizar la sesión activa
     if (oldName !== name && sessionStorage.getItem("viciotv_current_profile") === oldName) {
       sessionStorage.setItem("viciotv_current_profile", name);
     }
@@ -3878,7 +3723,6 @@ function saveProfileEditor() {
   saveProfiles(profiles);
   renderProfiles();
   closeProfileEditor();
-  // Actualizar nav si es el perfil activo
   const active = sessionStorage.getItem("viciotv_current_profile");
   const activeP = profiles.find(p => p.name === active);
   if (activeP) updateNavProfile(activeP);
@@ -3916,20 +3760,16 @@ const AV_PAGE_SIZE = 20;
 let _avObserver = null;
 
 function buildAvatarPicker() {
-  // Ocultar categorías (ya no las necesitamos)
   const catsEl = document.getElementById("pe-av-categories");
   if (catsEl) catsEl.innerHTML = "";
   _avPage = 0;
   const grid = document.getElementById("pe-av-grid");
   grid.innerHTML = "";
-  // Sentinel para scroll infinito
   const sentinel = document.createElement("div");
   sentinel.id = "av-sentinel";
   sentinel.style.height = "10px";
   grid.appendChild(sentinel);
-  // Cargar primera página
   loadAvatarPage();
-  // Observer para scroll infinito
   if (_avObserver) _avObserver.disconnect();
   _avObserver = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) loadAvatarPage();
@@ -3963,14 +3803,12 @@ function loadAvatarPage() {
 
 function renderAvatarGrid() { buildAvatarPicker(); }
 
-// ── Hero: botones prev/next y swipe táctil ──
 document.addEventListener("DOMContentLoaded", () => {
   const prevBtn = document.getElementById("hero-prev");
   const nextBtn = document.getElementById("hero-next");
   if (prevBtn) prevBtn.addEventListener("click", heroPrev);
   if (nextBtn) nextBtn.addEventListener("click", heroNext);
 
-  // Swipe táctil en el hero
   const hero = document.getElementById("hero");
   if (hero) {
     let _touchX = null;
@@ -4044,7 +3882,6 @@ async function _hrowRender(key) {
   if (!row) return;
   if (s.items.length === 0) await _hrowFetch(key);
 
-  // Para "popular" en Inicio: excluir IDs que ya aparecen en nowplaying o tvtrending
   let items = s.items;
   if (key === "popular") {
     const excludeIds = new Set([
@@ -4052,7 +3889,6 @@ async function _hrowRender(key) {
       ..._hrowState.tvtrending.items.map(m => m.id),
     ]);
     items = s.items.filter(m => !excludeIds.has(m.id));
-    // Si quedaron muy pocos, traer más páginas hasta tener suficientes
     while (items.length - s.shown < HROW_BATCH && !s.ended) {
       await _hrowFetch(key);
       items = s.items.filter(m => !excludeIds.has(m.id));
@@ -4129,7 +3965,6 @@ function buildHeroCard(m) {
     favBtn.classList.toggle("is-fav", isFav(m.id));
   });
 
-  // Trailer btn
   const trailerBtn = card.querySelector(".hcard-trailer");
   fetch(`${API_BASE}/${m._type||'movie'}/${m.id}/videos?api_key=${API_KEY}&language=es-MX`)
     .then(r=>r.json())
@@ -4139,7 +3974,6 @@ function buildHeroCard(m) {
       if (has) {
         trailerBtn.addEventListener("click", e => { e.stopPropagation(); openHeroTrailer(m); });
       } else {
-        // Ícono YouTube
         trailerBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>`;
         trailerBtn.title = "Buscar en YouTube";
         const q = encodeURIComponent((m.title||m.name||"")+" trailer");
@@ -4147,7 +3981,6 @@ function buildHeroCard(m) {
       }
     }).catch(()=>{ trailerBtn.classList.add("no-trailer"); });
 
-  // Runtime
   const runtimeEl = card.querySelector(".hcard-runtime");
   const dotRuntime = card.querySelector(".hcard-dot-runtime");
   if (!isTV && runtimeEl) {
@@ -4177,7 +4010,6 @@ function hrowNav(key, dir) {
   const sec = document.getElementById(`sec-${key}`);
   if (!row) return;
 
-  // Auto-scroll para que el título de sección quede al top al primer nav
   if (sec) {
     const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 68;
     const rect = sec.getBoundingClientRect();
@@ -4202,7 +4034,6 @@ function hrowNav(key, dir) {
   }
 }
 
-// Mobile: cargar más hcards al deslizar hasta el final
 function _initHrowTouchScroll(key) {
   const row = document.getElementById(`hrow-${key}`);
   if (!row || row._touchScrollBound) return;
@@ -4242,7 +4073,6 @@ function _initDragScroll(row, onScrollNearEnd) {
 
   function activateDrag() {
     isDragging = true;
-    // Recién acá deshabilitamos pointer-events en hijos
     row.querySelectorAll(".hcard").forEach(c => c.style.pointerEvents = "none");
     row.style.cursor = "grabbing";
     row.style.scrollSnapType = "none";
@@ -4262,7 +4092,6 @@ function _initDragScroll(row, onScrollNearEnd) {
     }
   }
 
-  // mousedown: solo registrar posición, NO activar drag todavía
   row.addEventListener("mousedown", e => {
     if (e.button !== 0) return;
     cancelMomentum();
@@ -4282,7 +4111,6 @@ function _initDragScroll(row, onScrollNearEnd) {
     const dt = now - lastTime || 1;
     moved = Math.abs(e.clientX - startX);
 
-    // Activar drag solo cuando se supera el umbral
     if (!isDragging && moved > DRAG_THRESHOLD) {
       activateDrag();
     }
@@ -4299,7 +4127,6 @@ function _initDragScroll(row, onScrollNearEnd) {
 
   window.addEventListener("mouseup", endDrag);
 
-  // Cancelar click solo si hubo drag real
   row.addEventListener("click", e => {
     if (moved > DRAG_THRESHOLD) {
       e.stopPropagation();
@@ -4318,7 +4145,6 @@ const _tabState = {
 const _tabObservers = { movies:null, series:null, anime:null };
 
 function openTabInfiniteGrid(tabKey){
-  // Siempre resetear al entrar al tab (comportamiento limpio como switchTab)
   _resetTabGrid(tabKey);
 }
 
@@ -4355,7 +4181,6 @@ async function _loadTabPage(tabKey){
   const grid = document.getElementById(`tabgrid-${tabKey}`);
   if(spinner) spinner.style.display="block";
 
-  // Skeletons solo en página 1
   if(s.page === 1 && grid){
     grid.innerHTML="";
     for(let i=0;i<20;i++){
@@ -4439,7 +4264,6 @@ function buildTabFiltersBar(tabKey){
   const barId = `filters-bar-${tabKey}`;
   const bar = document.getElementById(barId);
   if(!bar) return;
-  // Solo construir una vez
   if(bar.dataset.built) return;
   bar.dataset.built = "1";
 
@@ -4451,39 +4275,33 @@ function buildTabFiltersBar(tabKey){
     _resetTabGrid(tabKey);
   }
 
-  // Género
   const genres = cfg.type==="movie" ? MOVIE_GENRES : TV_GENRES;
   const gs = document.createElement("select"); gs.style.cssText=selStyle;
   gs.innerHTML=`<option value="">Género</option>`+Object.entries(genres).map(([id,n])=>`<option value="${id}">${n}</option>`).join("");
   gs.addEventListener("change",()=>{ state.filters.genre=gs.value||null; applyFilter(); });
   bar.appendChild(gs);
 
-  // Plataforma
   const ps = document.createElement("select"); ps.style.cssText=selStyle;
   ps.innerHTML=`<option value="">Plataforma</option>`+STREAMING_PLATFORMS.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
   ps.addEventListener("change",()=>{ state.filters.platform=ps.value||null; applyFilter(); });
   bar.appendChild(ps);
 
-  // Año
   const ys = document.createElement("select"); ys.style.cssText=selStyle;
   ys.innerHTML=`<option value="">Año</option>`+Array.from({length:36},(_,i)=>2026-i).map(y=>`<option value="${y}">${y}</option>`).join("");
   ys.addEventListener("change",()=>{ state.filters.year=ys.value||null; applyFilter(); });
   bar.appendChild(ys);
 
-  // Orden
   const ss = document.createElement("select"); ss.style.cssText=selStyle;
   ss.innerHTML=[["","Ordenar"],["popularity.desc","Más popular"],["vote_average.desc","Mejor valorado"],["release_date.desc","Más reciente"],["revenue.desc","Mayor taquilla"]].map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
   ss.addEventListener("change",()=>{ state.filters.sort=ss.value||null; applyFilter(); });
   bar.appendChild(ss);
 
-  // País
   const cs = document.createElement("select"); cs.style.cssText=selStyle;
   const COUNTRIES=[["","País"],["AR","🇦🇷 Argentina"],["US","🇺🇸 EEUU"],["GB","🇬🇧 Reino Unido"],["FR","🇫🇷 Francia"],["DE","🇩🇪 Alemania"],["IT","🇮🇹 Italia"],["ES","🇪🇸 España"],["MX","🇲🇽 México"],["BR","🇧🇷 Brasil"],["CO","🇨🇴 Colombia"],["CL","🇨🇱 Chile"],["JP","🇯🇵 Japón"],["KR","🇰🇷 Corea del Sur"],["CN","🇨🇳 China"],["IN","🇮🇳 India"],["AU","🇦🇺 Australia"],["CA","🇨🇦 Canadá"],["RU","🇷🇺 Rusia"],["TR","🇹🇷 Turquía"],["SE","🇸🇪 Suecia"]];
   cs.innerHTML=COUNTRIES.map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
   cs.addEventListener("change",()=>{ state.filters.country=cs.value||null; applyFilter(); });
   bar.appendChild(cs);
 
-  // Limpiar
   const rb = document.createElement("button");
   rb.style.cssText="background:transparent;color:var(--text3);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap";
   rb.textContent="Limpiar";
@@ -4496,14 +4314,11 @@ function buildTabFiltersBar(tabKey){
 }
 
 async function initHomeHrows() {
-  // nowplaying y tvtrending primero: sus IDs deben estar listos
-  // antes de renderizar "popular" para filtrar duplicados en Inicio
   await Promise.all([
     _hrowRender("nowplaying"),
     _hrowRender("tvtrending"),
   ]);
   await _hrowRender("popular");
-  // Habilitar scroll infinito táctil en mobile
   _initHrowTouchScroll("popular");
   _initHrowTouchScroll("nowplaying");
   _initHrowTouchScroll("tvtrending");
@@ -4541,8 +4356,6 @@ function _appendSimilarCards(items, grid) {
 async function loadMoreSimilar() {
   const btn = document.getElementById("similar-more-btn");
   if (!btn || !window._similarItemId) return;
-  // Primera vez que se aprieta "Ver más" → cargar /similar página 1
-  // Siguientes veces → /similar página 2, 3, etc.
   const page = window._similarMorePage || 1;
   btn.textContent = "Cargando...";
   btn.disabled = true;
@@ -4575,23 +4388,19 @@ async function openActorOverlay(personId, personName, imgSrc) {
   const imgWrap  = document.getElementById("actor-profile-img-wrap");
   const content  = document.getElementById("actor-content");
 
-  // Mostrar overlay con loading
   nameEl.textContent = personName;
   metaEl.textContent = "";
   bioEl.textContent  = "";
   bioEl.classList.remove("expanded");
   content.innerHTML  = '<div class="actor-loading">🎬 Cargando filmografía...</div>';
 
-  // Foto del actor
   imgWrap.innerHTML = imgSrc
     ? `<img class="actor-profile-img" src="${imgSrc}" alt="${personName}">`
     : `<div class="actor-profile-placeholder">👤</div>`;
 
-  // Cerrar el modal para que la filmografía ocupe toda la pantalla
   document.getElementById("modal-overlay").classList.remove("open");
   document.body.style.overflow = "";
 
-  // Pausar el reproductor principal — reemplazar iframe para cortar audio completamente
   const _actorMovieFrame = document.getElementById("movie-frame");
   if (_actorMovieFrame) {
     const savedSrc = _actorMovieFrame.src && _actorMovieFrame.src !== location.href ? _actorMovieFrame.src : "";
@@ -4613,13 +4422,11 @@ async function openActorOverlay(personId, personName, imgSrc) {
   history.pushState({ actorOverlay: true }, "");
 
   try {
-    // Detalles del actor + créditos en paralelo
     const [personData, creditsData] = await Promise.all([
       fetch(`${API_BASE}/person/${personId}?api_key=${API_KEY}&language=es-MX`).then(r=>r.json()),
       fetch(`${API_BASE}/person/${personId}/combined_credits?api_key=${API_KEY}&language=es-MX`).then(r=>r.json()),
     ]);
 
-    // Info del actor
     if (personData.birthday) {
       const age = personData.deathday ? "" :
         ` · ${new Date().getFullYear() - new Date(personData.birthday).getFullYear()} años`;
@@ -4630,7 +4437,6 @@ async function openActorOverlay(personId, personName, imgSrc) {
       bioEl.addEventListener("click", () => bioEl.classList.toggle("expanded"), { once: false });
     }
 
-    // Separar películas y series, filtrar sin poster y ordenar por popularidad
     const allCredits = creditsData.cast || [];
     const movies = allCredits
       .filter(c =>
@@ -4661,7 +4467,6 @@ async function openActorOverlay(personId, personName, imgSrc) {
       return;
     }
 
-    // ── Construcción de la sección de filtros ──
     const filmHeader = document.createElement("div");
     filmHeader.className = "actor-filmography-header";
     filmHeader.innerHTML = `
@@ -4682,19 +4487,16 @@ async function openActorOverlay(personId, personName, imgSrc) {
     `;
     content.appendChild(filmHeader);
 
-    // Grid infinito
     const infGrid = document.createElement("div");
     infGrid.className = "actor-inf-grid";
     infGrid.id = "actor-inf-grid";
     content.appendChild(infGrid);
 
-    // Sentinel para IntersectionObserver
     const sentinel = document.createElement("div");
     sentinel.className = "actor-inf-sentinel";
     sentinel.id = "actor-inf-sentinel";
     content.appendChild(sentinel);
 
-    // Estado del scroll infinito
     window._actorFilm = {
       movies, series,
       filter: "movies",
@@ -4704,7 +4506,6 @@ async function openActorOverlay(personId, personName, imgSrc) {
       loading: false,
     };
 
-    // Iniciar con Películas
     actorSetFilter("movies");
 
   } catch(e) {
@@ -4718,19 +4519,16 @@ function actorSetFilter(filter) {
   const state = window._actorFilm;
   if (!state) return;
 
-  // Limpiar observer previo
   if (state.observer) { state.observer.disconnect(); state.observer = null; }
 
   state.filter = filter;
   state.page = 0;
   state.loading = false;
 
-  // Actualizar tabs visuales
   document.querySelectorAll(".actor-filter-tab").forEach(btn => {
     btn.classList.toggle("active", btn.dataset.filter === filter);
   });
 
-  // Limpiar grid
   const grid = document.getElementById("actor-inf-grid");
   const sentinel = document.getElementById("actor-inf-sentinel");
   if (!grid || !sentinel) return;
@@ -4744,10 +4542,8 @@ function actorSetFilter(filter) {
     return;
   }
 
-  // Cargar primera página
   _actorLoadPage();
 
-  // IntersectionObserver para scroll infinito
   state.observer = new IntersectionObserver(entries => {
     if (entries[0].isIntersecting) _actorLoadPage();
   }, { threshold: 0.1 });
@@ -4792,13 +4588,11 @@ function _actorLoadPage() {
 function closeActorOverlay() {
   const overlay = document.getElementById("actor-overlay");
   overlay.classList.remove("open");
-  // Restaurar el reproductor si estaba corriendo
   const _actorMovieFrame = document.getElementById("movie-frame");
   if (_actorMovieFrame && _actorMovieFrame.dataset.actorPausedSrc) {
     _actorMovieFrame.src = _actorMovieFrame.dataset.actorPausedSrc;
     delete _actorMovieFrame.dataset.actorPausedSrc;
   }
-  // Reabrir el modal
   if (currentItem) {
     document.getElementById("modal-overlay").classList.add("open");
     document.body.style.overflow = "hidden";
@@ -4806,8 +4600,6 @@ function closeActorOverlay() {
   history.replaceState(null, "", window.location.pathname + window.location.search + window.location.hash);
 }
 
-// Cerrar con Escape o Back del browser
-// El popstate del actor overlay se maneja en el popstate general del modal
 
 /* ── PROVIDER BAR ── */
 function buildProviderBar(){
@@ -4818,14 +4610,12 @@ function buildProviderBar(){
   let showHidden = false;
 
   function renderButtons() {
-    // Quitar botones anteriores (no el label)
     bar.querySelectorAll(".provider-btn, .provider-more-btn").forEach(b => b.remove());
 
     const visible = PROVIDERS.filter(p => !p.hidden || showHidden);
     visible.forEach(p => {
       const btn = document.createElement("button");
       btn.className = "provider-btn" + (p.id === activeProvider ? " active" : "");
-      // Badge latino
       const latinoBadge = p.lang === "es" ? ' <span style="font-size:9px;background:rgba(255,255,255,.15);border-radius:3px;padding:1px 4px;vertical-align:middle">LAT</span>' : "";
       btn.innerHTML = `${p.flag} ${p.name}${latinoBadge}`;
       btn.title = p.note || "";
@@ -4847,7 +4637,6 @@ function buildProviderBar(){
       bar.appendChild(btn);
     });
 
-    // Botón "más" para mostrar/ocultar reserva
     const hasHidden = PROVIDERS.some(p => p.hidden);
     if (hasHidden) {
       const moreBtn = document.createElement("button");
@@ -4869,7 +4658,6 @@ function initApp() {
   if (saved) {
     const profiles = getProfiles();
     const active   = profiles.find(p => p.name === saved);
-    // Ocultar la intro inmediatamente si ya hay sesión activa
     const introEl = document.getElementById("vtv-intro");
     if (introEl) { introEl.classList.add("hidden"); window._vtvIntroDone = true; }
     document.getElementById("profiles-screen").style.display = "none";
@@ -4882,7 +4670,6 @@ function initApp() {
     initContent();
     showSidebar();
     registerVisit(active ? active.name : saved);
-    // Restaurar mascotas al recargar página
     setTimeout(() => {
       if (typeof window.vtvMascotInit === 'function') {
         const allProfiles = getProfiles();
@@ -4891,7 +4678,6 @@ function initApp() {
       }
     }, 800);
   } else {
-    // Si la intro ya se mostr� esta sesi�n, mostrar directamente
     const introAlreadyDone = window._vtvIntroDone;
     const pscreen = document.getElementById("profiles-screen");
     if (!introAlreadyDone) {
@@ -4916,8 +4702,6 @@ function initContent() {
   initHero();
   handleDeepLink();
 }
-
-
 
 /* ─── PWA ─── */
 if ("serviceWorker" in navigator) {
@@ -4945,24 +4729,17 @@ document.addEventListener("keydown", e => {
   }
 });
 
-// Limpiar flag viejo si existía
 localStorage.removeItem("viciotv_sub_tip_seen_old");
 
 /* ══════════════════════════════════════════
    THEME PICKER
 ══════════════════════════════════════════ */
 const THEME_COLORS = [
-  // Rojos / Cálidos
   "#e50914","#ff4444","#ff6b35","#f97316",
-  // Amarillos / Dorados
   "#f59e0b","#eab308","#facc15","#84cc16",
-  // Verdes
   "#22c55e","#10b981","#14b8a6","#06b6d4",
-  // Azules
   "#0ea5e9","#3b82f6","#6366f1","#8b5cf6",
-  // Violetas / Rosas
   "#a855f7","#d946ef","#ec4899","#f43f5e",
-  // Fondos oscuros
   "#0a0a0f","#0a0f1a","#0a0f0d","#0d0a1a",
   "#0f0a08","#150a12","#100e04","#040f12",
 ];
@@ -4971,10 +4748,8 @@ let _themeTarget = "accent"; // "accent" o "bg"
 
 function selectThemeTarget(target) {
   _themeTarget = target;
-  // Radio buttons
   document.getElementById("tp-radio-accent").classList.toggle("selected", target === "accent");
   document.getElementById("tp-radio-bg").classList.toggle("selected", target === "bg");
-  // Resaltar el color activo en la grilla
   highlightActiveColor();
 }
 
@@ -4987,7 +4762,6 @@ function highlightActiveColor() {
   });
 }
 
-// Default colors per skin
 const SKIN_DEFAULTS = {
   "compacta": { accent: "#6366f1", bg: "#0a0a0f" },
   "avanzada": { accent: "#e50914", bg: "#0a0a0f" }
@@ -5028,10 +4802,8 @@ function updateThemeBtn() {
 }
 
 function resetTheme() {
-  // Limpiar localStorage primero
   localStorage.removeItem("viciotv_accent_" + _skinId);
   localStorage.removeItem("viciotv_bg_" + _skinId);
-  // Aplicar defaults directamente al DOM (sin pasar por applyThemeColor para no re-guardar en localStorage)
   const root = document.documentElement;
   root.style.setProperty("--accent",        "#6366f1");
   root.style.setProperty("--accent2",       "#6366f1");
@@ -5082,7 +4854,6 @@ function toggleCreatorPanel(e) {
   if (isOpen) {
     const isMobile = window.innerWidth <= 640;
     if (!isMobile) {
-      // Position panel below the trigger button on desktop
       const btn = e.currentTarget;
       const rect = btn.getBoundingClientRect();
       panel.style.position = "fixed";
@@ -5093,7 +4864,6 @@ function toggleCreatorPanel(e) {
       panel.style.width = "260px";
       panel.style.borderRadius = "14px";
     } else {
-      // Mobile: open below the trigger button, aligned to the right edge
       const btn = e.currentTarget;
       const rect = btn.getBoundingClientRect();
       panel.style.position = "fixed";
@@ -5110,7 +4880,6 @@ function toggleCreatorPanel(e) {
 }
 
 function initThemePicker() {
-  // Renderizar 24 colores
   const container = document.getElementById("theme-colors");
   if (container) {
     THEME_COLORS.forEach(color => {
@@ -5126,14 +4895,11 @@ function initThemePicker() {
       container.appendChild(dot);
     });
   }
-  // Restaurar tema guardado
   const savedAccent = localStorage.getItem("viciotv_accent_" + _skinId);
   const savedBg     = localStorage.getItem("viciotv_bg_" + _skinId);
   if (savedAccent) applyThemeColor("accent", savedAccent);
   if (savedBg)     applyThemeColor("bg",     savedBg);
-  // Siempre forzar --accent2 al valor por defecto al arrancar
   document.documentElement.style.setProperty("--accent2", "#6366f1");
-  // Si no hay bg guardado, asegurar que el DOM tenga el default correcto
   if (!savedBg) {
     const root = document.documentElement;
     root.style.setProperty("--bg",  "#0a0a0f");
@@ -5141,7 +4907,6 @@ function initThemePicker() {
     root.style.setProperty("--bg3", "#15151e");
   }
   updateThemeBtn();
-  // Cerrar al clickear fuera
   document.addEventListener("click", e => {
     const panel = document.getElementById("creator-panel");
     if (panel?.classList.contains("open") && !panel.contains(e.target) && !e.target.closest(".creator-badge") && !e.target.closest("#nav-settings-btn")) {
@@ -5150,14 +4915,12 @@ function initThemePicker() {
   });
 }
 
-// ─── SIDEBAR ───
 
 /* Mostrar sidebar cuando hay sesión activa */
 function showSidebar(){
   const s = document.getElementById("sidebar");
   if(s){ s.classList.add("visible"); document.body.classList.add("sidebar-open"); }
   _sbMobileInit();
-  // Activar hover del submenu de plataformas (desktop)
   if(window._sbHoverSetup) window._sbHoverSetup();
 }
 
@@ -5165,7 +4928,6 @@ function _sbMobileInit(){
   if(window.innerWidth > 640) return;
   const icon = document.getElementById("sb-expand-icon");
   const title = document.getElementById("sb-salir-title");
-  // Mostrar icono de expandir (flechas) en mobile
   if(icon) icon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
   if(title) title.textContent = "Expandir";
 }
@@ -5174,36 +4936,28 @@ function sbToggleHide(){
   const s = document.getElementById('sidebar');
   const xIcon = document.getElementById('sb-x-icon');
   const hidden = s.classList.toggle('sb-hidden');
-  // X cuando visible → ocultar; chevron cuando oculto → mostrar
   if(hidden){
-    // Sidebar oculto: mostrar chevron derecho (indicar que se puede abrir)
     xIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><polyline points="9 18 15 12 9 6"/></svg>';
-    // Asegurarse de que el sidebar esté colapsado (no expandido)
     s.classList.remove('mob-expanded');
     s.classList.remove('sb-pinned');
     document.body.classList.remove('sidebar-mob-expanded');
   } else {
-    // Sidebar visible: mostrar X
     xIcon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
   }
 }
 
-// URL del botón de publicidad/link en el sidebar (desktop)
 const SB_LINK_URL = 'https://www.instagram.com/afaseleccion/?hl=es';
 
 function sbToggleExpand(){
   if(window.innerWidth > 640){
-    // Desktop: abrir link de publicidad
     window.open(SB_LINK_URL, '_blank', 'noopener,noreferrer');
     return;
   }
-  // Mobile: toggle expand
   const s = document.getElementById("sidebar");
   const icon = document.getElementById("sb-expand-icon");
   const title = document.getElementById("sb-salir-title");
   const expanded = s.classList.toggle("mob-expanded");
   document.body.classList.toggle("sidebar-mob-expanded", expanded);
-  // Rotar icono del botón expandir/colapsar
   if(icon){
     if(expanded){
       icon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><polyline points="11 17 6 12 11 7"/><polyline points="18 17 13 12 18 7"/></svg>';
@@ -5213,7 +4967,6 @@ function sbToggleExpand(){
       if(title) title.textContent = "Expandir";
     }
   }
-  // sb-x-icon lo maneja exclusivamente sbToggleHide()
 }
 
 /* Secciones extras del sidebar */
@@ -5231,7 +4984,6 @@ function openSidebarSection(key){
   document.getElementById("modal-overlay").classList.remove("open");
   document.body.style.overflow = "";
 
-  // En mobile: colapsar sidebar al abrir una sección
   if(window.innerWidth <= 640){
     const sidebar = document.getElementById("sidebar");
     if(sidebar){
@@ -5262,7 +5014,6 @@ function openSidebarSection(key){
   const _sbIdMap = {"netflixtop10":"sb-top10","mas-populares":"sb-populares","mas-recientes":"sb-recientes","mejores-anime":"sb-anime","proximamente":"sb-proximamente"};
   const activeBtn = document.getElementById(_sbIdMap[key]);
   if(activeBtn) activeBtn.classList.add("active");
-  // Marcar nav-tab si corresponde
   document.querySelectorAll(".nav-tab").forEach(t=>t.classList.toggle("active", t.dataset.tab===key));
 
   _activeSidebarSection = key;
@@ -5284,7 +5035,6 @@ function _openPlatformMenu(){
   const rect = btn.getBoundingClientRect();
   const sRect = sidebar.getBoundingClientRect();
   menu.style.top  = rect.top + "px";
-  // En mobile el sidebar NO se expande con hover, usar el ancho real actual
   const isMobile = window.innerWidth <= 640;
   const sidebarRight = isMobile ? sRect.left + sRect.width : sRect.left + 210;
   menu.style.left = (sidebarRight + 6) + "px";
@@ -5303,7 +5053,6 @@ function _closePlatformMenu(){
   sidebar.classList.remove("sb-pinned");
 }
 function togglePlatformMenu(e){
-  // En mobile (touch): toggle click normal
   if(window.innerWidth <= 640){
     e.stopPropagation();
     const menu = document.getElementById("sb-platform-menu");
@@ -5311,14 +5060,12 @@ function togglePlatformMenu(e){
     else _openPlatformMenu();
     return;
   }
-  // En desktop: click también funciona como toggle
   e.stopPropagation();
   const menu = document.getElementById("sb-platform-menu");
   if(menu.classList.contains("open")) _closePlatformMenu();
   else _openPlatformMenu();
 }
 
-// Desktop: hover sobre el botón Top10 abre el submenu automáticamente
 (function(){
   let _leaveTimer = null;
 
@@ -5329,7 +5076,6 @@ function togglePlatformMenu(e){
     _leaveTimer = setTimeout(()=>{ _closePlatformMenu(); }, 120);
   }
 
-  // Setup de hover — se ejecuta cuando el sidebar se hace visible (showSidebar lo llama)
   window._sbHoverSetup = function(){
     const btn  = document.getElementById("sb-top10");
     const menu = document.getElementById("sb-platform-menu");
@@ -5375,14 +5121,12 @@ function _sbCollapseMobile(){
   const xIcon = document.getElementById("sb-x-icon");
   if(icon) icon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
   if(title) title.textContent = "Expandir";
-  // sb-x-icon lo maneja exclusivamente sbToggleHide(), no tocar acá
 }
 function _isReallyInicio(){
   const el = document.getElementById("sec-popular");
   return el && el.style.display !== "none";
 }
 function _sbScrollToSection(sectionId){
-  // Calcular el offset del nav dinámicamente para mobile y desktop
   const navEl = document.getElementById("nav");
   const navH  = navEl ? navEl.getBoundingClientRect().height : 72;
   const el = document.getElementById(sectionId);
@@ -5394,7 +5138,6 @@ function _sbScrollToSection(sectionId){
   }
 }
 function sbGoFavs(){
-  // Si no hay favoritos, no hacer nada
   if(!getFavs().length) return;
   _sbCollapseMobile();
   closeSearchResults();
@@ -5404,7 +5147,6 @@ function sbGoFavs(){
   setTimeout(()=> _sbScrollToSection("section-favs"), 150);
 }
 function sbGoContinuar(){
-  // Si no hay nada en continuar viendo, no hacer nada
   if(!getContinueWatching().length) return;
   _sbCollapseMobile();
   closeSearchResults();
@@ -5424,7 +5166,6 @@ async function openTop10Platform(platformKey, providerId, platformName){
   const top10Btn = document.getElementById("sb-top10");
   if(top10Btn){ top10Btn.classList.remove("sb-top10-open"); }
 
-  // En mobile: colapsar sidebar al abrir el catálogo
   if(window.innerWidth <= 640){
     const sidebar = document.getElementById("sidebar");
     if(sidebar){
@@ -5456,7 +5197,6 @@ async function openTop10Platform(platformKey, providerId, platformName){
 let _currentTop10Provider = "8";
 let _netflixTop10Loaded = false;
 
-// Estado de paginación del Top10
 const _top10State = {
   page: 1,
   buffer: [],
@@ -5470,7 +5210,6 @@ async function _loadNetflixTop10(){
   if(_netflixTop10Loaded) return;
   _netflixTop10Loaded = true;
 
-  // Reset estado
   _top10State.page = 1;
   _top10State.buffer = [];
   _top10State.shown = 0;
@@ -5483,7 +5222,6 @@ async function _loadNetflixTop10(){
   grid.innerHTML = "";
   if(endEl) endEl.style.display="none";
 
-  // Skeletons iniciales (10 = 2 filas de 5 en 2 columnas)
   for(let i=0;i<10;i++){
     const sk=document.createElement("div"); sk.className="skeleton";
     sk.style.cssText="aspect-ratio:2/3;border-radius:16px";
@@ -5497,7 +5235,6 @@ async function _loadNetflixTop10(){
 
 function _setupTop10Observer(){
   if(_top10State.observer){ _top10State.observer.disconnect(); _top10State.observer=null; }
-  // Sin scroll infinito: el botón "Ver más" maneja la carga
   _top10UpdateVerMas();
 }
 
@@ -5518,7 +5255,6 @@ async function top10VerMas(){
   _top10UpdateVerMas();
 }
 
-// Trae una página de la API y la acumula en el buffer
 async function _top10FetchPage(){
   if(_top10State.loading || _top10State.ended) return;
   _top10State.loading = true;
@@ -5546,20 +5282,17 @@ async function _top10FetchPage(){
   _top10State.loading = false;
 }
 
-// Muestra los próximos `count` items del buffer en la grilla
 async function _top10RenderNext(count){
   const grid  = document.getElementById("grid-netflixtop10");
   const spin  = document.getElementById("spinner-top10");
   const endEl = document.getElementById("end-top10");
 
-  // Si el buffer no tiene suficientes, traer más páginas
   while(_top10State.buffer.length < count && !_top10State.ended){
     if(spin) spin.style.display="block";
     await _top10FetchPage();
   }
   if(spin) spin.style.display="none";
 
-  // Limpiar skeletons en la primera renderización
   if(_top10State.shown === 0) grid.innerHTML="";
 
   const toShow = _top10State.buffer.splice(0, count);
@@ -5581,13 +5314,11 @@ async function _top10RenderNext(count){
   _top10UpdateVerMas();
 }
 
-// Mantener compatibilidad (ya no se usa pero por si acaso)
 async function top10LoadMore(){ await _top10RenderNext(10); }
 
 /* ── SCROLL INFINITO GENÉRICO (populares / recientes / anime) ── */
 function _initInfiniteSection(key){
   const state = _sbState[key];
-  // Siempre resetear para una carga limpia al entrar
   if(state.observer){ state.observer.disconnect(); state.observer=null; }
   state.page=1; state.total=1; state.loading=false; state.ended=false;
   const grid=document.getElementById("grid-"+key);
@@ -5668,8 +5399,6 @@ function _setupInfiniteObserver(key){
   },{rootMargin:"400px",threshold:0});
   state.observer.observe(trigger);
 }
-
-
 
 /* ══════════════════════════════════════════════════
    PRÓXIMAMENTE — Trailers de estrenos futuros
@@ -5756,7 +5485,6 @@ function _proxRenderAll(){
     const dateStr=dateRaw?new Date(dateRaw+"T12:00:00").toLocaleDateString("es-AR",{day:"numeric",month:"short",year:"numeric"}):"Próximamente";
     if(!m._type) m._type = m._cat==="movie" ? "movie" : "tv";
     const card = buildHeroCard(m);
-    // Inyectar badge de fecha
     const hcardInfo = card.querySelector(".hcard-info");
     if(hcardInfo){
       const dateBadge = document.createElement("div");
@@ -5764,11 +5492,9 @@ function _proxRenderAll(){
       dateBadge.innerHTML=`<svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${dateStr}`;
       hcardInfo.insertBefore(dateBadge, hcardInfo.firstChild);
     }
-    // Ocultar botón trailer secundario (evitar duplicado)
     const trailerBtn = card.querySelector(".hcard-trailer");
     if(trailerBtn) trailerBtn.style.display="none";
 
-    // Botón principal: icono de carga mientras verificamos TMDB
     const playBtn = card.querySelector(".hcard-play");
     const ICON_TMDB = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#fff" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>`;
     const ICON_YT   = `<svg viewBox="0 0 24 24" width="14" height="14" fill="#fff"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>`;
@@ -5777,23 +5503,19 @@ function _proxRenderAll(){
       playBtn.addEventListener("click", e => { e.stopPropagation(); openHeroTrailer(m); });
     }
 
-    // Clonar card para limpiar listeners de openModal
     const newCard = card.cloneNode(false);
     newCard.innerHTML = card.innerHTML;
 
     const nb = newCard.querySelector(".hcard-play");
     const fb = newCard.querySelector(".hcard-fav");
 
-    // Verificar trailer en TMDB y actualizar botón según resultado
     fetch(`${API_BASE}/${m._type||'movie'}/${m.id}/videos?api_key=${API_KEY}&language=es-MX`)
       .then(r=>r.json())
       .then(data=>{
         const trailer = (data.results||[]).find(v=>v.site==="YouTube"&&(v.type==="Trailer"||v.type==="Teaser"));
         if(trailer){
-          // Trailer disponible en TMDB — icono de cámara
           if(nb){ nb.innerHTML=`${ICON_TMDB} Trailer`; nb.onclick=e=>{e.stopPropagation();openHeroTrailer(m);}; }
         } else {
-          // Sin trailer en TMDB — botón YouTube
           const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent((m.title||m.name||"")+" trailer")}`;
           if(nb){
             nb.innerHTML=`${ICON_YT} YouTube`;
@@ -5803,7 +5525,6 @@ function _proxRenderAll(){
           }
         }
       }).catch(()=>{
-        // Error al consultar — fallback YouTube silencioso
         const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent((m.title||m.name||"")+" trailer")}`;
         if(nb){
           nb.innerHTML=`${ICON_YT} YouTube`;
@@ -5819,7 +5540,6 @@ function _proxRenderAll(){
         fb.classList.toggle("is-fav", isFav(m.id));
       });
     }
-    // Click en la card: si hay trailer TMDB abre trailer, si no abre YouTube
     newCard.addEventListener("click", e => {
       if(e.target.closest("button")) return;
       openHeroTrailer(m);
@@ -5830,15 +5550,9 @@ function _proxRenderAll(){
 
 function proxLoadMore(){ _proxRenderAll(); }
 
-// ─── ARRANQUE ───
 initApp();
 initThemePicker();
 
-
-// ═══════════════════════════════════════════════════════════
-//  VICIO TV — ENERGY ASSEMBLY ENGINE v6.0
-//  Relámpagos de fondo · Chispas & arcos masivos · Reveal épico
-// ═══════════════════════════════════════════════════════════
 (function() {
   'use strict';
 
@@ -5858,25 +5572,23 @@ initThemePicker();
       .getPropertyValue('--accent').trim() || '#6366f1';
   }
 
-  // ═══════════════════════════════════════════════════════════
-  //  ENERGY ASSEMBLY ENGINE v6
-  // ═══════════════════════════════════════════════════════════
   function runEnergyAssembly(introEl, accentRgb, accentHex, onComplete) {
     const W = window.innerWidth;
     const H = window.innerHeight;
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
     const cv = document.createElement('canvas');
-    cv.width = W; cv.height = H;
+    cv.width = W * DPR; cv.height = H * DPR;
     cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:10;';
     introEl.appendChild(cv);
     const ctx = cv.getContext('2d');
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 
-    // ── Persistent trail buffer ──
     const trailCv = document.createElement('canvas');
-    trailCv.width = W; trailCv.height = H;
+    trailCv.width = W * DPR; trailCv.height = H * DPR;
     const tCtx = trailCv.getContext('2d');
+    tCtx.setTransform(DPR, 0, 0, DPR, 0, 0);
 
-    // ── Paleta de energía ──
     const COLORS = [
       `rgba(${accentRgb},`,
       'rgba(140,80,255,',
@@ -5889,9 +5601,6 @@ initThemePicker();
     let sparks   = [];
     let arcs     = [];
 
-    // ──────────────────────────────────────────
-    //  RELÁMPAGOS DE FONDO
-    // ──────────────────────────────────────────
     let lightningFlashes = []; // { alpha, decay, type:'fast'|'slow' }
     let lightningTimer = 0;
     let lightningInterval = 1800; // ms hasta próximo relámpago
@@ -5899,22 +5608,18 @@ initThemePicker();
     let linesKilled = false;      // true cuando todas las líneas terminaron
 
     function scheduleNextLightning() {
-      // Intervalo aleatorio entre relámpagos: 1.2s – 3s
       lightningInterval = 1200 + Math.random() * 1800;
     }
 
     function spawnLightningFlash(type) {
-      // type: 'fast' = destello breve intenso, 'slow' = se desvanece lentamente
       if (type === 'fast') {
         lightningFlashes.push({ alpha: 0.55 + Math.random() * 0.35, decay: 0.09 + Math.random() * 0.08, type:'fast' });
       } else {
         lightningFlashes.push({ alpha: 0.3 + Math.random() * 0.25, decay: 0.012 + Math.random() * 0.01, type:'slow' });
       }
-      // El flash de reveal es especial — muy brillante
     }
 
     function spawnRevealFlash() {
-      // Incandescencia total para el reveal del logo
       lightningFlashes.push({ alpha: 1.0, decay: 0.018, type:'reveal' });
     }
 
@@ -5925,12 +5630,10 @@ initThemePicker();
 
         ctx.save();
         if (f.type === 'reveal') {
-          // Blanco puro total
           ctx.globalAlpha = f.alpha;
           ctx.fillStyle = '#fff';
           ctx.fillRect(0, 0, W, H);
         } else {
-          // Gradiente radial — simula iluminación desde arriba
           const cx2 = W * (0.3 + Math.random() * 0.4);
           const cy2 = H * 0.1;
           const grad = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, H * 1.4);
@@ -5947,15 +5650,11 @@ initThemePicker();
       }
     }
 
-    // ──────────────────────────────────────────
-    //  SEGMENTOS DE ENERGÍA
-    // ──────────────────────────────────────────
     function makeSegment(phase) {
       const types = ['h','v','d','di'];
       const pool = phase < 2 ? ['h','v'] : types;
       const type = pool[Math.floor(Math.random() * pool.length)];
 
-      // v6: velocidad base AUMENTADA x2.2
       const speed = lerp(0.0009, 0.004, Math.min(phase / 6, 1)) * (0.7 + Math.random() * 0.6);
       const len = 0.08 + Math.random() * 0.3;
       const colorBase = COLORS[Math.floor(Math.random() * COLORS.length)];
@@ -6021,7 +5720,6 @@ initThemePicker();
       };
     }
 
-    // v6: más chispas por cruce
     function spawnSpark(x, y, intensity) {
       const count = 6 + Math.floor(intensity * 18);
       for (let i = 0; i < count; i++) {
@@ -6039,7 +5737,6 @@ initThemePicker();
       }
     }
 
-    // v6: arcos más largos y más visibles
     function spawnArc(x1, y1, x2, y2, forceBright) {
       arcs.push({
         x1, y1, x2, y2,
@@ -6051,7 +5748,6 @@ initThemePicker();
       });
     }
 
-    // v6: cruces más frecuentes + más arcos
     function checkCrossings(seg, phase) {
       for (const other of segments) {
         if (other === seg || other.done) continue;
@@ -6062,13 +5758,11 @@ initThemePicker();
           const mx = (seg.hx + other.hx) / 2;
           const my = (seg.hy + other.hy) / 2;
           spawnSpark(mx, my, phase / 6);
-          // Más arcos: 60% de chance (antes 30%)
           if (Math.random() < 0.6) {
             spawnArc(seg.hx, seg.hy,
               other.hx + (Math.random()-0.5)*80,
               other.hy + (Math.random()-0.5)*80, false);
           }
-          // Segundo arco rápido con baja prob
           if (Math.random() < 0.25) {
             spawnArc(seg.hx + (Math.random()-0.5)*40, seg.hy + (Math.random()-0.5)*40,
               other.hx + (Math.random()-0.5)*60, other.hy + (Math.random()-0.5)*60, true);
@@ -6119,9 +5813,6 @@ initThemePicker();
       tCtx.restore();
     }
 
-    // ══════════════════════════════
-    //  SECUENCIA PRINCIPAL
-    // ══════════════════════════════
 
     let globalPhase = 0;
     let phaseTime = 0;
@@ -6130,13 +5821,6 @@ initThemePicker();
     let prevTime = null;
     let animId;
 
-    // FASES (ms):
-    // 0: silencio inicial
-    // 1-4: activación progresiva con relámpagos de fondo
-    // 5: cortocircuito masivo
-    // 6: UN GRAN TRUENO → incandescencia → reveal logo → líneas dejan de spawnear
-    // 7: logo visible, parpadeo, loading terminal
-    // 8: fade out
     const PHASE_DURATIONS = [
       500,   // 0
       1000,  // 1
@@ -6155,22 +5839,18 @@ initThemePicker();
     const logoWrap = el('vtv-logo-wrap');
     const termEl   = el('vtv-terminal');
 
-
-    // ── Onda de expansión liviana (un solo div CSS) ──
-    // ── Electricidad en el logo post-reveal ──
     function spawnLogoElectricity() {
       const logoEl = el('vtv-logo-wrap');
       if (!logoEl) return;
       const r = logoEl.getBoundingClientRect();
 
-      // Canvas encima de todo, del tamaño de la ventana
       const cv = document.createElement('canvas');
-      cv.width = W; cv.height = H;
+      cv.width = W * DPR; cv.height = H * DPR;
       cv.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:99999;';
       document.body.appendChild(cv);
       const c = cv.getContext('2d');
+      c.setTransform(DPR, 0, 0, DPR, 0, 0);
 
-      // ── Puntos ancla sobre el logo (donde nacen los rayos) ──
       const anchors = [];
       const cols = 9, rows = 3;
       for (let i = 0; i <= cols; i++)
@@ -6178,7 +5858,6 @@ initThemePicker();
           anchors.push({ x: r.left + (r.width  / cols) * i,
                          y: r.top  + (r.height / rows) * j });
 
-      // ── Mini explosiones / chispas ──
       const sparks = [];
       function addSparks(x, y, count, power) {
         for (let i = 0; i < count; i++) {
@@ -6195,7 +5874,6 @@ initThemePicker();
         }
       }
 
-      // ── Segmentos de rayo que se regeneran ──
       function makeBolt(ax, ay, spread, depth) {
         const segs = [];
         function split(x1, y1, x2, y2, d, sp) {
@@ -6231,10 +5909,8 @@ initThemePicker();
 
         c.clearRect(0, 0, W, H);
 
-        // Fade global: máximo al principio, se apaga hacia el final
         const globalFade = Math.pow(1 - t, 1.2);
 
-        // ── Generar nuevos rayos periódicamente (más frecuentes al inicio) ──
         const boltInterval = 55 + t * 120; // 55ms→175ms
         if (elapsed - lastBoltTime > boltInterval) {
           lastBoltTime = elapsed;
@@ -6248,12 +5924,10 @@ initThemePicker();
             bolts.push({ segs, life, decay: .08 + Math.random() * .08,
                          cx: anchor.x, cy: anchor.y });
 
-            // Mini explosión en el punto de origen
             if (Math.random() < .55) addSparks(anchor.x, anchor.y, 3+Math.floor(Math.random()*5), 1-t*.7);
           }
         }
 
-        // ── Dibujar rayos ──
         c.lineCap = 'round';
         for (let i = bolts.length-1; i >= 0; i--) {
           const bolt = bolts[i];
@@ -6261,7 +5935,6 @@ initThemePicker();
           if (bolt.life <= 0) { bolts.splice(i,1); continue; }
           const alpha = bolt.life * globalFade;
 
-          // Glow
           c.save();
           c.globalAlpha = alpha * .5;
           c.strokeStyle = 'rgba(160,180,255,1)';
@@ -6273,7 +5946,6 @@ initThemePicker();
           });
           c.restore();
 
-          // Núcleo blanco
           c.save();
           c.globalAlpha = alpha;
           c.strokeStyle = 'rgba(255,255,255,1)';
@@ -6285,7 +5957,6 @@ initThemePicker();
           c.restore();
         }
 
-        // ── Dibujar sparks ──
         for (let i = sparks.length-1; i >= 0; i--) {
           const s = sparks[i];
           s.x += s.vx; s.y += s.vy;
@@ -6310,24 +5981,18 @@ initThemePicker();
       requestAnimationFrame(tick);
     }
 
-
-    // ── GRAN REVEAL: incandescencia + logo ──
     let revealTriggered = false;
     async function triggerReveal() {
       if (revealTriggered) return;
       revealTriggered = true;
 
-      // 1. Matar spawning de líneas
       linesKilled = true;
 
-      // 2. Flash masivo de relámpago (incandescencia total)
       spawnRevealFlash();
 
-      // 3. Chispas masivas por toda la pantalla
       for (let i = 0; i < 12; i++) {
         spawnSpark(Math.random() * W, Math.random() * H, 1.0);
       }
-      // Arcos brillantes cruzando la pantalla
       for (let i = 0; i < 8; i++) {
         spawnArc(
           Math.random() * W, Math.random() * H,
@@ -6336,10 +6001,8 @@ initThemePicker();
         );
       }
 
-      // 4. Esperar que el flash empiece a ceder
       await delay(220);
 
-      // 5. Reveal del logo con máximo brillo
       if (logoWrap) {
         logoWrap.style.opacity = '0';
         logoWrap.style.filter = 'blur(0px) brightness(4)';
@@ -6348,7 +6011,6 @@ initThemePicker();
         await delay(10);
         logoWrap.style.transition = 'opacity 400ms ease, filter 900ms ease';
         logoWrap.style.opacity = '1';
-        // brightness baja lentamente de 4 → 1
         await delay(20);
         logoWrap.style.filter = 'blur(0px) brightness(1.2)';
         await delay(500);
@@ -6357,12 +6019,10 @@ initThemePicker();
 
       spawnLogoElectricity();
 
-      // 6. Parpadeos del logo post-reveal (simula carga eléctrica)
       fatigueActive = true;
       flickerActive = true;
     }
 
-    // ── Terminal de status ──
     async function runTerminal() {
       if (!termEl) return;
       termEl.style.opacity = '1';
@@ -6372,7 +6032,6 @@ initThemePicker();
         el('vtl-1'), el('vtl-2'), el('vtl-3'), el('vtl-4')
       ].filter(Boolean);
 
-      // Textos definidos solo acá — el HTML los tiene vacíos para no flashear
       const texts = ['VICIOTV 2.3.8', 'Sincronizando entorno', 'Usuario detectado', 'Interfaz disponible'];
 
       const timings = [0, 280, 540, 820];
@@ -6396,7 +6055,6 @@ initThemePicker();
       await delay(500);
     }
 
-    // ── Fatiga post-reveal ──
     let fatigueActive = false;
     let fatigueTimer = 0;
 
@@ -6418,14 +6076,12 @@ initThemePicker();
       }
     }
 
-    // ── Parpadeo del logo ──
     let flickerActive = false;
     let flickerTimer = 0;
 
     function updateFlicker(dt) {
       if (!flickerActive || !logoWrap) return;
       flickerTimer += dt;
-      // Parpadeo cada ~2s
       if (Math.floor(flickerTimer / 2000) > Math.floor((flickerTimer - dt) / 2000)) {
         const dip = 0.75 + Math.random() * 0.2;
         logoWrap.style.opacity = String(dip);
@@ -6433,7 +6089,6 @@ initThemePicker();
           if (logoWrap) logoWrap.style.opacity = '1';
         }, 50 + Math.random() * 100);
       }
-      // Parpadeo rápido extra ocasional
       if (Math.random() < 0.001) {
         logoWrap.style.opacity = '0.5';
         setTimeout(() => { if (logoWrap) logoWrap.style.opacity = '1'; }, 30);
@@ -6442,7 +6097,6 @@ initThemePicker();
 
     scheduleNextLightning();
 
-    // ── Loop de render ──
     function tick(ts) {
       if (!running) return;
       const dt = prevTime ? Math.min(ts - prevTime, 50) : 16;
@@ -6452,13 +6106,11 @@ initThemePicker();
       segmentTimer += dt;
       lightningTimer += dt;
 
-      // ── Relámpagos de fondo periódicos (fases 1-5) ──
       if (globalPhase >= 1 && globalPhase <= 5 && lightningTimer >= lightningInterval) {
         lightningTimer = 0;
         scheduleNextLightning();
         const type = Math.random() < 0.6 ? 'fast' : 'slow';
         spawnLightningFlash(type);
-        // Los relámpagos intensos también generan arcos y chispas
         if (type === 'fast') {
           const rx = Math.random() * W, ry = Math.random() * H * 0.6;
           spawnSpark(rx, ry, 0.5);
@@ -6466,13 +6118,11 @@ initThemePicker();
         }
       }
 
-      // Avanzar fase
       if (globalPhase < PHASE_DURATIONS.length - 1 && phaseTime >= PHASE_DURATIONS[globalPhase]) {
         phaseTime -= PHASE_DURATIONS[globalPhase];
         globalPhase++;
 
         if (globalPhase === 5) {
-          // Cortocircuito masivo
           for (let i = 0; i < 22; i++) {
             setTimeout(() => {
               if (!running) return;
@@ -6481,7 +6131,6 @@ initThemePicker();
           }
         }
         if (globalPhase === 6) {
-          // ¡EL GRAN TRUENO!
           triggerReveal();
         }
         if (globalPhase === 7) {
@@ -6501,7 +6150,6 @@ initThemePicker();
         }
       }
 
-      // Spawn de nuevos segmentos (solo si no se mató el spawning)
       const spawnRate = PHASE_SPAWN_RATE[globalPhase] || 99999;
       const maxSegs   = PHASE_MAX_SEGS[globalPhase] || 0;
       if (!linesKilled && segmentTimer >= spawnRate && segments.filter(s=>!s.done).length < maxSegs) {
@@ -6511,16 +6159,12 @@ initThemePicker();
         if (globalPhase >= 5 && Math.random() < 0.35) segments.push(makeSegment(globalPhase));
       }
 
-      // ── Clear ──
       ctx.clearRect(0, 0, W, H);
 
-      // ── Relámpagos de fondo (van detrás de todo) ──
       drawLightningFlashes();
 
-      // ── Trails permanentes ──
       ctx.drawImage(trailCv, 0, 0);
 
-      // ── Segmentos activos ──
       for (let i = segments.length - 1; i >= 0; i--) {
         const seg = segments[i];
         if (seg.done) continue;
@@ -6555,7 +6199,6 @@ initThemePicker();
           continue;
         }
 
-        // v6: chequeo de cruces más frecuente
         if (globalPhase >= 1 && Math.random() < 0.10) {
           checkCrossings(seg, globalPhase);
         }
@@ -6565,7 +6208,6 @@ initThemePicker();
 
       if (segments.length > 120) segments = segments.filter(s => !s.done);
 
-      // ── Sparks ──
       for (let i = sparks.length - 1; i >= 0; i--) {
         const s = sparks[i];
         s.x += s.vx; s.y += s.vy;
@@ -6584,7 +6226,6 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Arcos eléctricos ──
       for (let i = arcs.length - 1; i >= 0; i--) {
         const arc = arcs[i];
         arc.life -= arc.decay;
@@ -6608,12 +6249,9 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Onda de estabilización (CSS transition, sin cómputo por frame) ──
-      // ── Fatiga y flicker ──
       updateFatigue(dt);
       updateFlicker(dt);
 
-      // ── Interferencia en sobrecarga ──
       if (globalPhase === 5) {
         if (Math.random() < 0.14) {
           ctx.save();
@@ -6635,9 +6273,6 @@ initThemePicker();
     };
   }
 
-  // ─────────────────────────────────
-  //  ARRANQUE
-  // ─────────────────────────────────
   function finishIntro(intro) {
     window._vtvIntroDone = true;
     intro.style.transition = 'opacity 600ms cubic-bezier(0.4,0,0.2,1)';
@@ -6648,10 +6283,7 @@ initThemePicker();
     }, 620);
   }
 
-  // ── Rayos ambientales: entran desde los bordes, no llegan lejos ──────────
-  // ── Sistema de efectos climáticos ────────────────────────────────────────
   function startAmbientLightning() { /* reemplazado por sistema de ambientes */ }
-
 
   async function runIntro() {
     const intro = el('vtv-intro');
@@ -6694,14 +6326,9 @@ initThemePicker();
 
 })();
 
-// ══════════════════════════════════════════════════════════
-//  VICIO TV — MASCOTA v3.0 — MULTI MASCOTA
-//  Múltiples instancias · Interacción entre mascotas
-// ══════════════════════════════════════════════════════════
 (function() {
   'use strict';
 
-  // ── CSS de la mascota (inyectado una sola vez) ──
   const STYLE = `
   .vtv-mascot-wrap {
     position: fixed;
@@ -7083,9 +6710,7 @@ initThemePicker();
   .mascot-state-fall .mascot-shin-right      { animation: shin-fall-r      0.3s ease-in-out infinite; }
   `;
 
-  // ── Frases compartidas ──
   const FRASES = {
-    // ── Movimiento físico ──
     walk:  ["Explorando el catálogo…", "Buscando algo copado… 🚶", "Siempre hay algo nuevo por descubrir.", "La biblioteca cambia cuando la explorás.", "Sigo buscando.", "Qué variedad de títulos hay acá.", "Mucho para ver. Poco tiempo. El clásico problema."],
     run:   ["¡Vamos vamos!", "¡Rápido che!", "¡No me alcanzás!", "🏃 ¡A todo gas!", "¡Modo turbo ON!", "¡Chau, me voy!"],
     jump:  ["¡Weee! 🚀", "¡Saltando!", "¡Arriba! 🎉", "¡Boing!", "¡Hasta la luna! 🌙", "¡Parkour! 🤸"],
@@ -7096,7 +6721,6 @@ initThemePicker();
     fall:  ["¡Me caí! 😱", "¡Aaaaaah! 💨", "¡Bajo con estilo... o no! 😅", "¡¡Aaaay!! 🫨", "Bien... sigo igual 😅"],
     bounce:["¡Ow! 😅", "Reboté pero acá estoy 😎", "¡Choqué! Sigo igual…"],
 
-    // ── Bienvenida ──
     idle: [
       "¿Qué miramos hoy?", "La noche recién empieza.", "Detectando ganas de mirar algo...",
       "Tengo algunas recomendaciones esperándote.", "Tu perfil sigue exactamente donde lo dejaste.",
@@ -7107,7 +6731,6 @@ initThemePicker();
       "Sistema estable. Por ahora.",
     ],
 
-    // ── Mouse rápido ──
     mouse_fast: [
       "Buscando algo específico, ¿eh?", "Vas rápido hoy.", "¿Perdiste algo?",
       "Parece que estás cazando una serie.", "Mucha exploración por aquí.",
@@ -7115,31 +6738,26 @@ initThemePicker();
       "Veo actividad interesante.",
     ],
 
-    // ── Inactivo / quieto ──
     inactivo: [
       "¿Seguís ahí?", "Silencio absoluto...", "Creo que estás pensando.",
       "Tomate tu tiempo. No hay apuro.", "Yo puedo esperar.",
       "Me quedé observando el cursor.", "Psst… ¿seguís ahí? 👀",
       "¿Todo bien? 🤔", "Ey, hola…",
-      // Reels
       "Diagnóstico preliminar: reels.", "Instagram ganó otra batalla.",
       "TikTok acaba de sumar un punto.", "Nos están goleando.",
       "Viniste a VicioTV y terminaste mirando reels. Clásico.",
       "¿Cuántos reels viste desde que abriste esto?", "No quiero saber la respuesta.",
       "Estás haciendo esa cosa otra vez.", "Te vi. No literalmente. Pero te vi.",
       "Reel número 87. Y contando.",
-      // No te duermas
       "Ehh, no te me duermas ahora.", "¿Seguís consciente?",
       "Nivel de sueño detectado: peligroso.", "Ojo que el sillón está ganando.",
       "La película contra la almohada. La almohada viene fuerte.",
       "Si te dormís, te despierto en los créditos. No garantizo buenos modales.",
-      // Comida
       "¿Hay pizza?", "Tengo hambre. Y eso es raro porque soy digital.",
       "¿Pedimos algo o seguimos ignorando el problema?", "La heladera te llama.",
       "Energía detectada: hambre.", "Necesitamos snacks.", "¿Mate? ¿Café? ¿Empanadas?",
     ],
 
-    // ── Inactivo largo (muchos minutos) ──
     inactivo_largo: [
       "¿Ya terminaste de mirar reels o todavía estás investigando por qué una llama aprendió a surfear?",
       "Llevás bastante tiempo acá. Yo estoy bien. Vos fijate.",
@@ -7156,7 +6774,6 @@ initThemePicker();
       "La productividad quedó para mañana. Y mañana la pateamos para pasado.",
     ],
 
-    // ── Solo, de noche ──
     solo: [
       "¿Otra noche vos y yo? Qué dupla. No me quejo.", "Yo tampoco tenía planes.",
       "Estamos invictos en cancelar salidas.", "Al menos estoy yo. No es mucho. Pero es trabajo honesto.",
@@ -7169,7 +6786,6 @@ initThemePicker();
       "¿Otra función privada? Exclusiva para una persona. Qué lujo.",
     ],
 
-    // ── Invitar a alguien ──
     invitar: [
       "Che... ¿y cuándo invitamos a alguien?", "¿La segunda entrada sigue vacía?",
       "La silla de al lado sigue disponible. Dato estadístico. Nada más.",
@@ -7181,7 +6797,6 @@ initThemePicker();
       "¿Invitar a alguien? Evento desbloqueable. Todavía bloqueado.",
     ],
 
-    // ── Comida ──
     comida: [
       "¿Qué cenamos hoy?", "Tengo hambre. Y eso es raro porque soy digital.",
       "¿Pedimos algo o seguimos ignorando el problema?", "Yo voto pizza.",
@@ -7209,7 +6824,6 @@ initThemePicker();
       "Claramente soy de Córdoba.",
     ],
 
-    // ── Reels / distracción ──
     reels: [
       "Che... ¿viniste a ver una serie o a mirar reels?",
       "¿Seguís acá o Instagram te secuestró?", "Yo ya preparé todo y vos seguís en reels.",
@@ -7231,7 +6845,6 @@ initThemePicker();
       "Tu atención duró menos que la intro de Netflix.", "Muchos reels. Te colgaste. Volvé.",
     ],
 
-    // ── No te duermas ──
     no_duermas: [
       "Ehh, no te me duermas ahora. La película recién empieza.",
       "¿Seguís consciente? Parpadeaste muy lento recién.", "Eso me preocupa.",
@@ -7244,7 +6857,6 @@ initThemePicker();
       "Ya estamos jugados. Ahora hay que seguir.",
     ],
 
-    // ── Frases raras / secretas ──
     secreto: [
       "A veces creo que la pantalla me observa a mí.", "No le cuentes a nadie que hablé.",
       "Entre nosotros, esa serie está infravalorada.", "¿Escuchaste eso?",
@@ -7253,7 +6865,6 @@ initThemePicker();
       "Absolutamente nada extraño.", "Estoy aprendiendo tus gustos.",
     ],
 
-    // ── Acciones de contenido ──
     like_add:    ["Guardado. 👌", "La voy cuidando.", "Favorito agregado.", "Eso merece una segunda mirada.", "Buena memoria.", "Anotado para después.", "Buen gusto che.", "Top tier ese 💜", "¡Clásico total! ⭐"],
     like_remove: ["Entendido.", "La saco de la lista.", "Cambiaste de opinión.", "Adiós, favorito.", "Espacio liberado.", "Quizás vuelva más tarde.", "¿Tan malo estuvo? 😅"],
     open_movie:  ["Buena elección.", "Preparando la función. Luces apagadas.", "Disfrutá la película.", "Espero que tengas pochoclos.", "Esta promete.", "Excelente selección.", "¿La viste? No te spoileo…", "Dicen que está 10 puntos 🍿"],
@@ -7275,7 +6886,6 @@ initThemePicker();
     fav_view:    ["Tus guardadas. ❤️", "Buen gusto tenés vos…", "La colección personal.", "¡Joyas todas esas!"],
     pwa_install: ["¡La instalaste! 🎉", "¡Ahora sí que somos familia! 🏠", "App mode activado."],
 
-    // ── Personalización ──
     weather_change: [
       "Buena elección de clima. 🌦️", "Me gusta el ambiente nuevo.", "Ahora sí, más inmersivo.",
       "¿Soleado o tormenta? Difícil elegir.", "El ambiente cambia todo.", "Así se disfruta más. ✨",
@@ -7291,7 +6901,6 @@ initThemePicker();
       "Cada uno lo arma como quiere.", "¿Qué cambiamos hoy?", "Tuneando la experiencia. 🛠️",
     ],
 
-    // ── Interacción entre mascotas ──
     meet_other:  ["¡Ey, vos también estás acá! 👀", "¡Somos un equipo! 🤝", "¡Hola compañero! 👋", "Buen equipo el nuestro. 💪"],
     race:        ["¡Te gano! 🏃", "¡A ver quién llega primero!", "¡Competencia! 🏆"],
   };
@@ -7304,7 +6913,6 @@ initThemePicker();
   const MASCOT_SIZE = 88;
   const GRAVITY = 0.6;
 
-  // ── Manager global ──
   const _manager = {
     instances: [],  // array de MascotInstance activas
     lastEventTime: 0,
@@ -7320,7 +6928,6 @@ initThemePicker();
     return true;
   }
 
-  // ── Clase MascotInstance ──
   class MascotInstance {
     constructor(profile, index, total) {
       this.profile = profile;
@@ -7330,7 +6937,6 @@ initThemePicker();
       this.bodyEl = null;
       this.bubbleEl = null;
 
-      // Estado físico
       this.x = 80 + Math.random() * (window.innerWidth - 200);
       this.y = 0;
       this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
@@ -7342,7 +6948,6 @@ initThemePicker();
       this.platformY = 0;
       this.currentPlatform = null;
 
-      // Timers propios
       this.raf = null;
       this.running = false;
       this._paused = false;
@@ -7508,7 +7113,6 @@ initThemePicker();
       if (!this.el) return;
       const el = this.el;
 
-      // Estado del drag
       this._drag = {
         active: false,
         offsetX: 0,
@@ -7521,7 +7125,6 @@ initThemePicker();
       const H = () => window.innerHeight;
 
       const onDown = (e) => {
-        // Ignorar si viene de un click en otra mascota manejando
         e.stopPropagation();
         const pt = e.touches ? e.touches[0] : e;
         const d = this._drag;
@@ -7529,15 +7132,11 @@ initThemePicker();
         d.wasGrabbed = false;
         d.trail = [];
 
-        // offsetX/Y: distancia del puntero al centro de la mascota en coordenadas de pantalla
-        // La mascota está en bottom=0, transform: translateX(x) translateY(-y)
-        // Su posición real en pantalla: left = x, top = H - y - MASCOT_SIZE
         const mascotScreenX = this.x;
         const mascotScreenY = H() - this.y - MASCOT_SIZE;
         d.offsetX = pt.clientX - mascotScreenX;
         d.offsetY = pt.clientY - mascotScreenY;
 
-        // Pausar física
         this._paused = true;
         this.currentPlatform = null;
         this.platformY = 0;
@@ -7557,12 +7156,10 @@ initThemePicker();
         const d = this._drag;
         d.wasGrabbed = true;
 
-        // Convertir posición del puntero a coordenadas de la mascota
         const newX = pt.clientX - d.offsetX;
         const newScreenY = pt.clientY - d.offsetY;
         const newY = H() - newScreenY - MASCOT_SIZE;
 
-        // Guardar trail para velocidad
         const now = performance.now();
         d.trail.push({ x: newX, y: newY, t: now });
         if (d.trail.length > d.trailMax) d.trail.shift();
@@ -7572,7 +7169,6 @@ initThemePicker();
         this.flipped = false;
         this._applyTransform();
 
-        // Rotar levemente según velocidad horizontal para sensación de balanceo
         if (d.trail.length >= 2) {
           const last = d.trail[d.trail.length - 1];
           const prev = d.trail[d.trail.length - 2];
@@ -7594,25 +7190,20 @@ initThemePicker();
         if (this.bodyEl) this.bodyEl.style.transform = '';
 
         if (!d.wasGrabbed) {
-          // Click simple sin arrastre → comportamiento original
           this._onClick();
           return;
         }
 
-        // Calcular velocidad de lanzamiento desde el trail
         let throwVx = 0, throwVy = 0;
         if (d.trail.length >= 2) {
-          // Usar los últimos N puntos para suavizar
           const recent = d.trail.slice(-5);
           const dt = Math.max(1, recent[recent.length-1].t - recent[0].t);
           const dx = recent[recent.length-1].x - recent[0].x;
           const dy = recent[recent.length-1].y - recent[0].y;
-          // Escalar a px/frame (16ms) con un factor de lanzamiento
           throwVx = (dx / dt) * 16 * 1.4;
           throwVy = (dy / dt) * 16 * 1.4; // trail.y ya está en coords mascota (Y↑)
         }
 
-        // Aplicar velocidad y dejar caer
         this.vx = Math.max(-18, Math.min(18, throwVx));
         this.vy = Math.max(-22, Math.min(22, throwVy));
         this.currentPlatform = null;
@@ -7620,7 +7211,6 @@ initThemePicker();
         this.setState('fall');
         this._resetIdleTimer();
 
-        // Frase de lanzamiento
         const speed = Math.sqrt(throwVx*throwVx + throwVy*throwVy);
         if (speed > 8) {
           this.showBubble(['¡WOOOOOO! 🚀', '¡A VOLAR! 💨', '¡¡AAAAAAH!! 😱', '¡Modo proyectil! 🎯'][Math.floor(Math.random()*4)], 2000, true);
@@ -7631,7 +7221,6 @@ initThemePicker();
         }
       };
 
-      // Pointer events (mouse + touch)
       el.addEventListener('pointerdown', onDown, { passive: false });
       window.addEventListener('pointermove', onMove, { passive: false });
       window.addEventListener('pointerup', onUp);
@@ -7690,49 +7279,36 @@ initThemePicker();
       }
     }
 
-    // ── Escanea TODOS los elementos visibles en pantalla y los categoriza ──
     _scanInteractables() {
       const W = window.innerWidth;
       const H = window.innerHeight;
       const results = [];
       const seen = new WeakSet();
 
-      // Tabla de selectores → { label, frases, tall (puede treparse) }
       const TARGETS = [
-        // Superficie grande — trepar encima
         { sel: '#nav',              tall: true,  label: 'nav',        frases: ['¿Qué tenemos hoy? 🎬','Mucho para explorar acá.','Veo cosas interesantes.','Buen catálogo el de hoy. 😎'] },
         { sel: '#hero',             tall: true,  label: 'hero',       frases: ['Esta parece prometedora. 🍿','Esa la guardaría para después. 🌟','Tiene pinta de estar buena. 🎭','Yo le daría una oportunidad. 🎬'] },
         { sel: '#sidebar,.sidebar', tall: true,  label: 'sidebar',    frases: ['Veo que hay series por todos lados. ✨','Buen surtido de opciones. 🛋️','Difícil elegir con tanto para ver. 👀'] },
-        // Botones — subirse encima
         { sel: '.btn-play',         tall: false, label: 'btn_play',   frases: ['Dale, dale, dale. ▶️','Esta merece verse. 🎬','Buena elección. 🔴','¿Le damos? 🙏'] },
         { sel: '.btn-info',         tall: false, label: 'btn_info',   frases: ['Bueno saber más antes de arrancar.','Primero los datos, después la función. 🤓','Curioso yo también. 🔎'] },
         { sel: '.nav-tab',          tall: false, label: 'nav_tab',    frases: ['Hay de todo acá. 🗂️','Buen catálogo para explorar. 🏷️','Podría pasar horas eligiendo. 🔀'] },
         { sel: '.sidebar-btn',      tall: false, label: 'sb_btn',     frases: ['Hay bastante para ver hoy. 📌','Buenas opciones por todos lados. 🛡️','Me gusta la selección. 🔘'] },
         { sel: '.hero-nav-btn',     tall: false, label: 'hero_nav',   frases: ['A ver qué más hay. ➡️','Miremos opciones. 🎮','Que no se escape ninguna. 🧭'] },
         { sel: '.hero-badge',       tall: false, label: 'hero_badge', frases: ['Esa tiene buena pinta. 🏷️','Se ve interesante. ✨','Esa me llamó la atención. 💜'] },
-        // Cards — subirse al borde superior
         { sel: '.card',             tall: false, label: 'card',       frases: ['Acá hay algo interesante. 🎬','Esta parece buena. 🎥','Esa la guardaría. 🍿','Yo le daría una oportunidad. 😋','¿La conocés? Tiene buena pinta.','No la conocía, pero se ve interesante.'] },
         { sel: '.hcard',            tall: false, label: 'hcard',      frases: ['Esta parece una joya. 🖼️','Buena pinta tiene esa. 🏆','Esa me llamó la atención. 🎭','Yo arrancaría por esta. 🌟'] },
-        // Badges / etiquetas
         { sel: '.card-type-badge,.hcard-badge,.badge-movie,.badge-serie,.badge-anime,.prox-card-type-badge', tall: false, label: 'badge', frases: ['Serie o película, ambas opciones me gustan. 🏷️','Hay de todo para elegir. ✨','Buen mix de contenido. 😅','Algo para cada humor. 👑'] },
         { sel: '.live-badge',       tall: false, label: 'live_badge', frases: ['¡En vivo y en directo! 🔴','¡Esto pasa ahora mismo! 📡','¡Tele en tiempo real! 📺','¡A no perderse nada! ⚡'] },
         { sel: '.sb-top10-badge',   tall: false, label: 'top10',      frases: ['Top 10 Argentina. Algo bueno tiene que haber. 🇦🇷','Lo más visto del momento. 🔥','El ranking habla solo. 📊'] },
         { sel: '.card-rating,.hcard-rating', tall: false, label: 'rating', frases: ['Buena puntuación. Vale la pena. ⭐','Las estrellas no mienten. 📊','Alta calificación. Eso siempre es buena señal. ✨','Bien puntuada. 🏅'] },
-        // Títulos y headers de sección
         { sel: '.row-title',        tall: false, label: 'row_title',  frases: ['Buena sección esta. 📝','Acá hay cosas buenas. 🎩','Esta categoría siempre tiene algo interesante. 😎','Habría que explorar más por acá. ✍️'] },
         { sel: '.hero-title',       tall: false, label: 'hero_title', frases: ['Esa tiene nombre de buena peli. 🎬','El título me convence. 🌟','Suena bien. Le daría una oportunidad. 📖'] },
         { sel: '.card-name',        tall: false, label: 'card_name',  frases: ['Ese título me suena conocido. 📽️','No la vi. Habrá que anotarla. 🧐','Buen nombre. ✨'] },
-        // Inputs y búsqueda
         { sel: '#search-input,input[type="search"],.search-input', tall: false, label: 'search', frases: ['¿Qué andás buscando? 🔍','A ver si la encuentro. 🕵️','La biblioteca es grande. 🎯','¿Algún título en mente? 🔎'] },
-        // Live channels
         { sel: '.live-channel-card,.live-item', tall: false, label: 'live', frases: ['Tele en vivo. Siempre hay algo. 📺','En directo y sin filtros. ⚡','Canal live. A ver qué dan. 🔴','Esto pasa ahora mismo. 🌐'] },
-        // Creator panel
         { sel: '#creator-panel,.creator-panel,#color-creator', tall: true, label: 'creator', frases: ['Personalizando a gusto. 🎨','Buena onda los colores. ✏️','Cada uno le pone su estilo. 🌈','Quedó lindo. 🖌️'] },
-        // Sección próximamente
         { sel: '.prox-card',        tall: false, label: 'prox_card',  frases: ['Se viene algo bueno. 🎯','Esa la esperamos. 🕐','Un poco más de paciencia. ⏳','Guardala en la lista. 👀'] },
-        // Actor cards
         { sel: '.actor-card,.actor-img', tall: false, label: 'actor', frases: ['Buen actor ese. 👋','El elenco define todo. 🎭','Cara conocida, trabajo garantizado. 🤩','Con ese reparto ya tengo ganas de verla. 🎬'] },
-        // Modal
         { sel: '.modal-inner,.modal-content', tall: true, label: 'modal', frases: ['¡Me metí al modal! 📋','¡Info mode! 🤓','¡Leyendo los detalles! 📖','¡Dame más info! 🔎'] },
       ];
 
@@ -7743,18 +7319,15 @@ initThemePicker();
           if (seen.has(el) || el.closest('.vtv-mascot-wrap')) continue;
           let r;
           try { r = el.getBoundingClientRect(); } catch(e) { continue; }
-          // Debe estar visible en pantalla (con margen generoso)
           if (r.width < 14 || r.height < 8) continue;
           if (r.bottom < 20 || r.top > H - 20) continue;
           if (r.right < 20 || r.left > W - 20) continue;
           seen.add(el);
-          // Calcular la "plataforma": borde superior del elemento
           const platY = H - r.top; // altura desde abajo hasta el borde superior del el
           const platX = Math.max(10, r.left + 4);
           const platW = Math.max(20, r.width - 8);
           results.push({ el, label, frases, tall, r,
             x: platX, w: platW, y: platY,
-            // altura en coords de mascota cuando está "encima"
             mascotY: Math.max(0, H - r.top - (tall ? MASCOT_SIZE : MASCOT_SIZE)),
           });
         }
@@ -7766,14 +7339,12 @@ initThemePicker();
       if (this.state === 'sleep' || this._paused) return;
       const targets = this._scanInteractables();
       if (!targets.length) return;
-      // Preferir targets visibles cerca de la mascota, con algo de aleatoriedad
       const scored = targets.map(t => {
         const dist = Math.abs((t.r.left + t.r.width/2) - this.x);
         const score = Math.random() * 200 - dist * 0.3;
         return { t, score };
       });
       scored.sort((a,b) => b.score - a.score);
-      // Elegir entre los 5 mejores al azar para variedad
       const pool = scored.slice(0, Math.min(5, scored.length));
       const chosen = pool[Math.floor(Math.random() * pool.length)].t;
       this._goInteract(chosen);
@@ -7783,7 +7354,6 @@ initThemePicker();
       if (!this.el || this.state === 'sleep' || this._paused) return;
       const H = window.innerHeight;
       const r = target.r;
-      // Punto de destino horizontal: dentro del elemento
       const targetX = r.left + 8 + Math.random() * Math.max(4, r.width - 24);
       const clampedX = Math.max(55, Math.min(window.innerWidth - 120, targetX));
 
@@ -7795,7 +7365,6 @@ initThemePicker();
 
       const iv = setInterval(() => {
         if (!this.el || !this.running || this._paused) { clearInterval(iv); this.currentPlatform = null; return; }
-        // Cancelar si ya no está en run/walk (fue arrastrado, etc.)
         if (this.state !== 'run' && this.state !== 'walk') { clearInterval(iv); this.currentPlatform = null; return; }
 
         if (Math.abs(this.x - clampedX) < 28) {
@@ -7806,11 +7375,9 @@ initThemePicker();
           const targetY = target.mascotY;
 
           if (targetY <= 2) {
-            // Elemento al nivel del suelo → pararse al lado, curiosear
             this.setState('idle');
             const frase = target.frases[Math.floor(Math.random() * target.frases.length)];
             this.showBubble(frase, 2200);
-            // Pequeño salto de emoción
             setTimeout(() => {
               if (!this.el || !this.running) return;
               this.setState('jump', 500);
@@ -7831,7 +7398,6 @@ initThemePicker();
               }
             }, 2400);
           } else {
-            // Elemento elevado → trepar encima
             this.setState('climb');
             this.platformY = targetY;
             let climbed = this.y;
@@ -7845,7 +7411,6 @@ initThemePicker();
                 this.setState('perch');
                 const frase = target.frases[Math.floor(Math.random() * target.frases.length)];
                 this.showBubble(frase, 2500);
-                // Caminar un poco encima del objeto
                 this.vx = (Math.random() < 0.5 ? 0.35 : -0.35);
                 setTimeout(() => {
                   if (this.el && this.running && this.currentPlatform === target) {
@@ -7903,7 +7468,6 @@ initThemePicker();
       }, 8000);
     }
 
-    // ── Interacción con otras mascotas ──
     _checkOtherMascots(dt) {
       const others = _manager.instances.filter(m => m !== this && m.el && m.running);
       if (!others.length) return;
@@ -7913,27 +7477,22 @@ initThemePicker();
       for (const other of others) {
         const dist = Math.abs(this.x - other.x);
 
-        // Si están muy cerca (dentro de 120px) → reaccionar
         if (dist < 120 && this.y === 0 && other.y === 0) {
-          // Evitar que se superpongan: rebote suave
           if (dist < 60) {
             const pushDir = this.x < other.x ? -1 : 1;
             this.vx = pushDir * 1.5;
             this.flipped = pushDir < 0;
           }
 
-          // Reacción de saludo cada ~15s entre ellos
           if (this.interactionTimer > 15000 + Math.random() * 10000) {
             this.interactionTimer = 0;
             if (this.canReact(8000)) {
               const roll = Math.random();
               if (roll < 0.4) {
-                // Salto de saludo
                 this.setState('jump', 700);
                 this.showBubble(pickFrase('meet_other'), 2200);
                 setTimeout(() => { if (this.state === 'jump') this.setState('walk'); }, 700);
               } else if (roll < 0.65) {
-                // Baile conjunto
                 this.setState('dance', 2000);
                 this.vx = 0;
                 setTimeout(() => {
@@ -7943,7 +7502,6 @@ initThemePicker();
                   }
                 }, 2000);
               } else if (roll < 0.8) {
-                // Carrera
                 this.showBubble(pickFrase('race'), 1800);
                 const dir = this.x < other.x ? 1 : -1;
                 this.vx = dir * 3.0;
@@ -7966,7 +7524,6 @@ initThemePicker();
       const dt = Math.min(ts - this.prevTs, 50);
       this.prevTs = ts;
 
-      // Si está siendo arrastrado, solo redibujar y seguir
       if (this._paused) {
         this._applyTransform();
         this.raf = requestAnimationFrame(ts2 => this.tick(ts2));
@@ -7977,14 +7534,12 @@ initThemePicker();
       const H = window.innerHeight;
       const state = this.state;
 
-      // Scroll detection (usa el del manager)
       const absScroll = Math.abs(_manager.scrollVel);
       if (absScroll > 3) this._resetInactivoTimer();
       if (absScroll > 12 && this.currentPlatform && Math.random() < 0.3 && state === 'perch') {
         this._leaveCurrentPlatform('fall');
       }
 
-      // Movimiento horizontal — walk, run Y también fall/jump (lanzamiento libre)
       if (state === 'walk' || state === 'run' || state === 'fall' || state === 'jump') {
         if ((state === 'walk' || state === 'run') && absScroll > 8) {
           if (state !== 'run') this.setState('run');
@@ -8009,7 +7564,6 @@ initThemePicker();
         if (Math.abs(this.vx) > 0.1) this.flipped = this.vx < 0;
       }
 
-      // Gravedad
       if (state === 'fall' || (this.y > this.platformY + 2 && state !== 'climb' && state !== 'perch' && state !== 'jump')) {
         this.vy -= GRAVITY * (dt / 16);
         this.y += this.vy * (dt / 16);
@@ -8022,7 +7576,6 @@ initThemePicker();
         }
       }
 
-      // Salto
       if (state === 'jump' && this.vy !== 0) {
         this.vy -= GRAVITY * (dt / 16);
         this.y += this.vy * (dt / 16);
@@ -8032,7 +7585,6 @@ initThemePicker();
         }
       }
 
-      // Interacción con objetos: cada ~1.5s buscar algo cercano para curiosear o trepar
       this.platformCheckTimer += dt;
       if (this.platformCheckTimer > 1500 && (state === 'walk' || state === 'idle') && !this.currentPlatform && this.y === 0) {
         this.platformCheckTimer = 0;
@@ -8040,10 +7592,8 @@ initThemePicker();
       }
       if (this.y === 0 && this.currentPlatform) { this.currentPlatform = null; this.platformY = 0; }
 
-      // Timer de estado
       if (this.stateTimer > 0) this.stateTimer -= dt;
 
-      // Interacción con otras mascotas
       this._checkOtherMascots(dt);
 
       this._applyTransform();
@@ -8067,7 +7617,6 @@ initThemePicker();
       this.raf = requestAnimationFrame(ts => this.tick(ts));
       this._resetIdleTimer();
       this._resetInactivoTimer();
-      // Saludo inicial
       const greetings = [
         `Ahí estás, ${profile.name}. Pensé que te habías ido.`,
         `Bienvenido de nuevo, ${profile.name}.`,
@@ -8099,12 +7648,10 @@ initThemePicker();
     }
   }
 
-  // ── Hooks de eventos de página (instalados una sola vez) ──
   function _installGlobalHooks() {
     if (_manager.globalHooksInstalled) return;
     _manager.globalHooksInstalled = true;
 
-    // Scroll
     let scrollFastTimer = null;
     window.addEventListener('scroll', () => {
       _manager.scrollVel = window.scrollY - _manager.lastScrollY;
@@ -8118,7 +7665,6 @@ initThemePicker();
       }, 80);
     }, { passive: true });
 
-    // Actualizar scrollVel en el tick global
     setInterval(() => {
       _manager.scrollVel = window.scrollY - _manager.lastScrollY;
       _manager.lastScrollY = window.scrollY;
@@ -8126,7 +7672,6 @@ initThemePicker();
 
     document.addEventListener('mousemove', (e) => {
       _manager.instances.forEach(m => { if (m.state === 'sleep') m._resetIdleTimer(); });
-      // Detectar mouse rápido
       const now = Date.now();
       if (!_manager._lastMousePos) _manager._lastMousePos = { x: e.clientX, y: e.clientY, t: now };
       const dx = e.clientX - _manager._lastMousePos.x;
@@ -8145,7 +7690,6 @@ initThemePicker();
       _manager.instances.forEach(m => m._resetIdleTimer());
     });
 
-    // Patch de funciones globales — solo una vez
     const _origToggleFav = window.toggleFav;
     if (typeof _origToggleFav === 'function') {
       window.toggleFav = function(item) {
@@ -8304,7 +7848,6 @@ initThemePicker();
       });
     }
 
-    // ── Personalización: modo clima ──
     const _origSetWeatherMode = window.setWeatherMode;
     if (typeof _origSetWeatherMode === 'function') {
       window.setWeatherMode = function(mode) {
@@ -8317,7 +7860,6 @@ initThemePicker();
       };
     }
 
-    // ── Personalización: tipo de tormenta ──
     const _origSetStormType = window.setStormType;
     if (typeof _origSetStormType === 'function') {
       window.setStormType = function(type) {
@@ -8329,7 +7871,6 @@ initThemePicker();
       };
     }
 
-    // ── Personalización: abrir panel ──
     const _origToggleCreator = window.toggleCreatorPanel;
     if (typeof _origToggleCreator === 'function') {
       window.toggleCreatorPanel = function(e) {
@@ -8344,8 +7885,6 @@ initThemePicker();
       };
     }
 
-    // ── Timers de personalidad ─────────────────────────────────
-    // Cada 4-8 min lanza una frase temática aleatoria de entre: comida, reels, solo, invitar, no_duermas, secreto
     const PERSONALITY_POOLS = ['comida','reels','solo','invitar','no_duermas','secreto'];
     let _personalityTimer = null;
     function _schedulePersonality() {
@@ -8361,7 +7900,6 @@ initThemePicker();
     }
     _schedulePersonality();
 
-    // Timer de inactivo largo (5+ min sin tocar nada → reels/no_duermas)
     let _largoTimer = null;
     function _resetLargoTimer() {
       if (_largoTimer) clearTimeout(_largoTimer);
@@ -8376,7 +7914,6 @@ initThemePicker();
     document.addEventListener('click', _resetLargoTimer);
     document.addEventListener('mousemove', _resetLargoTimer, { passive: true });
 
-    // Hora tardía (después de medianoche): frase de no_duermas espontánea
     function _checkHoraTardia() {
       const h = new Date().getHours();
       if (h >= 0 && h <= 4 && _canReact(3600000)) {
@@ -8387,16 +7924,12 @@ initThemePicker();
     setInterval(_checkHoraTardia, 600000); // revisar cada 10 min
   }
 
-  // ── API pública ──
 
-  // Inicializar con un perfil o array de perfiles
   window.vtvMascotInit = function(profileOrProfiles) {
     if (!profileOrProfiles) return;
 
-    // Soportar tanto un perfil único como un array
     const profiles = Array.isArray(profileOrProfiles) ? profileOrProfiles : [profileOrProfiles];
 
-    // Inyectar CSS una sola vez
     if (!document.getElementById('vtv-mascot-style')) {
       const s = document.createElement('style');
       s.id = 'vtv-mascot-style';
@@ -8404,14 +7937,11 @@ initThemePicker();
       document.head.appendChild(s);
     }
 
-    // Destruir instancias previas
     _manager.instances.forEach(m => m.destroy());
     _manager.instances.length = 0;
 
-    // Crear una instancia por perfil, con posiciones iniciales distribuidas
     profiles.forEach((profile, i) => {
       const inst = new MascotInstance(profile, i, profiles.length);
-      // Posición X distribuida: repartidas por la pantalla sin superponerse
       const spacing = window.innerWidth / (profiles.length + 1);
       inst.x = spacing * (i + 1) + (Math.random() - 0.5) * spacing * 0.5;
       inst.x = Math.max(80, Math.min(window.innerWidth - 140, inst.x));
@@ -8422,7 +7952,6 @@ initThemePicker();
       _manager.instances.push(inst);
     });
 
-    // Instalar hooks globales (solo la primera vez)
     _installGlobalHooks();
   };
 
@@ -8431,32 +7960,31 @@ initThemePicker();
     _manager.instances.length = 0;
   };
 
-  // Exponer instancias para sistemas externos (colisión con partículas de ambiente)
   window._vtvMascots = _manager.instances;
-  // Exponer frases para acceso desde sistemas externos
   window._vtvFRASES = FRASES;
 
 })();
 
-// ─── SISTEMA DE AMBIENTES ────────────────────────────────────────────────────
 (function() {
 
-  // Canvas compartido para todos los efectos
   const cv = document.createElement('canvas');
   cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9996;';
   document.body.appendChild(cv);
   const ctx = cv.getContext('2d');
-  function resize() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  function resize() {
+    cv.width = window.innerWidth * DPR;
+    cv.height = window.innerHeight * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
   resize();
   window.addEventListener('resize', resize, { passive: true });
 
-  // Estado
   let activeMode   = null;
   let particles    = [];
   let spawnerTmrs  = [];
   let stormFlash   = null; // overlay flash de tormenta
 
-  // ── Limpiar todo ─────────────────────────────────────────────────────────
   function clearAll() {
     spawnerTmrs.forEach(t => clearTimeout(t));
     spawnerTmrs = [];
@@ -8464,7 +7992,6 @@ initThemePicker();
     if (stormFlash) { stormFlash.remove(); stormFlash = null; }
     const sw = document.getElementById('storm-switch-wrap');
     if (sw) sw.style.display = 'none';
-    // Ocultar árbol de naranjas si existe
     (function() {
       const tr = document.getElementById('vtv-orange-tree');
       if (!tr) return;
@@ -8473,7 +8000,6 @@ initThemePicker();
     })();
   }
 
-  // ── Spawner con tracking ──────────────────────────────────────────────────
   function spawnLoop(factory, interval, max) {
     (function loop() {
       const t = setTimeout(() => {
@@ -8486,14 +8012,9 @@ initThemePicker();
 
   const W = () => cv.width, H = () => cv.height;
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // FÁBRICAS DE PARTÍCULAS
-  // ══════════════════════════════════════════════════════════════════════════
 
-  // ── HOJA ─────────────────────────────────────────────────────────────────
   function makeLeaf() {
     const w = W(), h = H();
-    // Más peso en los laterales
     const side = Math.random() < 0.55 ? (Math.random() < 0.5 ? 'left' : 'right') : 'top';
     let x, y, vx, vy;
     const wind = 0.5 + Math.random() * 1.2; // deriva horizontal constante
@@ -8511,7 +8032,6 @@ initThemePicker();
   }
   makeLeaf.type = 'leaf';
 
-  // ── BELLOTA ───────────────────────────────────────────────────────────────
   function makeAcorn() {
     const w = W();
     return { type: 'acorn',
@@ -8524,12 +8044,10 @@ initThemePicker();
   }
   makeAcorn.type = 'acorn';
 
-  // ── ARDILLA ──────────────────────────────────────────────────────────────
   function makeSquirrel() {
     const h = H(), w = W();
     const fromLeft = Math.random() < 0.5;
     const spd = 1.8 + Math.random() * 1.0;
-    // Punto de retorno: entre el 18% y el 38% del ancho desde el borde de entrada
     const peekFrac = 0.18 + Math.random() * 0.20;
     const turnX = fromLeft ? w * peekFrac : w * (1 - peekFrac);
     return { type: 'squirrel',
@@ -8545,7 +8063,6 @@ initThemePicker();
   }
   makeSquirrel.type = 'squirrel';
 
-  // ── MARIPOSA ─────────────────────────────────────────────────────────────
   function makeButterfly() {
     const w = W(), h = H();
     const side = Math.random() < 0.5 ? 'left' : 'right';
@@ -8567,38 +8084,32 @@ initThemePicker();
   }
   makeButterfly.type = 'butterfly';
 
-  // ── RAYO SOLAR (volumétrico, multigradient cálido) ────────────────────────
   function makeSunRay() {
     const w = W(), h = H();
     const isMobile = w < 600;
 
-    // 15% de probabilidad: rayo cinematográfico muy ancho (fuente lejana)
     const isCinematic = Math.random() < 0.15;
 
     const side = Math.random() < 0.6 ? 'top' : (Math.random() < 0.5 ? 'left' : 'right');
     let x0, y0, angle;
     const offscreen = isCinematic ? Math.max(w,h) * 0.35 : Math.max(w,h) * 0.28;
 
-    // Tipo de rayo: 70% borde (lejos del centro), 25% cerca del centro, 5% roza centro
     const roll = Math.random();
     const rayKind = roll < 0.70 ? 'border' : roll < 0.95 ? 'near' : 'graze';
 
     if (side === 'top') {
       const isLeft = Math.random() < 0.5;
       if (rayKind === 'border') {
-        // Sale del tercio exterior, apunta hacia afuera
         x0 = isLeft ? w * (Math.random() * 0.25) : w * (0.75 + Math.random() * 0.25);
         y0 = -offscreen;
         const tilt = 0.30 + Math.random() * 0.35;
         angle = isLeft ? Math.PI/2 - tilt : Math.PI/2 + tilt;
       } else if (rayKind === 'near') {
-        // Sale del tercio medio-exterior, pasa cerca pero no por el centro
         x0 = isLeft ? w * (0.15 + Math.random() * 0.20) : w * (0.65 + Math.random() * 0.20);
         y0 = -offscreen;
         const tilt = 0.12 + Math.random() * 0.18;
         angle = isLeft ? Math.PI/2 - tilt : Math.PI/2 + tilt;
       } else {
-        // Roza el centro — sale más hacia la mitad, ángulo casi vertical
         x0 = isLeft ? w * (0.28 + Math.random() * 0.18) : w * (0.54 + Math.random() * 0.18);
         y0 = -offscreen;
         const tilt = 0.04 + Math.random() * 0.08;
@@ -8638,14 +8149,12 @@ initThemePicker();
       }
     }
 
-    // Paleta solar: amarillo brillante → naranja → rojo-naranja → ámbar
     const hues = [52, 42, 30, 18];
     const hue = hues[Math.floor(Math.random() * hues.length)];
 
     if (isCinematic) {
       const len        = Math.max(w, h) * (1.1 + Math.random() * 0.5) + offscreen;
       const spreadBase = (isMobile ? 220 : 320) + Math.random() * 200;
-      // spreadTip generoso para evitar linea visible; en mobile aun mas
       const spreadTip  = spreadBase * (isMobile ? 0.55 : 0.38);
       return { type: 'sunray',
         x0, y0, angle, len,
@@ -8661,7 +8170,6 @@ initThemePicker();
     } else {
       const len    = Math.max(w, h) * (0.45 + Math.random() * 0.35) + offscreen;
       const spread = (isMobile ? 90 : 130) + Math.random() * 120;
-      // spreadTip muy generoso - el vertice no debe ser un punto sino ya un ancho visible
       const spreadTip = spread * (isMobile ? 0.55 : 0.38);
       return { type: 'sunray',
         x0, y0, angle, len, spread,
@@ -8677,7 +8185,6 @@ initThemePicker();
   }
   makeSunRay.type = 'sunray';
 
-  // ── COPO DE NIEVE ────────────────────────────────────────────────────────
   function makeSnowflake() {
     const w = W();
     return { type: 'snowflake',
@@ -8691,18 +8198,14 @@ initThemePicker();
   }
   makeSnowflake.type = 'snowflake';
 
-  // ── BOLA DE NIEVE (cruza de lado a lado) ─────────────────────────────────
   function makeSnowball() {
     const w = W(), h = H();
     const size = Math.min(w, h) / 20; // 1/20 del lado menor de la pantalla
     const goRight = Math.random() < 0.5;
-    // Sale completamente fuera del borde, a altura variable (20%-75%)
     const y = h * (0.20 + Math.random() * 0.55);
     const x0 = goRight ? -size * 2 : w + size * 2;
     const speed = 0.55 + Math.random() * 0.45; // px/ms, lento y cinematico
-    // Ligera deriva vertical (sube o baja un poco mientras cruza)
     const vy = (Math.random() - 0.5) * 0.15;
-    // Cada bola tarda entre 18s y 30s en cruzar — da tiempo a apreciarla
     const duration = (w + size * 4) / speed;
     return {
       type: 'snowball',
@@ -8715,7 +8218,6 @@ initThemePicker();
       alpha: 0,
       duration,
       elapsed: 0,
-      // pequeñas marcas de nieve en la superficie
       marks: Array.from({length: 6}, () => ({
         a: Math.random() * Math.PI * 2,
         r: size * (0.18 + Math.random() * 0.38),
@@ -8727,7 +8229,6 @@ initThemePicker();
   }
   makeSnowball.type = 'snowball';
 
-  // ── RAYO DE TORMENTA (borde→interior) ────────────────────────────────────
   function makeLightningSeg() {
     const w = W(), h = H();
     const side = Math.floor(Math.random() * 4);
@@ -8746,7 +8247,6 @@ initThemePicker();
   }
   makeLightningSeg.type = 'lightning';
 
-  // ── LIBÉLULA (solo soleado) ──────────────────────────────────────────────
   function makeDragonfly() {
     const w = W(), h = H();
     const fromLeft = Math.random() < 0.5;
@@ -8765,15 +8265,10 @@ initThemePicker();
   }
   makeDragonfly.type = 'dragonfly';
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // MODOS
-  // ══════════════════════════════════════════════════════════════════════════
 
   function startOtono() {
     spawnLoop(makeLeaf,     [400, 1200], 22);
     spawnLoop(makeAcorn,    [8000, 22000], 3);
-    // Ardilla: evento especial, como la bola de nieve en nieve
-    // Primera aparece pronto (8-14s), luego cada 18-35s, máx 1 en pantalla
     (function squirrelLoop() {
       const delay = particles.filter(p => p.type === 'squirrel').length === 0
         ? 10000 + Math.random() * 8000    // primera vez: ~10-18s
@@ -8789,15 +8284,10 @@ initThemePicker();
     })();
   }
 
-
-
-
   function startSoleado() {
-    // Sistema de rayos solares desincronizado: 2-4 activos, fades independientes
     (function sunRayManager() {
       const MIN_ACTIVE = 2, MAX_ACTIVE = 4;
       function scheduleNext() {
-        // Delay muy variable: entre 0.8s y 5s, para que no sean sincrónicos
         const delay = 800 + Math.random() * 4200;
         const t = setTimeout(() => {
           const active = particles.filter(p => p.type === 'sunray').length;
@@ -8808,7 +8298,6 @@ initThemePicker();
         }, delay);
         spawnerTmrs.push(t);
       }
-      // Arrancar con 2-3 rayos ya presentes, escalonados
       for (let i = 0; i < MIN_ACTIVE + 1; i++) {
         const t = setTimeout(() => {
           if (particles.filter(p => p.type === 'sunray').length < MAX_ACTIVE) {
@@ -8819,11 +8308,9 @@ initThemePicker();
       }
       scheduleNext();
     })();
-    // Rayos cinematográficos: baja frecuencia, destacan como eventos especiales
     (function cinematicLoop() {
       const t = setTimeout(() => {
         if (activeMode !== 'soleado') return;
-        // Forzar un rayo cinematográfico independiente del azar
         const w = W(), h = H();
         const side = Math.random() < 0.6 ? 'top' : (Math.random() < 0.5 ? 'left' : 'right');
         let x0, y0, angle;
@@ -8848,7 +8335,6 @@ initThemePicker();
     })();
     spawnLoop(makeButterfly,[2000, 5000], 8);
     spawnLoop(makeDragonfly,[8000,18000], 3);
-    // Flash atmosférico suave (no tormenta)
     (function sunFlashLoop() {
       const t = setTimeout(() => {
         if (activeMode !== 'soleado') return;
@@ -8862,20 +8348,17 @@ initThemePicker();
   let stormType = 'relampagos'; // default
 
   function startTormenta() {
-    // Mostrar sub-switch
     const sw = document.getElementById('storm-switch-wrap');
     if (sw) sw.style.display = 'block';
     applyStormType();
   }
 
   function applyStormType() {
-    // Limpiar solo partículas de tormenta y flash, no el modo
     spawnerTmrs.forEach(t => clearTimeout(t));
     spawnerTmrs = [];
     particles = particles.filter(p => p.type !== 'lightning');
     if (stormFlash) { stormFlash.remove(); stormFlash = null; }
 
-    // Ambos modos tienen flash de relámpago (overlay ambiental)
     stormFlash = document.createElement('div');
     stormFlash.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9997;opacity:0;will-change:opacity;background:radial-gradient(ellipse at var(--lx,50%) var(--ly,30%),rgba(200,210,255,0.22) 0%,rgba(160,170,255,0.10) 40%,transparent 75%)';
     document.body.appendChild(stormFlash);
@@ -8890,16 +8373,13 @@ initThemePicker();
     setTimeout(doStormFlash, 600);
 
     if (stormType === 'rayos') {
-      // Rayos: flash overlay + rayos de borde atmosféricos (haces luminosos más anchos)
       spawnLoop(makeLightningSeg, [600, 2200], 8);
       setTimeout(() => { for(let i=0;i<3;i++) setTimeout(()=>particles.push(makeLightningSeg()),i*120); }, 400);
     }
-    // Si stormType === 'relampagos': solo el flash overlay (ya iniciado arriba)
   }
 
   window.setStormType = function(type) {
     stormType = type;
-    // UI
     document.getElementById('st-relampagos').style.background = type === 'relampagos' ? 'var(--accent)' : 'transparent';
     document.getElementById('st-relampagos').style.color      = type === 'relampagos' ? '#fff' : 'var(--text3)';
     document.getElementById('st-rayos').style.background      = type === 'rayos'      ? 'var(--accent)' : 'transparent';
@@ -8910,11 +8390,9 @@ initThemePicker();
 
   function startNieve() {
     spawnLoop(makeSnowflake, [200, 700], 55);
-    // Bolas de nieve: aparece 1 cada 12-28s, max 2 en pantalla a la vez
     spawnLoop(makeSnowball, [12000, 28000], 2);
   }
 
-  // ── Flash de tormenta ─────────────────────────────────────────────────────
   function doStormFlash() {
     if (!stormFlash) return;
     stormFlash.style.setProperty('--lx', (20 + Math.random()*60) + '%');
@@ -8931,7 +8409,6 @@ initThemePicker();
     (function next(){ if(i>=seq.length)return; const{op,dur}=seq[i++]; stormFlash.style.transition=`opacity ${dur}ms linear`; stormFlash.style.opacity=op; setTimeout(next,dur+8); })();
   }
 
-  // ── Flash solar suave ─────────────────────────────────────────────────────
   function spawnSunFlash() {
     const d = document.createElement('div');
     d.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9994;opacity:0;transition:opacity 600ms ease;background:radial-gradient(ellipse at '+(30+Math.random()*40)+'% '+(5+Math.random()*25)+'%,rgba(255,220,120,0.08) 0%,transparent 60%)';
@@ -8941,9 +8418,6 @@ initThemePicker();
     setTimeout(() => { d.style.opacity = '0'; setTimeout(() => d.remove(), 700); }, 800);
   }
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // RENDER
-  // ══════════════════════════════════════════════════════════════════════════
   let lastTs = 0;
   function tick(ts) {
     const dt = Math.min(ts - lastTs, 50); lastTs = ts;
@@ -8953,11 +8427,9 @@ initThemePicker();
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
 
-      // Fade in
       if (p.fadeIn) { p.alpha = Math.min(1, (p.alpha || 0) + 0.025); if (p.alpha >= 1) p.fadeIn = false; }
       else { p.alpha = p.alpha ?? 1; }
 
-      // ── Hoja ──
       if (p.type === 'leaf') {
         p.wobble += p.wobbleV;
         p.x += p.vx + Math.sin(p.wobble) * 0.6;
@@ -8978,33 +8450,26 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Bellota ──
       else if (p.type === 'acorn') {
         p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.rot += p.rotV;
         if (p.y > h + 20) { particles.splice(i,1); continue; }
         ctx.save(); ctx.globalAlpha = p.alpha * 0.88;
         ctx.translate(p.x, p.y); ctx.rotate(p.rot);
         const s = p.size;
-        // Cuerpo
         ctx.beginPath(); ctx.ellipse(0, s*.2, s*.55, s*.65, 0, 0, Math.PI*2);
         ctx.fillStyle = '#8B5E3C'; ctx.fill();
-        // Sombrero
         ctx.beginPath(); ctx.ellipse(0, -s*.3, s*.62, s*.35, 0, 0, Math.PI*2);
         ctx.fillStyle = '#5C3D1E'; ctx.fill();
-        // Palito
         ctx.strokeStyle='#4a3020'; ctx.lineWidth=1.5; ctx.lineCap='round';
         ctx.beginPath(); ctx.moveTo(0,-s*.6); ctx.lineTo(0,-s*1.1); ctx.stroke();
         ctx.restore();
       }
 
-      // ── Ardilla ──
       else if (p.type === 'squirrel') {
         p.frameTimer += dt;
         if (p.frameTimer > 120) { p.frame = (p.frame+1)%4; p.frameTimer=0; }
 
-        // Lógica de peek-and-return
         if (!p.returning) {
-          // Avanzando: ¿llegó al punto de giro?
           if ((p.fromLeft && p.x >= p.turnX) || (!p.fromLeft && p.x <= p.turnX)) {
             p.returning = true;
             p.vx = -p.vx;           // invertir dirección
@@ -9014,7 +8479,6 @@ initThemePicker();
 
         p.x += p.vx;
 
-        // Eliminar cuando sale por el borde de origen
         if (p.returning) {
           if ((p.fromLeft && p.x < -80) || (!p.fromLeft && p.x > w + 80)) {
             particles.splice(i,1); continue;
@@ -9025,19 +8489,13 @@ initThemePicker();
         ctx.save(); ctx.globalAlpha = 0.88;
         ctx.translate(p.x, p.y);
         if (p.flipped) { ctx.scale(-1,1); }
-        // Cuerpo
         ctx.fillStyle = '#C47A2F';
         ctx.beginPath(); ctx.ellipse(-2,0,s*.55,s*.38,-.2,0,Math.PI*2); ctx.fill();
-        // Cabeza
         ctx.beginPath(); ctx.ellipse(s*.5,-s*.15,s*.32,s*.28,0.3,0,Math.PI*2); ctx.fill();
-        // Ojo
         ctx.fillStyle='#1a0a00'; ctx.beginPath(); ctx.arc(s*.68,-s*.2,2,0,Math.PI*2); ctx.fill();
-        // Oreja
         ctx.fillStyle='#C47A2F'; ctx.beginPath(); ctx.ellipse(s*.45,-s*.4,4,6,.3,0,Math.PI*2); ctx.fill();
-        // Cola esponjosa
         ctx.strokeStyle='#A0601C'; ctx.lineWidth=7; ctx.lineCap='round';
         ctx.beginPath(); ctx.moveTo(-s*.5,0); ctx.quadraticCurveTo(-s*.8,-s*.5,-s*.3,-s*.7); ctx.stroke();
-        // Patitas animadas
         const legOff = Math.sin(p.frame*Math.PI/2)*5;
         ctx.strokeStyle='#8B4513'; ctx.lineWidth=3;
         ctx.beginPath(); ctx.moveTo(0,s*.3); ctx.lineTo(-6,s*.65+legOff); ctx.stroke();
@@ -9045,12 +8503,10 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Mariposa ──
       else if (p.type === 'butterfly') {
         p.wobble += p.wobbleV; p.wingPhase += 0.18;
         p.x += p.vx + Math.sin(p.wobble) * 0.5;
         p.y += p.vy + Math.cos(p.wobble * 0.7) * 0.3;
-        // Rebotar si pasa del límite de borde
         const distFromEdge = p.vx > 0 ? p.x : w - p.x;
         if (distFromEdge > p.maxX) { p.life -= 0.02; }
         p.life -= 0.0015;
@@ -9071,7 +8527,6 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Libélula ──
       else if (p.type === 'dragonfly') {
         p.wobble   += p.wobbleV;
         p.wingPhase += 0.28;
@@ -9086,7 +8541,6 @@ initThemePicker();
         if (p.vx < 0) ctx.scale(-1, 1);
         const s = p.size;
         const flap = Math.abs(Math.sin(p.wingPhase));
-        // Alas superiores (más grandes, translúcidas)
         for (const [sx, sy, rx, ry] of [
           [s * .55, -s * .22, s * .72 * flap + 1, s * .3],
           [-s * .55, -s * .22, s * .72 * flap + 1, s * .3],
@@ -9100,12 +8554,10 @@ initThemePicker();
           ctx.lineWidth = .6;
           ctx.fill(); ctx.stroke();
         }
-        // Cuerpo (segmentado, largo y delgado)
         ctx.beginPath();
         ctx.ellipse(0, 0, s * .12, s * .62, 0, 0, Math.PI * 2);
         ctx.fillStyle = `hsl(${p.hue}, 80%, 32%)`;
         ctx.fill();
-        // Segmentos del abdomen
         for (let seg = 0; seg < 4; seg++) {
           const sy2 = s * .05 + seg * s * .16;
           ctx.beginPath();
@@ -9113,7 +8565,6 @@ initThemePicker();
           ctx.fillStyle = `hsl(${p.hue + seg * 8}, 72%, ${38 + seg * 4}%)`;
           ctx.fill();
         }
-        // Cabeza
         ctx.beginPath();
         ctx.arc(0, -s * .6, s * .16, 0, Math.PI * 2);
         ctx.fillStyle = `hsl(${p.hue}, 65%, 28%)`;
@@ -9133,7 +8584,6 @@ initThemePicker();
         const hw    = p.spread / 2;
         const hwTip = (p.spreadTip || p.spread * 0.38) / 2;
 
-        // off es la fraccion del total que queda fuera de pantalla (origen oculto)
         const offFrac = p.offscreen ? Math.min(p.offscreen / p.len, 0.55) : 0.25;
 
         if (p.cinematic) {
@@ -9210,10 +8660,8 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Copo de nieve ──
       else if (p.type === 'snowflake') {
         p.wobble += p.wobbleV; p.x += p.vx + Math.sin(p.wobble)*.4; p.y += p.vy; p.rot += 0.015;
-        // Las partículas de splash tienen vx/vy propios; decrementar life si está < 1
         if (p.life !== undefined && p.life < 1) {
           p.life -= 0.018;
           p.vy += 0.08; // gravedad suave
@@ -9235,7 +8683,6 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Bola de nieve ──
       else if (p.type === 'snowball') {
         p.elapsed += dt;
         p.x += p.vx * dt;
@@ -9245,21 +8692,17 @@ initThemePicker();
         const life = t < 0.08 ? t/0.08 : t > 0.92 ? 1-(t-0.92)/0.08 : 1;
         p.alpha = life;
 
-        // Acumular puntos del rastro cada ~18ms
         p.trailTimer += dt;
         if (p.trailTimer > 18) {
           p.trailTimer = 0;
           p.trail.push({ x: p.x, y: p.y, age: 0 });
           if (p.trail.length > 55) p.trail.shift();
         }
-        // Envejecer puntos del rastro
         p.trail.forEach(tp => tp.age += dt);
 
         const r = p.size;
         const TRAIL_LIFE = 900; // ms que tarda un punto en desaparecer
 
-        // ── Dibujar rastro ──
-        // Capa 1: niebla fría difusa (elipses borrosas)
         p.trail.forEach((tp, ti) => {
           const ta = Math.max(0, 1 - tp.age / TRAIL_LIFE);
           if (ta <= 0) return;
@@ -9279,15 +8722,12 @@ initThemePicker();
           ctx.restore();
         });
 
-        // Capa 2: partículas de hielo/escarcha a lo largo del rastro
         p.trail.forEach((tp, ti) => {
           const ta = Math.max(0, 1 - tp.age / (TRAIL_LIFE * 0.7));
           if (ta <= 0 || ti % 3 !== 0) return; // solo cada 3 puntos
           const frac = ti / p.trail.length;
-          // Cristalitos pequeños flotando alrededor del camino
           const spread = r * 0.9;
           for (let k = 0; k < 2; k++) {
-            // posición fija por índice (no random cada frame)
             const angle = (ti * 2.8 + k * 3.14) % (Math.PI * 2);
             const dist  = spread * (0.3 + (ti * 0.37 + k * 1.1) % 0.7);
             const cx = tp.x + Math.cos(angle) * dist;
@@ -9305,7 +8745,6 @@ initThemePicker();
           }
         });
 
-        // Capa 3: línea de escarcha central — trazo continuo con grosor variable
         if (p.trail.length > 3) {
           ctx.save();
           ctx.lineCap = 'round';
@@ -9328,15 +8767,12 @@ initThemePicker();
           ctx.restore();
         }
 
-        // ── Colisión con mascotas ──
         if (!p.hitCooldown) p.hitCooldown = 0;
         p.hitCooldown = Math.max(0, p.hitCooldown - dt);
         const mascots = window._vtvMascots;
         if (mascots && p.hitCooldown <= 0) {
           for (const m of mascots) {
             if (!m.el || !m.running) continue;
-            // La mascota tiene su origen en bottom=0, posición: x = m.x, y desde abajo = m.y
-            // En coordenadas de pantalla: screenX = m.x + 44, screenY = H - m.y - 88
             const mScreenX = m.x + 44;  // centro horizontal aprox
             const mScreenY = h - m.y - 44; // centro vertical aprox (MASCOT_SIZE=88, centro≈44)
             const dx = p.x - mScreenX;
@@ -9344,11 +8780,9 @@ initThemePicker();
             const dist = Math.sqrt(dx * dx + dy * dy);
             const hitRadius = r + 38; // radio bola + radio colisión mascota
             if (dist < hitRadius) {
-              // Rebotar la bola: invertir vx y darle un pequeño rebote vy
               p.vx *= -0.6;
               p.vy = -(Math.abs(p.vx) * 0.4 + 0.3);
               p.hitCooldown = 1200; // 1.2s cooldown para no re-chocar
-              // Explotar con nieve: partículas pequeñas de nieve
               for (let k = 0; k < 8; k++) {
                 const angle = (k / 8) * Math.PI * 2;
                 const spd = 1.5 + Math.random() * 2;
@@ -9363,7 +8797,6 @@ initThemePicker();
                   alpha: 1, fadeIn: false, life: 0.8,
                 });
               }
-              // Reacción de la mascota
               if (m.canReact(2000)) {
                 const prevState = m.state;
                 m.setState('fall', 900);
@@ -9387,7 +8820,6 @@ initThemePicker();
           }
         }
 
-        // ── Dibujar la bola ──
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(p.rot);
@@ -9430,7 +8862,6 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Rayo de tormenta ──
       else if (p.type === 'lightning') {
         p.elapsed += dt;
         const t = p.elapsed / p.duration;
@@ -9454,16 +8885,11 @@ initThemePicker();
   }
   requestAnimationFrame(tick);
 
-  // ══════════════════════════════════════════════════════════════════════════
-  // API PÚBLICA
-  // ══════════════════════════════════════════════════════════════════════════
   window.setWeatherMode = function(mode) {
-    // Nunca se puede deseleccionar: si ya está activo, no hace nada
     if (mode === activeMode) return;
     activeMode = mode;
     clearAll();
 
-    // UI
     document.querySelectorAll('.wb-btn').forEach(b => b.classList.remove('wb-active'));
     const btn = document.getElementById('wb-' + mode);
     if (btn) btn.classList.add('wb-active');
@@ -9475,7 +8901,6 @@ initThemePicker();
     if (mode === 'nieve')    startNieve();
   };
 
-  // Restaurar preferencia guardada, o elegir un modo al azar
   const saved = localStorage.getItem('vtv_weather_mode');
   const savedStorm = localStorage.getItem('vtv_storm_type');
   if (savedStorm) stormType = savedStorm;
@@ -9484,10 +8909,6 @@ initThemePicker();
 
 })();
 
-
-
-
-// Se llama desde selectProfile, con el perfil ya elegido
 async function registerVisit(profileName) {
   const COOLDOWN_MS = 2 * 60 * 60 * 1000;
   const STORAGE_KEY = `viciotv_last_visit__${profileName}`;
