@@ -4869,6 +4869,9 @@ function initApp() {
   if (saved) {
     const profiles = getProfiles();
     const active   = profiles.find(p => p.name === saved);
+    // Ocultar la intro inmediatamente si ya hay sesión activa
+    const introEl = document.getElementById("vtv-intro");
+    if (introEl) { introEl.classList.add("hidden"); window._vtvIntroDone = true; }
     document.getElementById("profiles-screen").style.display = "none";
     document.getElementById("nav").style.display   = "";
     document.getElementById("hero").style.display  = "";
@@ -7083,15 +7086,15 @@ initThemePicker();
   // ── Frases compartidas ──
   const FRASES = {
     // ── Movimiento físico ──
-    walk:  ["Explorando VicioTV…", "Buscando algo copado…", "Paseando por acá 🚶", "De paseo por el sitio 🗺️", "La biblioteca cambia cuando la observás.", "Siempre hay algo nuevo escondido.", "Sigo observando."],
+    walk:  ["Explorando el catálogo…", "Buscando algo copado… 🚶", "Siempre hay algo nuevo por descubrir.", "La biblioteca cambia cuando la explorás.", "Sigo buscando.", "Qué variedad de títulos hay acá.", "Mucho para ver. Poco tiempo. El clásico problema."],
     run:   ["¡Vamos vamos!", "¡Rápido che!", "¡No me alcanzás!", "🏃 ¡A todo gas!", "¡Modo turbo ON!", "¡Chau, me voy!"],
     jump:  ["¡Weee! 🚀", "¡Saltando!", "¡Arriba! 🎉", "¡Boing!", "¡Hasta la luna! 🌙", "¡Parkour! 🤸"],
-    dance: ["🎵 Ritmo, ritmo 🎵", "¡Que suenen los temas!", "🎶 Re bailongo 🎶", "¡Mostrando los pasos!", "🕺 Modo fiesta activado.", "Necesito aprender algunos chistes de aquí."],
-    sleep: ["zzz… 💤", "Shh, estoy soñando…", "No me molestes…", "💤 Rico sueñito…", "La pantalla también descansa."],
+    dance: ["🎵 Ritmo, ritmo 🎵", "¡Que suenen los temas!", "🎶 Re bailongo 🎶", "¡Mostrando los pasos!", "🕺 Modo fiesta activado.", "Esta tiene banda sonora buenísima."],
+    sleep: ["zzz… 💤", "Shh, estoy soñando…", "No me molestes…", "💤 Rico sueñito…", "Soñé que terminaba la temporada."],
     climb: ["¡Voy subiendo! 🧗", "¡Casi llego!", "¡Escalando! 💪", "¡Arriba del todo! 🧗‍♂️", "¡Trepo como araña! 🕷️"],
-    perch: ["¡Llegué! 🎉", "¡Qué vista desde acá! 🔭", "¡Top del mundo! 👑", "¡Rey de la colina! 👑", "Cómodo como en casa. 🏠"],
+    perch: ["¡Llegué! 🎉", "Buena vista del catálogo desde acá. 🔭", "¡Cómodo! 👑", "Desde acá se ve todo bien. 👑", "Cómodo como en casa. 🏠"],
     fall:  ["¡Me caí! 😱", "¡Aaaaaah! 💨", "¡Bajo con estilo... o no! 😅", "¡¡Aaaay!! 🫨", "Bien... sigo igual 😅"],
-    bounce:["¡Ow, la pared! 😅", "¡Choqué! Sigo igual…", "Reboté pero acá estoy 😎"],
+    bounce:["¡Ow! 😅", "Reboté pero acá estoy 😎", "¡Choqué! Sigo igual…"],
 
     // ── Bienvenida ──
     idle: [
@@ -7272,6 +7275,16 @@ initThemePicker();
     fav_view:    ["Tus guardadas. ❤️", "Buen gusto tenés vos…", "La colección personal.", "¡Joyas todas esas!"],
     pwa_install: ["¡La instalaste! 🎉", "¡Ahora sí que somos familia! 🏠", "App mode activado."],
 
+    // ── Personalización ──
+    weather_change: [
+      "Buena elección de clima. 🌦️", "Me gusta el ambiente nuevo.", "Ahora sí, más inmersivo.",
+      "¿Soleado o tormenta? Difícil elegir.", "El ambiente cambia todo.", "Así se disfruta más. ✨",
+    ],
+    panel_open: [
+      "A personalizar se ha dicho. 🎨", "Buena idea hacerlo a tu gusto.", "Dale tu toque personal. ✨",
+      "Cada uno lo arma como quiere.", "¿Qué cambiamos hoy?", "Tuneando la experiencia. 🛠️",
+    ],
+
     // ── Interacción entre mascotas ──
     meet_other:  ["¡Ey, vos también estás acá! 👀", "¡Somos un equipo! 🤝", "¡Hola compañero! 👋", "Buen equipo el nuestro. 💪"],
     race:        ["¡Te gano! 🏃", "¡A ver quién llega primero!", "¡Competencia! 🏆"],
@@ -7334,6 +7347,7 @@ initThemePicker();
       this.sniffBtnTimer = 0;
       this.prevTs = 0;
       this.lastEventTime = 0;
+      this.lastBubbleTime = 0;
       this.interactionTimer = 0;  // para interacciones con otras mascotas
     }
 
@@ -7445,8 +7459,12 @@ initThemePicker();
       if (state === 'sleep') this.showBubble(pickFrase('sleep'));
     }
 
-    showBubble(text, duration) {
+    showBubble(text, duration, force) {
       if (!this.bubbleEl) return;
+      const now = Date.now();
+      const MIN_PAUSE = 12000; // mínimo 12s entre frases
+      if (!force && now - this.lastBubbleTime < MIN_PAUSE) return;
+      this.lastBubbleTime = now;
       this.bubbleEl.textContent = text;
       this.bubbleEl.classList.add('show');
       if (this.bubbleTimeout) clearTimeout(this.bubbleTimeout);
@@ -7519,7 +7537,7 @@ initThemePicker();
         this.platformY = 0;
         this.vx = 0; this.vy = 0;
         this.setState('fall'); // brazos abiertos = agarrado
-        this.showBubble(['¡Me agarraste! 😲', '¡Ey, soltame! 😅', '¡Voy a volar! 🚀', '¡Cuidado! 😱'][Math.floor(Math.random()*4)], 1500);
+        this.showBubble(['¡Me agarraste! 😲', '¡Ey, soltame! 😅', '¡Voy a volar! 🚀', '¡Cuidado! 😱'][Math.floor(Math.random()*4)], 1500, true);
 
         el.style.cursor = 'grabbing';
         el.style.zIndex = '99998';
@@ -7599,11 +7617,11 @@ initThemePicker();
         // Frase de lanzamiento
         const speed = Math.sqrt(throwVx*throwVx + throwVy*throwVy);
         if (speed > 8) {
-          this.showBubble(['¡WOOOOOO! 🚀', '¡A VOLAR! 💨', '¡¡AAAAAAH!! 😱', '¡Modo proyectil! 🎯'][Math.floor(Math.random()*4)], 2000);
+          this.showBubble(['¡WOOOOOO! 🚀', '¡A VOLAR! 💨', '¡¡AAAAAAH!! 😱', '¡Modo proyectil! 🎯'][Math.floor(Math.random()*4)], 2000, true);
         } else if (speed > 3) {
-          this.showBubble(['¡Uy! 😅', '¡Me tiraste! 😤', '¡Volando! 🌀', '¡Wheee! 🌟'][Math.floor(Math.random()*4)], 1800);
+          this.showBubble(['¡Uy! 😅', '¡Me tiraste! 😤', '¡Volando! 🌀', '¡Wheee! 🌟'][Math.floor(Math.random()*4)], 1800, true);
         } else {
-          this.showBubble(['¡Me soltaste! 😌', '¡Libertad! 🕊️', '¡Gracias! 😅'][Math.floor(Math.random()*3)], 1500);
+          this.showBubble(['¡Me soltaste! 😌', '¡Libertad! 🕊️', '¡Gracias! 😅'][Math.floor(Math.random()*3)], 1500, true);
         }
       };
 
@@ -7628,11 +7646,11 @@ initThemePicker();
         this.setState('jump', 800);
         this.vy = 12 + Math.random() * 4;
         this.vx = (Math.random() < 0.5 ? 1 : -1) * (1 + Math.random());
-        this.showBubble(pickFrase('jump'), 1800);
+        this.showBubble(pickFrase('jump'), 1800, true);
       } else if (roll < 0.55) {
         this.setState('dance', 2500);
         this.vx = 0;
-        this.showBubble(pickFrase('dance'), 2200);
+        this.showBubble(pickFrase('dance'), 2200, true);
         setTimeout(() => {
           if (this.state === 'dance') {
             this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
@@ -7646,17 +7664,17 @@ initThemePicker();
           return;
         } else {
           this._leaveCurrentPlatform('walk');
-          this.showBubble('¡Bajo a tierra! 🛬', 1800);
+          this.showBubble('¡Bajo a tierra! 🛬', 1800, true);
         }
       } else if (roll < 0.85) {
         this.setState('idle');
-        this.showBubble(pickFrase('idle'), 2200);
+        this.showBubble(pickFrase('idle'), 2200, true);
         setTimeout(() => { if (this.state === 'idle') this.setState('walk'); }, 2200);
       } else {
         const dir = Math.random() < 0.5 ? 1 : -1;
         this.vx = dir * 3.2;
         this.setState('run');
-        this.showBubble(pickFrase('run'), 1600);
+        this.showBubble(pickFrase('run'), 1600, true);
         setTimeout(() => {
           if (this.state === 'run') {
             this.vx = Math.sign(this.vx) * (0.9 + Math.random() * 0.5);
@@ -7676,38 +7694,38 @@ initThemePicker();
       // Tabla de selectores → { label, frases, tall (puede treparse) }
       const TARGETS = [
         // Superficie grande — trepar encima
-        { sel: '#nav',              tall: true,  label: 'nav',        frases: ['¡Conquisté la barra! 🧭','¡Arriba del nav! 👑','¡Vista total desde acá! 🔭','¡El rey del navbar! 😎'] },
-        { sel: '#hero',             tall: true,  label: 'hero',       frases: ['¡Primera fila del hero! 🍿','¡Encima de la estrella! 🌟','¡VIP location! 🎭','¡Arriba del banner! 🎬'] },
-        { sel: '#sidebar,.sidebar', tall: true,  label: 'sidebar',    frases: ['¡Trepo la sidebar! 📋','¡Lateral conquistado! ✨','¡Cómodo acá al costado! 🛋️','¡Vista privilegiada! 👀'] },
+        { sel: '#nav',              tall: true,  label: 'nav',        frases: ['¿Qué tenemos hoy? 🎬','Mucho para explorar acá.','Veo cosas interesantes.','Buen catálogo el de hoy. 😎'] },
+        { sel: '#hero',             tall: true,  label: 'hero',       frases: ['Esta parece prometedora. 🍿','Esa la guardaría para después. 🌟','Tiene pinta de estar buena. 🎭','Yo le daría una oportunidad. 🎬'] },
+        { sel: '#sidebar,.sidebar', tall: true,  label: 'sidebar',    frases: ['Veo que hay series por todos lados. ✨','Buen surtido de opciones. 🛋️','Difícil elegir con tanto para ver. 👀'] },
         // Botones — subirse encima
-        { sel: '.btn-play',         tall: false, label: 'btn_play',   frases: ['¡Encima del play! ▶️','¡A un click de ver! 🎬','¡Apretá eso! 🔴','¡El botón sagrado! 🙏'] },
-        { sel: '.btn-info',         tall: false, label: 'btn_info',   frases: ['¡Arriba de Info! 📋','¡El botón de más datos! 🤓','¡Curioso yo también! 🔎'] },
-        { sel: '.nav-tab',          tall: false, label: 'nav_tab',    frases: ['¡Arriba de la pestaña! 🗂️','¡Tab conquistada! 🏷️','¡Desde acá cambio de sección! 🔀'] },
-        { sel: '.sidebar-btn',      tall: false, label: 'sb_btn',     frases: ['¡Encima del botón lateral! 📌','¡Custodiando la función! 🛡️','¡Este botón mola! 🔘'] },
-        { sel: '.hero-nav-btn',     tall: false, label: 'hero_nav',   frases: ['¡Arriba de la flecha! ➡️','¡Controlando el hero! 🎮','¡Navegador de banners! 🧭'] },
-        { sel: '.hero-badge',       tall: false, label: 'hero_badge', frases: ['¡Encima del badge! 🏷️','¡La etiqueta del hero! ✨','¡Esa badge brilla! 💜'] },
+        { sel: '.btn-play',         tall: false, label: 'btn_play',   frases: ['Dale, dale, dale. ▶️','Esta merece verse. 🎬','Buena elección. 🔴','¿Le damos? 🙏'] },
+        { sel: '.btn-info',         tall: false, label: 'btn_info',   frases: ['Bueno saber más antes de arrancar.','Primero los datos, después la función. 🤓','Curioso yo también. 🔎'] },
+        { sel: '.nav-tab',          tall: false, label: 'nav_tab',    frases: ['Hay de todo acá. 🗂️','Buen catálogo para explorar. 🏷️','Podría pasar horas eligiendo. 🔀'] },
+        { sel: '.sidebar-btn',      tall: false, label: 'sb_btn',     frases: ['Hay bastante para ver hoy. 📌','Buenas opciones por todos lados. 🛡️','Me gusta la selección. 🔘'] },
+        { sel: '.hero-nav-btn',     tall: false, label: 'hero_nav',   frases: ['A ver qué más hay. ➡️','Miremos opciones. 🎮','Que no se escape ninguna. 🧭'] },
+        { sel: '.hero-badge',       tall: false, label: 'hero_badge', frases: ['Esa tiene buena pinta. 🏷️','Se ve interesante. ✨','Esa me llamó la atención. 💜'] },
         // Cards — subirse al borde superior
-        { sel: '.card',             tall: false, label: 'card',       frases: ['¡Encima de la card! 🃏','¡Me subí a la tarjeta! 🎬','¡Vista de película desde acá! 🎥','¡El mejor asiento! 🍿','¡Custodiando este contenido! 🛡️','¡Qué buena pinta tiene esto! 😋'] },
-        { sel: '.hcard',            tall: false, label: 'hcard',      frases: ['¡Arriba de la card grande! 🖼️','¡Hero card conquistada! 🏆','¡Encima del póster! 🎭','¡Primera fila yo! 🌟'] },
+        { sel: '.card',             tall: false, label: 'card',       frases: ['Acá hay algo interesante. 🎬','Esta parece buena. 🎥','Esa la guardaría. 🍿','Yo le daría una oportunidad. 😋','¿La conocés? Tiene buena pinta.','No la conocía, pero se ve interesante.'] },
+        { sel: '.hcard',            tall: false, label: 'hcard',      frases: ['Esta parece una joya. 🖼️','Buena pinta tiene esa. 🏆','Esa me llamó la atención. 🎭','Yo arrancaría por esta. 🌟'] },
         // Badges / etiquetas
-        { sel: '.card-type-badge,.hcard-badge,.badge-movie,.badge-serie,.badge-anime,.prox-card-type-badge', tall: false, label: 'badge', frases: ['¡Una etiquetita! 🏷️','¡Badge encontrada! ✨','¡Que chica esta cosa! 😅','¡Me siento gigante acá! 👑'] },
-        { sel: '.live-badge',       tall: false, label: 'live_badge', frases: ['¡Estamos en vivo! 🔴','¡LIVE! 📡','¡Señal en directo! 📺','¡Esto es ahora mismo! ⚡'] },
-        { sel: '.sb-top10-badge',   tall: false, label: 'top10',      frases: ['¡Top 10 Argentina! 🇦🇷','¡Los más vistos! 🔥','¡El ranking del momento! 📊'] },
-        { sel: '.card-rating,.hcard-rating', tall: false, label: 'rating', frases: ['★ ¡Buen puntaje! ⭐','¡Bien rankeado! 📊','¡Las estrellas no mienten! ✨','¡Alta puntuación! 🏅'] },
+        { sel: '.card-type-badge,.hcard-badge,.badge-movie,.badge-serie,.badge-anime,.prox-card-type-badge', tall: false, label: 'badge', frases: ['Serie o película, ambas opciones me gustan. 🏷️','Hay de todo para elegir. ✨','Buen mix de contenido. 😅','Algo para cada humor. 👑'] },
+        { sel: '.live-badge',       tall: false, label: 'live_badge', frases: ['¡En vivo y en directo! 🔴','¡Esto pasa ahora mismo! 📡','¡Tele en tiempo real! 📺','¡A no perderse nada! ⚡'] },
+        { sel: '.sb-top10-badge',   tall: false, label: 'top10',      frases: ['Top 10 Argentina. Algo bueno tiene que haber. 🇦🇷','Lo más visto del momento. 🔥','El ranking habla solo. 📊'] },
+        { sel: '.card-rating,.hcard-rating', tall: false, label: 'rating', frases: ['Buena puntuación. Vale la pena. ⭐','Las estrellas no mienten. 📊','Alta calificación. Eso siempre es buena señal. ✨','Bien puntuada. 🏅'] },
         // Títulos y headers de sección
-        { sel: '.row-title',        tall: false, label: 'row_title',  frases: ['¡Arriba del título! 📝','¡Sentado en el header! 🎩','¡Qué sección copada! 😎','¡El letrero me gusta! ✍️'] },
-        { sel: '.hero-title',       tall: false, label: 'hero_title', frases: ['¡Encima del título principal! 🎬','¡El nombre de la película! 🌟','¡Qué títulazo! 📖'] },
-        { sel: '.card-name',        tall: false, label: 'card_name',  frases: ['¡El nombre de la peli! 📽️','¡Leí el título! 🧐','¡Qué nombre! ✨'] },
+        { sel: '.row-title',        tall: false, label: 'row_title',  frases: ['Buena sección esta. 📝','Acá hay cosas buenas. 🎩','Esta categoría siempre tiene algo interesante. 😎','Habría que explorar más por acá. ✍️'] },
+        { sel: '.hero-title',       tall: false, label: 'hero_title', frases: ['Esa tiene nombre de buena peli. 🎬','El título me convence. 🌟','Suena bien. Le daría una oportunidad. 📖'] },
+        { sel: '.card-name',        tall: false, label: 'card_name',  frases: ['Ese título me suena conocido. 📽️','No la vi. Habrá que anotarla. 🧐','Buen nombre. ✨'] },
         // Inputs y búsqueda
-        { sel: '#search-input,input[type="search"],.search-input', tall: false, label: 'search', frases: ['¿Qué buscás? 🔍','¡El buscador y yo! 🕵️','¡A un click de encontrarlo! 🎯','¡Buscame algo piola! 🔎'] },
+        { sel: '#search-input,input[type="search"],.search-input', tall: false, label: 'search', frases: ['¿Qué andás buscando? 🔍','A ver si la encuentro. 🕵️','La biblioteca es grande. 🎯','¿Algún título en mente? 🔎'] },
         // Live channels
-        { sel: '.live-channel-card,.live-item', tall: false, label: 'live', frases: ['¡Un canal en vivo! 📺','¡Tele en tiempo real! ⚡','¡Señal live! 🔴','¡Esto pasa ahora! 🌐'] },
+        { sel: '.live-channel-card,.live-item', tall: false, label: 'live', frases: ['Tele en vivo. Siempre hay algo. 📺','En directo y sin filtros. ⚡','Canal live. A ver qué dan. 🔴','Esto pasa ahora mismo. 🌐'] },
         // Creator panel
-        { sel: '#creator-panel,.creator-panel,#color-creator', tall: true, label: 'creator', frases: ['¡Me metí en el creator! 🎨','¡Zona de diseño! ✏️','¡Qué colores tan lindos! 🌈','¡Diseñador amateur! 🖌️'] },
+        { sel: '#creator-panel,.creator-panel,#color-creator', tall: true, label: 'creator', frases: ['Personalizando a gusto. 🎨','Buena onda los colores. ✏️','Cada uno le pone su estilo. 🌈','Quedó lindo. 🖌️'] },
         // Sección próximamente
-        { sel: '.prox-card',        tall: false, label: 'prox_card',  frases: ['¡Lo que viene! 🎯','¡Próximamente! 🕐','¡Hay que esperar un poco! ⏳','¡Se viene algo bueno! 👀'] },
+        { sel: '.prox-card',        tall: false, label: 'prox_card',  frases: ['Se viene algo bueno. 🎯','Esa la esperamos. 🕐','Un poco más de paciencia. ⏳','Guardala en la lista. 👀'] },
         // Actor cards
-        { sel: '.actor-card,.actor-img', tall: false, label: 'actor', frases: ['¡Hola actor! 👋','¡El elenco! 🎭','¡Qué cara conocida! 🤩','¡Fanático del casting! 🎬'] },
+        { sel: '.actor-card,.actor-img', tall: false, label: 'actor', frases: ['Buen actor ese. 👋','El elenco define todo. 🎭','Cara conocida, trabajo garantizado. 🤩','Con ese reparto ya tengo ganas de verla. 🎬'] },
         // Modal
         { sel: '.modal-inner,.modal-content', tall: true, label: 'modal', frases: ['¡Me metí al modal! 📋','¡Info mode! 🤓','¡Leyendo los detalles! 📖','¡Dame más info! 🔎'] },
       ];
@@ -7842,7 +7860,7 @@ initThemePicker();
         this.setState('fall');
         this.vy = 2;
         this.vx = (Math.random() < 0.5 ? 1 : -1) * 1.5;
-        this.showBubble('¡Me caí! 😱', 1800);
+        this.showBubble('¡Me caí! 😱', 1800, true);
       } else {
         this.setState('walk');
         this.vx = (Math.random() < 0.5 ? 1 : -1) * 1.2;
@@ -7858,7 +7876,7 @@ initThemePicker();
     _resetIdleTimer() {
       if (this.idleTimeout) clearTimeout(this.idleTimeout);
       if (this.state === 'sleep') {
-        this.showBubble('¡Ya desperté! 👀', 1800);
+        this.showBubble('¡Ya desperté! 👀', 1800, true);
         this.vx = (Math.random() < 0.5 ? 1 : -1) * (0.9 + Math.random() * 0.5);
         this.setState('walk');
       }
@@ -8057,7 +8075,7 @@ initThemePicker();
         `Volviste. Eso me gusta. 🎬`,
       ];
       setTimeout(() => {
-        this.showBubble(greetings[Math.floor(Math.random() * greetings.length)], 3500);
+        this.showBubble(greetings[Math.floor(Math.random() * greetings.length)], 3500, true);
       }, 400 + this.index * 600);
       setTimeout(() => {
         if (this.state !== 'sleep') this.showBubble(pickFrase('idle'), 2500);
@@ -8089,7 +8107,7 @@ initThemePicker();
       if (scrollFastTimer) clearTimeout(scrollFastTimer);
       scrollFastTimer = setTimeout(() => {
         if (Math.abs(_manager.scrollVel) > 18 && _canReact(2000)) {
-          _manager.instances.forEach(m => { if (m.canReact(2000)) m.showBubble(pickFrase('scroll_fast'), 2000); });
+          _manager.instances.forEach(m => { m.showBubble(pickFrase('scroll_fast'), 2000, true); });
         }
       }, 80);
     }, { passive: true });
@@ -8128,15 +8146,13 @@ initThemePicker();
         const wasFav = typeof isFav === 'function' && isFav(item.id);
         _origToggleFav(item);
         const nowFav = typeof isFav === 'function' && isFav(item.id);
-        if (!_canReact(2000)) return;
         _manager.instances.forEach(m => {
-          if (!m.canReact(2000)) return;
           if (nowFav && !wasFav) {
             m.setState('jump', 700);
-            setTimeout(() => m.showBubble(pickFrase('like_add'), 2500), 200);
+            setTimeout(() => m.showBubble(pickFrase('like_add'), 2500, true), 200);
             setTimeout(() => { if (m.state === 'jump') m.setState('walk'); }, 700);
           } else if (!nowFav && wasFav) {
-            m.showBubble(pickFrase('like_remove'), 2500);
+            m.showBubble(pickFrase('like_remove'), 2500, true);
           }
         });
       };
@@ -8146,7 +8162,6 @@ initThemePicker();
     if (typeof _origOpenModal === 'function') {
       window.openModal = function(item) {
         _origOpenModal(item);
-        if (!_canReact(3500)) return;
         const genres = item.genre_ids || [];
         const isAnime = item._cat === 'anime' || (item._type === 'tv' && genres.includes(16) && (item.origin_country||[]).includes('JP'));
         const isTerror = genres.includes(27) || genres.includes(53); // Horror, Thriller
@@ -8154,14 +8169,13 @@ initThemePicker();
         const isTV = item._type === 'tv';
         const key = isAnime ? 'open_anime' : isTerror ? 'open_terror' : isComedia ? 'open_comedia' : isTV ? 'open_serie' : 'open_movie';
         _manager.instances.forEach((m, i) => {
-          if (!m.canReact(3500)) return;
           setTimeout(() => {
             if (Math.random() < 0.65) {
               m.setState('jump', 650);
-              setTimeout(() => m.showBubble(pickFrase(key), 2800), 300);
+              setTimeout(() => m.showBubble(pickFrase(key), 2800, true), 300);
               setTimeout(() => { if (m.state === 'jump') m.setState('walk'); }, 650);
             } else {
-              m.showBubble(pickFrase(key), 2800);
+              m.showBubble(pickFrase(key), 2800, true);
             }
           }, i * 300);
         });
@@ -8172,9 +8186,9 @@ initThemePicker();
     if (typeof _origCloseModal === 'function') {
       window.closeModal = function() {
         _origCloseModal();
-        if (_canReact(4000) && Math.random() < 0.4) {
+        if (Math.random() < 0.4) {
           const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
-          if (m) m.showBubble(pickFrase('modal_close'), 2000);
+          if (m) m.showBubble(pickFrase('modal_close'), 2000, true);
         }
       };
     }
@@ -8189,7 +8203,7 @@ initThemePicker();
           searchDebounce = setTimeout(() => {
             if (_canReact(4000)) {
               const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
-              if (m) m.showBubble(pickFrase('search'), 2000);
+              if (m) m.showBubble(pickFrase('search'), 2000, true);
             }
           }, 600);
         }
@@ -8200,15 +8214,13 @@ initThemePicker();
     if (typeof _origOpenHeroTrailer === 'function') {
       window.openHeroTrailer = function(item) {
         _origOpenHeroTrailer(item);
-        if (_canReact(4000)) {
-          setTimeout(() => {
+        setTimeout(() => {
             _manager.instances.forEach(m => {
               m.setState('dance', 1800);
-              m.showBubble(pickFrase('trailer'), 2500);
+              m.showBubble(pickFrase('trailer'), 2500, true);
               setTimeout(() => { if (m.state === 'dance') { m.vx = (Math.random()<0.5?1:-1)*(0.9+Math.random()*0.5); m.setState('walk'); } }, 1800);
             });
           }, 400);
-        }
       };
     }
 
@@ -8216,12 +8228,10 @@ initThemePicker();
     if (typeof _origOpenLive === 'function') {
       window.openLiveChannel = function(ch) {
         _origOpenLive(ch);
-        if (_canReact(4000)) {
-          setTimeout(() => {
-            const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
-            if (m) m.showBubble(pickFrase('live_tv'), 2500);
-          }, 300);
-        }
+        setTimeout(() => {
+          const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+          if (m) m.showBubble(pickFrase('live_tv'), 2500, true);
+        }, 300);
       };
     }
 
@@ -8229,7 +8239,6 @@ initThemePicker();
     if (typeof _origSwitchTab === 'function') {
       window.switchTab = function(tab) {
         _origSwitchTab(tab);
-        if (!_canReact(3000)) return;
         const tabMap = { movies:'tab_movies', series:'tab_series', anime:'tab_anime' };
         const key = tabMap[tab];
         if (key) {
@@ -8237,10 +8246,10 @@ initThemePicker();
             setTimeout(() => {
               if (tab === 'anime') {
                 m.setState('dance', 1500);
-                m.showBubble(pickFrase(key), 2500);
+                m.showBubble(pickFrase(key), 2500, true);
                 setTimeout(() => { if (m.state === 'dance') { m.vx=(Math.random()<.5?1:-1)*(0.9+Math.random()*0.5); m.setState('walk'); } }, 1500);
               } else {
-                m.showBubble(pickFrase(key), 2200);
+                m.showBubble(pickFrase(key), 2200, true);
               }
             }, i * 400);
           });
@@ -8252,11 +8261,9 @@ initThemePicker();
     if (typeof _origApplyTheme === 'function') {
       window.applyThemeColor = function(type, value) {
         _origApplyTheme(type, value);
-        if (_canReact(3500)) {
-          setTimeout(() => {
-            _manager.instances.forEach(m => { if (m.canReact(3500)) m.showBubble(pickFrase('theme_change'), 2200); });
-          }, 200);
-        }
+        setTimeout(() => {
+          _manager.instances.forEach(m => { m.showBubble(pickFrase('theme_change'), 2200, true); });
+        }, 200);
       };
     }
 
@@ -8264,10 +8271,8 @@ initThemePicker();
     if (typeof _origSbGoFavs === 'function') {
       window.sbGoFavs = function() {
         _origSbGoFavs();
-        if (_canReact(4000)) {
-          const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
-          if (m) m.showBubble(pickFrase('fav_view'), 2200);
-        }
+        const m_fav = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+        if (m_fav) m_fav.showBubble(pickFrase('fav_view'), 2200, true);
       };
     }
 
@@ -8275,10 +8280,8 @@ initThemePicker();
     if (typeof _origSbGoContinuar === 'function') {
       window.sbGoContinuar = function() {
         _origSbGoContinuar();
-        if (_canReact(4000)) {
-          const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
-          if (m) m.showBubble(pickFrase('continue_watch'), 2200);
-        }
+        const m_cont = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+        if (m_cont) m_cont.showBubble(pickFrase('continue_watch'), 2200, true);
       };
     }
 
@@ -8286,15 +8289,53 @@ initThemePicker();
     if (installBtn) {
       installBtn.addEventListener('click', () => {
         setTimeout(() => {
-          if (_canReact(5000)) {
-            _manager.instances.forEach(m => {
+          _manager.instances.forEach(m => {
               m.setState('dance', 2000);
-              m.showBubble(pickFrase('pwa_install'), 2500);
+              m.showBubble(pickFrase('pwa_install'), 2500, true);
               setTimeout(() => { if (m.state === 'dance') { m.vx=(Math.random()<.5?1:-1)*(0.9+Math.random()*0.5); m.setState('walk'); } }, 2000);
             });
-          }
         }, 800);
       });
+    }
+
+    // ── Personalización: modo clima ──
+    const _origSetWeatherMode = window.setWeatherMode;
+    if (typeof _origSetWeatherMode === 'function') {
+      window.setWeatherMode = function(mode) {
+        _origSetWeatherMode(mode);
+        if (!mode) return; // desactivado
+        setTimeout(() => {
+          const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+          if (m) m.showBubble(pickFrase('weather_change'), 2200, true);
+        }, 300);
+      };
+    }
+
+    // ── Personalización: tipo de tormenta ──
+    const _origSetStormType = window.setStormType;
+    if (typeof _origSetStormType === 'function') {
+      window.setStormType = function(type) {
+        _origSetStormType(type);
+        setTimeout(() => {
+          const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+          if (m) m.showBubble(pickFrase('weather_change'), 2000, true);
+        }, 300);
+      };
+    }
+
+    // ── Personalización: abrir panel ──
+    const _origToggleCreator = window.toggleCreatorPanel;
+    if (typeof _origToggleCreator === 'function') {
+      window.toggleCreatorPanel = function(e) {
+        _origToggleCreator(e);
+        const panel = document.getElementById('creator-panel');
+        if (panel && panel.classList.contains('open')) {
+          setTimeout(() => {
+            const m = _manager.instances[Math.floor(Math.random() * _manager.instances.length)];
+            if (m) m.showBubble(pickFrase('panel_open'), 2000, true);
+          }, 200);
+        }
+      };
     }
 
     // ── Timers de personalidad ─────────────────────────────────
@@ -8503,46 +8544,108 @@ initThemePicker();
   // ── RAYO SOLAR (volumétrico, multigradient cálido) ────────────────────────
   function makeSunRay() {
     const w = W(), h = H();
+    const isMobile = w < 600;
 
     // 15% de probabilidad: rayo cinematográfico muy ancho (fuente lejana)
     const isCinematic = Math.random() < 0.15;
 
     const side = Math.random() < 0.6 ? 'top' : (Math.random() < 0.5 ? 'left' : 'right');
     let x0, y0, angle;
-    if (side === 'top')   { x0 = w * (0.05 + Math.random() * 0.9); y0 = 0; angle = Math.PI / 2 + (Math.random() - 0.5) * 0.7; }
-    if (side === 'left')  { x0 = 0; y0 = h * (0.02 + Math.random() * 0.45); angle = (Math.random() - 0.5) * 0.7; }
-    if (side === 'right') { x0 = w; y0 = h * (0.02 + Math.random() * 0.45); angle = Math.PI + (Math.random() - 0.5) * 0.7; }
+    const offscreen = isCinematic ? Math.max(w,h) * 0.35 : Math.max(w,h) * 0.28;
+
+    // Tipo de rayo: 70% borde (lejos del centro), 25% cerca del centro, 5% roza centro
+    const roll = Math.random();
+    const rayKind = roll < 0.70 ? 'border' : roll < 0.95 ? 'near' : 'graze';
+
+    if (side === 'top') {
+      const isLeft = Math.random() < 0.5;
+      if (rayKind === 'border') {
+        // Sale del tercio exterior, apunta hacia afuera
+        x0 = isLeft ? w * (Math.random() * 0.25) : w * (0.75 + Math.random() * 0.25);
+        y0 = -offscreen;
+        const tilt = 0.30 + Math.random() * 0.35;
+        angle = isLeft ? Math.PI/2 - tilt : Math.PI/2 + tilt;
+      } else if (rayKind === 'near') {
+        // Sale del tercio medio-exterior, pasa cerca pero no por el centro
+        x0 = isLeft ? w * (0.15 + Math.random() * 0.20) : w * (0.65 + Math.random() * 0.20);
+        y0 = -offscreen;
+        const tilt = 0.12 + Math.random() * 0.18;
+        angle = isLeft ? Math.PI/2 - tilt : Math.PI/2 + tilt;
+      } else {
+        // Roza el centro — sale más hacia la mitad, ángulo casi vertical
+        x0 = isLeft ? w * (0.28 + Math.random() * 0.18) : w * (0.54 + Math.random() * 0.18);
+        y0 = -offscreen;
+        const tilt = 0.04 + Math.random() * 0.08;
+        angle = isLeft ? Math.PI/2 - tilt : Math.PI/2 + tilt;
+      }
+    }
+    if (side === 'left') {
+      x0 = -offscreen;
+      if (rayKind === 'border') {
+        y0 = h * (Math.random() * 0.28);
+        const tilt = 0.20 + Math.random() * 0.28;
+        angle = -tilt;
+      } else if (rayKind === 'near') {
+        y0 = h * (0.15 + Math.random() * 0.25);
+        const tilt = 0.06 + Math.random() * 0.14;
+        angle = tilt; // apunta un poco más hacia adentro, pasa cerca
+      } else {
+        y0 = h * (0.30 + Math.random() * 0.20);
+        const tilt = 0.02 + Math.random() * 0.06;
+        angle = tilt; // casi horizontal, roza el centro
+      }
+    }
+    if (side === 'right') {
+      x0 = w + offscreen;
+      if (rayKind === 'border') {
+        y0 = h * (Math.random() * 0.28);
+        const tilt = 0.20 + Math.random() * 0.28;
+        angle = Math.PI + tilt;
+      } else if (rayKind === 'near') {
+        y0 = h * (0.15 + Math.random() * 0.25);
+        const tilt = 0.06 + Math.random() * 0.14;
+        angle = Math.PI - tilt;
+      } else {
+        y0 = h * (0.30 + Math.random() * 0.20);
+        const tilt = 0.02 + Math.random() * 0.06;
+        angle = Math.PI - tilt;
+      }
+    }
 
     // Paleta solar: amarillo brillante → naranja → rojo-naranja → ámbar
     const hues = [52, 42, 30, 18];
     const hue = hues[Math.floor(Math.random() * hues.length)];
 
     if (isCinematic) {
-      // Rayo cinematográfico: muy ancho, largo, baja opacidad, expansión progresiva
-      const len    = Math.max(w, h) * (0.75 + Math.random() * 0.45);
-      const spreadBase = 320 + Math.random() * 280;  // muy ancho en la base
-      const spreadTip  = 30 + Math.random() * 60;    // estrecho en el origen (perspectiva)
+      const len        = Math.max(w, h) * (1.1 + Math.random() * 0.5) + offscreen;
+      const spreadBase = (isMobile ? 220 : 320) + Math.random() * 200;
+      // spreadTip generoso para evitar linea visible; en mobile aun mas
+      const spreadTip  = spreadBase * (isMobile ? 0.55 : 0.38);
       return { type: 'sunray',
         x0, y0, angle, len,
-        spread: spreadBase,       // spread máximo al final
-        spreadTip,                // spread en el punto de origen
+        spread: spreadBase,
+        spreadTip,
         cinematic: true,
-        peak: 0.10 + Math.random() * 0.14,  // más sutil para mayor realismo
-        duration: 5000 + Math.random() * 5000,
+        peak: 0.09 + Math.random() * 0.12,
+        duration: 14000 + Math.random() * 12000,
         elapsed: 0,
         hue,
+        offscreen,
       };
     } else {
-      const len    = Math.max(w, h) * (0.22 + Math.random() * 0.25);
-      const spread = 110 + Math.random() * 140;
+      const len    = Math.max(w, h) * (0.45 + Math.random() * 0.35) + offscreen;
+      const spread = (isMobile ? 90 : 130) + Math.random() * 120;
+      // spreadTip muy generoso - el vertice no debe ser un punto sino ya un ancho visible
+      const spreadTip = spread * (isMobile ? 0.55 : 0.38);
       return { type: 'sunray',
         x0, y0, angle, len, spread,
         cinematic: false,
-        spreadTip: spread * 0.08,
-        peak: 0.28 + Math.random() * 0.32,
-        duration: 2500 + Math.random() * 3500,
+        spreadTip,
+        peak: 0.26 + Math.random() * 0.28,
+        duration: 10000 + Math.random() * 10000,
         elapsed: 0,
         hue,
+        offscreen,
       };
     }
   }
@@ -8561,6 +8664,42 @@ initThemePicker();
     };
   }
   makeSnowflake.type = 'snowflake';
+
+  // ── BOLA DE NIEVE (cruza de lado a lado) ─────────────────────────────────
+  function makeSnowball() {
+    const w = W(), h = H();
+    const size = Math.min(w, h) / 20; // 1/20 del lado menor de la pantalla
+    const goRight = Math.random() < 0.5;
+    // Sale completamente fuera del borde, a altura variable (20%-75%)
+    const y = h * (0.20 + Math.random() * 0.55);
+    const x0 = goRight ? -size * 2 : w + size * 2;
+    const speed = 0.55 + Math.random() * 0.45; // px/ms, lento y cinematico
+    // Ligera deriva vertical (sube o baja un poco mientras cruza)
+    const vy = (Math.random() - 0.5) * 0.15;
+    // Cada bola tarda entre 18s y 30s en cruzar — da tiempo a apreciarla
+    const duration = (w + size * 4) / speed;
+    return {
+      type: 'snowball',
+      x: x0, y,
+      vx: goRight ? speed : -speed,
+      vy,
+      size,
+      rot: Math.random() * Math.PI * 2,
+      rotV: (goRight ? 1 : -1) * (0.008 + Math.random() * 0.012),
+      alpha: 0,
+      duration,
+      elapsed: 0,
+      // pequeñas marcas de nieve en la superficie
+      marks: Array.from({length: 6}, () => ({
+        a: Math.random() * Math.PI * 2,
+        r: size * (0.18 + Math.random() * 0.38),
+        s: size * (0.04 + Math.random() * 0.07),
+      })),
+      trail: [],          // historial de posiciones para el rastro
+      trailTimer: 0,      // acumulador para no guardar cada frame
+    };
+  }
+  makeSnowball.type = 'snowball';
 
   // ── RAYO DE TORMENTA (borde→interior) ────────────────────────────────────
   function makeLightningSeg() {
@@ -8598,7 +8737,32 @@ initThemePicker();
   }
 
   function startSoleado() {
-    spawnLoop(makeSunRay,   [1500, 4000], 4);
+    // Sistema de rayos solares desincronizado: 2-4 activos, fades independientes
+    (function sunRayManager() {
+      const MIN_ACTIVE = 2, MAX_ACTIVE = 4;
+      function scheduleNext() {
+        // Delay muy variable: entre 0.8s y 5s, para que no sean sincrónicos
+        const delay = 800 + Math.random() * 4200;
+        const t = setTimeout(() => {
+          const active = particles.filter(p => p.type === 'sunray').length;
+          if (active < MAX_ACTIVE) {
+            particles.push(makeSunRay());
+          }
+          scheduleNext();
+        }, delay);
+        spawnerTmrs.push(t);
+      }
+      // Arrancar con 2-3 rayos ya presentes, escalonados
+      for (let i = 0; i < MIN_ACTIVE + 1; i++) {
+        const t = setTimeout(() => {
+          if (particles.filter(p => p.type === 'sunray').length < MAX_ACTIVE) {
+            particles.push(makeSunRay());
+          }
+        }, i * (2500 + Math.random() * 2000));
+        spawnerTmrs.push(t);
+      }
+      scheduleNext();
+    })();
     // Rayos cinematográficos: baja frecuencia, destacan como eventos especiales
     (function cinematicLoop() {
       const t = setTimeout(() => {
@@ -8689,6 +8853,8 @@ initThemePicker();
 
   function startNieve() {
     spawnLoop(makeSnowflake, [200, 700], 55);
+    // Bolas de nieve: aparece 1 cada 12-28s, max 2 en pantalla a la vez
+    spawnLoop(makeSnowball, [12000, 28000], 2);
   }
 
   // ── Flash de tormenta ─────────────────────────────────────────────────────
@@ -8835,24 +9001,26 @@ initThemePicker();
         p.elapsed += dt;
         const t = p.elapsed / p.duration;
         if (t >= 1) { particles.splice(i,1); continue; }
-        const life = t < 0.2 ? t/0.2 : t > 0.72 ? 1-(t-0.72)/0.28 : 1;
+        const life = t < 0.35 ? t/0.35 : t > 0.60 ? 1-(t-0.60)/0.40 : 1;
         const alpha = p.peak * life;
         ctx.save();
         ctx.translate(p.x0, p.y0);
         ctx.rotate(p.angle - Math.PI/2);
 
-        const hw = p.spread / 2;         // mitad del ancho en el extremo lejano
-        const hwTip = (p.spreadTip || p.spread * 0.08) / 2;  // mitad en el origen
+        const hw    = p.spread / 2;
+        const hwTip = (p.spreadTip || p.spread * 0.38) / 2;
+
+        // off es la fraccion del total que queda fuera de pantalla (origen oculto)
+        const offFrac = p.offscreen ? Math.min(p.offscreen / p.len, 0.55) : 0.25;
 
         if (p.cinematic) {
-          // ── Rayo cinematográfico: trapezoide que se expande con perspectiva ──
-          // Haz principal — gradiente muy suave y amplio
           const grd = ctx.createLinearGradient(0, 0, 0, p.len);
-          grd.addColorStop(0,    `hsla(${p.hue+14},100%,92%,${alpha * 0.9})`);
-          grd.addColorStop(0.12, `hsla(${p.hue+8},100%,78%,${alpha * 0.7})`);
-          grd.addColorStop(0.35, `hsla(${p.hue},95%,62%,${alpha * 0.45})`);
-          grd.addColorStop(0.65, `hsla(${p.hue-8},88%,50%,${alpha * 0.2})`);
-          grd.addColorStop(1,    `hsla(${p.hue-16},80%,40%,0)`);
+          grd.addColorStop(0,              `hsla(${p.hue+14},100%,92%,0)`);
+          grd.addColorStop(offFrac * 0.6,  `hsla(${p.hue+14},100%,92%,0)`);
+          grd.addColorStop(offFrac,        `hsla(${p.hue+8},100%,78%,${alpha * 0.7})`);
+          grd.addColorStop(offFrac + 0.25, `hsla(${p.hue},95%,62%,${alpha * 0.45})`);
+          grd.addColorStop(0.72,           `hsla(${p.hue-8},88%,50%,${alpha * 0.2})`);
+          grd.addColorStop(1,              `hsla(${p.hue-16},80%,40%,0)`);
           ctx.fillStyle = grd;
           ctx.beginPath();
           ctx.moveTo(-hwTip, 0);
@@ -8863,30 +9031,31 @@ initThemePicker();
           ctx.filter = 'blur(38px)';
           ctx.fill();
 
-          // Segunda capa interior más brillante pero más estrecha
-          const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.6);
-          grd2.addColorStop(0,   `hsla(${p.hue+18},100%,97%,${alpha * 0.55})`);
-          grd2.addColorStop(0.5, `hsla(${p.hue+5},100%,78%,${alpha * 0.25})`);
-          grd2.addColorStop(1,   `hsla(${p.hue},90%,62%,0)`);
+          const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.75);
+          grd2.addColorStop(0,             `hsla(${p.hue+18},100%,97%,0)`);
+          grd2.addColorStop(offFrac * 0.7, `hsla(${p.hue+18},100%,97%,0)`);
+          grd2.addColorStop(offFrac,       `hsla(${p.hue+5},100%,78%,${alpha * 0.5})`);
+          grd2.addColorStop(0.65,          `hsla(${p.hue},90%,62%,${alpha * 0.2})`);
+          grd2.addColorStop(1,             `hsla(${p.hue},90%,62%,0)`);
           ctx.fillStyle = grd2;
-          const hw2 = hw * 0.32, hwTip2 = hwTip * 0.4;
+          const hw2 = hw * 0.32, hwTip2 = hwTip * 0.55;
           ctx.beginPath();
           ctx.moveTo(-hwTip2, 0);
           ctx.lineTo( hwTip2, 0);
-          ctx.lineTo( hw2,    p.len * 0.6);
-          ctx.lineTo(-hw2,    p.len * 0.6);
+          ctx.lineTo( hw2,    p.len * 0.75);
+          ctx.lineTo(-hw2,    p.len * 0.75);
           ctx.closePath();
           ctx.filter = 'blur(16px)';
           ctx.fill();
 
         } else {
-          // ── Rayo normal (lógica original con mejoras menores) ──
           const grd = ctx.createLinearGradient(0, 0, 0, p.len);
-          grd.addColorStop(0,    `hsla(${p.hue+14},100%,88%,${alpha})`);
-          grd.addColorStop(0.15, `hsla(${p.hue+8},100%,72%,${alpha*0.85})`);
-          grd.addColorStop(0.38, `hsla(${p.hue},95%,60%,${alpha*0.65})`);
-          grd.addColorStop(0.65, `hsla(${p.hue-10},90%,50%,${alpha*0.35})`);
-          grd.addColorStop(1,    `hsla(${p.hue-16},85%,42%,0)`);
+          grd.addColorStop(0,              `hsla(${p.hue+14},100%,88%,0)`);
+          grd.addColorStop(offFrac * 0.55, `hsla(${p.hue+14},100%,88%,0)`);
+          grd.addColorStop(offFrac,        `hsla(${p.hue+8},100%,72%,${alpha*0.85})`);
+          grd.addColorStop(offFrac + 0.28, `hsla(${p.hue},95%,60%,${alpha*0.65})`);
+          grd.addColorStop(0.72,           `hsla(${p.hue-10},90%,50%,${alpha*0.3})`);
+          grd.addColorStop(1,              `hsla(${p.hue-16},85%,42%,0)`);
           ctx.fillStyle = grd;
           ctx.beginPath();
           ctx.moveTo(-hwTip, 0);
@@ -8897,17 +9066,18 @@ initThemePicker();
           ctx.filter = 'blur(22px)';
           ctx.fill();
 
-          // Segunda capa central brillante
-          const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.7);
-          grd2.addColorStop(0,   `hsla(${p.hue+18},100%,95%,${alpha*0.7})`);
-          grd2.addColorStop(0.4, `hsla(${p.hue+5},100%,75%,${alpha*0.4})`);
-          grd2.addColorStop(1,   `hsla(${p.hue},90%,60%,0)`);
+          const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.75);
+          grd2.addColorStop(0,             `hsla(${p.hue+18},100%,95%,0)`);
+          grd2.addColorStop(offFrac * 0.6, `hsla(${p.hue+18},100%,95%,0)`);
+          grd2.addColorStop(offFrac,       `hsla(${p.hue+5},100%,75%,${alpha*0.6})`);
+          grd2.addColorStop(0.6,           `hsla(${p.hue},90%,60%,${alpha*0.3})`);
+          grd2.addColorStop(1,             `hsla(${p.hue},90%,60%,0)`);
           ctx.fillStyle = grd2;
           ctx.beginPath();
-          ctx.moveTo(-hwTip*0.5, 0);
-          ctx.lineTo( hwTip*0.5, 0);
-          ctx.lineTo( hw*0.35, p.len*0.7);
-          ctx.lineTo(-hw*0.35, p.len*0.7);
+          ctx.moveTo(-hwTip*0.55, 0);
+          ctx.lineTo( hwTip*0.55, 0);
+          ctx.lineTo( hw*0.38, p.len*0.75);
+          ctx.lineTo(-hw*0.38, p.len*0.75);
           ctx.closePath();
           ctx.filter = 'blur(10px)';
           ctx.fill();
@@ -8932,6 +9102,142 @@ initThemePicker();
           ctx.moveTo(0,p.size*.5); ctx.lineTo(-p.size*.22,p.size*.32);
           ctx.stroke(); ctx.restore();
         }
+        ctx.restore();
+      }
+
+      // ── Bola de nieve ──
+      else if (p.type === 'snowball') {
+        p.elapsed += dt;
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        const t = p.elapsed / p.duration;
+        if (t >= 1) { particles.splice(i,1); continue; }
+        const life = t < 0.08 ? t/0.08 : t > 0.92 ? 1-(t-0.92)/0.08 : 1;
+        p.alpha = life;
+
+        // Acumular puntos del rastro cada ~18ms
+        p.trailTimer += dt;
+        if (p.trailTimer > 18) {
+          p.trailTimer = 0;
+          p.trail.push({ x: p.x, y: p.y, age: 0 });
+          if (p.trail.length > 55) p.trail.shift();
+        }
+        // Envejecer puntos del rastro
+        p.trail.forEach(tp => tp.age += dt);
+
+        const r = p.size;
+        const TRAIL_LIFE = 900; // ms que tarda un punto en desaparecer
+
+        // ── Dibujar rastro ──
+        // Capa 1: niebla fría difusa (elipses borrosas)
+        p.trail.forEach((tp, ti) => {
+          const ta = Math.max(0, 1 - tp.age / TRAIL_LIFE);
+          if (ta <= 0) return;
+          const frac = ti / p.trail.length; // 0=más viejo 1=más reciente
+          const fogR = r * (1.8 + (1 - frac) * 1.4);
+          ctx.save();
+          ctx.globalAlpha = ta * p.alpha * 0.13 * frac;
+          ctx.filter = 'blur(12px)';
+          const fg = ctx.createRadialGradient(tp.x, tp.y, 0, tp.x, tp.y, fogR);
+          fg.addColorStop(0,   'rgba(180,220,255,1)');
+          fg.addColorStop(0.45,'rgba(160,205,255,0.6)');
+          fg.addColorStop(1,   'rgba(130,185,255,0)');
+          ctx.fillStyle = fg;
+          ctx.beginPath();
+          ctx.ellipse(tp.x, tp.y, fogR, fogR * 0.55, 0, 0, Math.PI*2);
+          ctx.fill();
+          ctx.restore();
+        });
+
+        // Capa 2: partículas de hielo/escarcha a lo largo del rastro
+        p.trail.forEach((tp, ti) => {
+          const ta = Math.max(0, 1 - tp.age / (TRAIL_LIFE * 0.7));
+          if (ta <= 0 || ti % 3 !== 0) return; // solo cada 3 puntos
+          const frac = ti / p.trail.length;
+          // Cristalitos pequeños flotando alrededor del camino
+          const spread = r * 0.9;
+          for (let k = 0; k < 2; k++) {
+            // posición fija por índice (no random cada frame)
+            const angle = (ti * 2.8 + k * 3.14) % (Math.PI * 2);
+            const dist  = spread * (0.3 + (ti * 0.37 + k * 1.1) % 0.7);
+            const cx = tp.x + Math.cos(angle) * dist;
+            const cy = tp.y + Math.sin(angle) * dist * 0.5;
+            const cs = r * (0.04 + (ti % 4) * 0.018);
+            ctx.save();
+            ctx.globalAlpha = ta * p.alpha * frac * 0.65;
+            ctx.shadowBlur = cs * 3;
+            ctx.shadowColor = 'rgba(200,230,255,0.8)';
+            ctx.fillStyle = `rgba(220,240,255,${ta * 0.9})`;
+            ctx.beginPath();
+            ctx.arc(cx, cy, cs, 0, Math.PI*2);
+            ctx.fill();
+            ctx.restore();
+          }
+        });
+
+        // Capa 3: línea de escarcha central — trazo continuo con grosor variable
+        if (p.trail.length > 3) {
+          ctx.save();
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          for (let ti = 1; ti < p.trail.length; ti++) {
+            const tp0 = p.trail[ti-1], tp1 = p.trail[ti];
+            const frac = ti / p.trail.length;
+            const ta = Math.max(0, 1 - tp1.age / (TRAIL_LIFE * 0.55));
+            if (ta <= 0) continue;
+            ctx.globalAlpha = ta * p.alpha * frac * 0.35;
+            ctx.strokeStyle = `rgba(210,235,255,${ta})`;
+            ctx.lineWidth = r * (0.12 + frac * 0.20);
+            ctx.shadowBlur = r * 0.5;
+            ctx.shadowColor = 'rgba(180,215,255,0.6)';
+            ctx.beginPath();
+            ctx.moveTo(tp0.x, tp0.y);
+            ctx.lineTo(tp1.x, tp1.y);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        // ── Dibujar la bola ──
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        p.rot += p.rotV;
+
+        ctx.shadowBlur = r * 0.9;
+        ctx.shadowColor = 'rgba(180,210,255,0.35)';
+
+        const grd = ctx.createRadialGradient(-r*0.28, -r*0.28, r*0.05, 0, 0, r);
+        grd.addColorStop(0,   `rgba(255,255,255,${p.alpha * 0.98})`);
+        grd.addColorStop(0.45,`rgba(230,242,255,${p.alpha * 0.92})`);
+        grd.addColorStop(0.78,`rgba(195,220,255,${p.alpha * 0.82})`);
+        grd.addColorStop(1,   `rgba(160,200,245,${p.alpha * 0.60})`);
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI*2);
+        ctx.fill();
+
+        const grd2 = ctx.createRadialGradient(-r*0.32, -r*0.32, 0, -r*0.28, -r*0.28, r*0.45);
+        grd2.addColorStop(0,   `rgba(255,255,255,${p.alpha * 0.75})`);
+        grd2.addColorStop(0.5, `rgba(255,255,255,${p.alpha * 0.20})`);
+        grd2.addColorStop(1,   `rgba(255,255,255,0)`);
+        ctx.fillStyle = grd2;
+        ctx.beginPath();
+        ctx.arc(0, 0, r, 0, Math.PI*2);
+        ctx.fill();
+
+        ctx.shadowBlur = 0;
+        p.marks.forEach(m => {
+          const mx = Math.cos(m.a) * m.r, my = Math.sin(m.a) * m.r;
+          const mg = ctx.createRadialGradient(mx, my, 0, mx, my, m.s);
+          mg.addColorStop(0, `rgba(140,175,220,${p.alpha * 0.45})`);
+          mg.addColorStop(1, `rgba(140,175,220,0)`);
+          ctx.fillStyle = mg;
+          ctx.beginPath();
+          ctx.arc(mx, my, m.s, 0, Math.PI*2);
+          ctx.fill();
+        });
+
         ctx.restore();
       }
 
