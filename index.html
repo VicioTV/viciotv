@@ -6554,7 +6554,7 @@ initThemePicker();
     const w = W(), h = H();
     const isMobile = isMobileViewport();
 
-    const isCinematic = !isMobile && Math.random() < 0.15;
+    const isCinematic = Math.random() < 0.15;
 
     const side = Math.random() < 0.6 ? 'top' : (Math.random() < 0.5 ? 'left' : 'right');
     let x0, y0, angle;
@@ -6752,7 +6752,7 @@ initThemePicker();
   function startSoleado() {
     (function sunRayManager() {
       const MIN_ACTIVE = 2, MAX_ACTIVE = 4;
-      const MAX_MOBILE = 0;
+      const MAX_MOBILE = 2;
       function scheduleNext() {
         const delay = 800 + Math.random() * 4200;
         const t = setTimeout(() => {
@@ -7168,7 +7168,6 @@ initThemePicker();
         ctx.restore();
       }
       else if (p.type === 'sunray') {
-        if (isMobileViewport()) { particles.splice(i,1); continue; }
         p.elapsed += dt;
         const t = p.elapsed / p.duration;
         if (t >= 1) { particles.splice(i,1); continue; }
@@ -7179,27 +7178,40 @@ initThemePicker();
         const hwTip = (p.spreadTip || p.spread * 0.38) / 2;
         const offFrac = p.offscreen ? Math.min(p.offscreen / p.len, 0.55) : 0.25;
 
-        if (w < 600) {
-          /* ── MOBILE: un solo haz difuso, sin capas superpuestas ── */
+        if (isMobileViewport()) {
+          /* ── MOBILE: render tipo desktop, escalado para viewport chico ── */
           ctx.save();
           ctx.translate(p.x0, p.y0);
           ctx.rotate(p.angle - Math.PI/2);
 
-          const mobileOff = p.offscreen ? Math.min(p.offscreen / p.len, 0.48) : 0.18;
-          const beamHw = hw * 1.25;
-          const beamTip = hwTip * 1.25;
-          const beam = ctx.createLinearGradient(0, 0, 0, p.len);
-          beam.addColorStop(0,                 `hsla(${p.hue+14},100%,90%,0)`);
-          beam.addColorStop(mobileOff * 0.55,  `hsla(${p.hue+14},100%,90%,0)`);
-          beam.addColorStop(mobileOff,         `hsla(${p.hue+8},100%,74%,${alpha * 0.22})`);
-          beam.addColorStop(mobileOff + 0.36,  `hsla(${p.hue},95%,62%,${alpha * 0.18})`);
-          beam.addColorStop(0.86,              `hsla(${p.hue-10},88%,50%,${alpha * 0.07})`);
-          beam.addColorStop(1,                 `hsla(${p.hue-16},80%,40%,0)`);
-          ctx.fillStyle = beam;
+          const mobileAlpha = alpha * (p.cinematic ? 0.78 : 0.68);
+          const mobileOff = p.offscreen ? Math.min(p.offscreen / p.len, 0.52) : 0.22;
+
+          const outer = ctx.createLinearGradient(0, 0, 0, p.len);
+          outer.addColorStop(0,                   `hsla(${p.hue+14},100%,92%,0)`);
+          outer.addColorStop(mobileOff * 0.6,     `hsla(${p.hue+14},100%,92%,0)`);
+          outer.addColorStop(mobileOff,           `hsla(${p.hue+8},100%,76%,${mobileAlpha * 0.58})`);
+          outer.addColorStop(mobileOff + 0.28,    `hsla(${p.hue},95%,62%,${mobileAlpha * 0.4})`);
+          outer.addColorStop(0.74,                `hsla(${p.hue-8},88%,50%,${mobileAlpha * 0.18})`);
+          outer.addColorStop(1,                   `hsla(${p.hue-16},80%,40%,0)`);
+          ctx.fillStyle = outer;
           ctx.beginPath();
-          ctx.moveTo(-beamTip, 0); ctx.lineTo(beamTip, 0);
-          ctx.lineTo(beamHw, p.len); ctx.lineTo(-beamHw, p.len);
-          ctx.closePath(); ctx.filter = 'blur(30px)'; ctx.fill();
+          ctx.moveTo(-hwTip * 0.85, 0); ctx.lineTo(hwTip * 0.85, 0);
+          ctx.lineTo(hw * 0.9, p.len); ctx.lineTo(-hw * 0.9, p.len);
+          ctx.closePath(); ctx.filter = 'blur(22px)'; ctx.fill();
+
+          const innerLen = p.len * 0.76;
+          const inner = ctx.createLinearGradient(0, 0, 0, innerLen);
+          inner.addColorStop(0,                   `hsla(${p.hue+18},100%,96%,0)`);
+          inner.addColorStop(mobileOff * 0.65,    `hsla(${p.hue+18},100%,96%,0)`);
+          inner.addColorStop(mobileOff,           `hsla(${p.hue+5},100%,78%,${mobileAlpha * 0.42})`);
+          inner.addColorStop(0.62,                `hsla(${p.hue},90%,62%,${mobileAlpha * 0.18})`);
+          inner.addColorStop(1,                   `hsla(${p.hue},90%,62%,0)`);
+          ctx.fillStyle = inner;
+          ctx.beginPath();
+          ctx.moveTo(-hwTip * 0.38, 0); ctx.lineTo(hwTip * 0.38, 0);
+          ctx.lineTo(hw * 0.28, innerLen); ctx.lineTo(-hw * 0.28, innerLen);
+          ctx.closePath(); ctx.filter = 'blur(9px)'; ctx.fill();
 
           ctx.filter = 'none';
           ctx.restore();
