@@ -7189,12 +7189,11 @@ initThemePicker();
           ctx.save();
           ctx.translate(p.x0, p.y0);
           ctx.rotate(p.angle - Math.PI/2);
-          const rw = hw * 0.5; // ancho único para todo el rayo
+          const rw = hw * 0.5;
           const rayGrd = ctx.createLinearGradient(0, 0, 0, p.len);
-          rayGrd.addColorStop(0,    `hsla(${p.hue+10},100%,88%,0)`);
-          rayGrd.addColorStop(0.08, `hsla(${p.hue+10},100%,88%,${alpha * 0.85})`);
-          rayGrd.addColorStop(0.5,  `hsla(${p.hue},95%,65%,${alpha * 0.45})`);
-          rayGrd.addColorStop(1,    `hsla(${p.hue-10},85%,48%,0)`);
+          rayGrd.addColorStop(0,   `hsla(${p.hue+10},100%,88%,${alpha * 0.85})`);
+          rayGrd.addColorStop(0.6, `hsla(${p.hue},95%,65%,${alpha * 0.35})`);
+          rayGrd.addColorStop(1,   `hsla(${p.hue-10},85%,48%,0)`);
           ctx.fillStyle = rayGrd;
           ctx.beginPath();
           ctx.moveTo(-rw, 0); ctx.lineTo(rw, 0);
