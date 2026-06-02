@@ -6937,6 +6937,7 @@ initThemePicker();
     }
   });
   function tick(ts) {
+    try {
     const dt = Math.min((lastTs ? ts - lastTs : 16), 50); lastTs = ts;
     const w = W(), h = H();
     ctx.clearRect(0, 0, w, h);
@@ -7212,6 +7213,7 @@ initThemePicker();
           ctx.fill();
 
         } else {
+          const isMobileRender = w < 600;
           const grd = ctx.createLinearGradient(0, 0, 0, p.len);
           grd.addColorStop(0,              `hsla(${p.hue+14},100%,88%,0)`);
           grd.addColorStop(offFrac * 0.55, `hsla(${p.hue+14},100%,88%,0)`);
@@ -7226,7 +7228,7 @@ initThemePicker();
           ctx.lineTo( hw, p.len);
           ctx.lineTo(-hw, p.len);
           ctx.closePath();
-          ctx.filter = isMobile ? 'blur(34px)' : 'blur(22px)';
+          ctx.filter = isMobileRender ? 'blur(34px)' : 'blur(22px)';
           ctx.fill();
 
           const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.75);
@@ -7242,11 +7244,11 @@ initThemePicker();
           ctx.lineTo( hw*0.38, p.len*0.75);
           ctx.lineTo(-hw*0.38, p.len*0.75);
           ctx.closePath();
-          ctx.filter = isMobile ? 'blur(16px)' : 'blur(10px)';
+          ctx.filter = isMobileRender ? 'blur(16px)' : 'blur(10px)';
           ctx.fill();
 
           /* Capa extra de núcleo luminoso — solo en mobile para profundidad 3D */
-          if (isMobile) {
+          if (isMobileRender) {
             const grd3 = ctx.createLinearGradient(0, 0, 0, p.len * 0.5);
             grd3.addColorStop(0,             `hsla(${p.hue+22},100%,99%,0)`);
             grd3.addColorStop(offFrac * 0.7, `hsla(${p.hue+22},100%,99%,0)`);
@@ -7437,6 +7439,7 @@ initThemePicker();
       }
     }
 
+    } catch(e) { console.error('Weather tick error:', e); }
     requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
