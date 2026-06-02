@@ -8528,9 +8528,17 @@ initThemePicker();
   function makeSquirrel() {
     const h = H(), w = W();
     const fromLeft = Math.random() < 0.5;
+    const spd = 1.8 + Math.random() * 1.0;
+    // Punto de retorno: entre el 18% y el 38% del ancho desde el borde de entrada
+    const peekFrac = 0.18 + Math.random() * 0.20;
+    const turnX = fromLeft ? w * peekFrac : w * (1 - peekFrac);
     return { type: 'squirrel',
-      x: fromLeft ? -60 : w + 60, y: h * (0.6 + Math.random() * 0.35),
-      vx: fromLeft ? 1.8 + Math.random() * 1.2 : -(1.8 + Math.random() * 1.2),
+      x: fromLeft ? -60 : w + 60,
+      y: h * (0.6 + Math.random() * 0.35),
+      vx: fromLeft ? spd : -spd,
+      fromLeft,
+      turnX,
+      returning: false,  // false = entrando, true = volviendo al borde
       frame: 0, frameTimer: 0, life: 1,
       flipped: !fromLeft,
     };
@@ -8764,175 +8772,23 @@ initThemePicker();
   function startOtono() {
     spawnLoop(makeLeaf,     [400, 1200], 22);
     spawnLoop(makeAcorn,    [8000, 22000], 3);
-    // Mariposas: algunas vuelan por otoño también
-    spawnLoop(makeButterfly,[5000, 12000], 3);
-    // Ardilla: muy esporádica
+    // Ardilla: evento especial, como la bola de nieve en nieve
+    // Primera aparece pronto (8-14s), luego cada 18-35s, máx 1 en pantalla
     (function squirrelLoop() {
+      const delay = particles.filter(p => p.type === 'squirrel').length === 0
+        ? 10000 + Math.random() * 8000    // primera vez: ~10-18s
+        : 35000 + Math.random() * 25000;  // siguientes: ~35-60s
       const t = setTimeout(() => {
-        if (activeMode === 'otono') { particles.push(makeSquirrel()); squirrelLoop(); }
-      }, 25000 + Math.random() * 45000);
+        if (activeMode !== 'otono') return;
+        if (particles.filter(p => p.type === 'squirrel').length < 1) {
+          particles.push(makeSquirrel());
+        }
+        squirrelLoop();
+      }, delay);
       spawnerTmrs.push(t);
     })();
-    // Árbol de naranjas decorativo
-    _showOrangeTree();
   }
 
-  function _showOrangeTree() {
-    if (document.getElementById('vtv-orange-tree')) return;
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    svg.id = 'vtv-orange-tree';
-    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    svg.style.cssText = 'position:fixed;bottom:0;right:0;width:340px;height:100vh;pointer-events:none;z-index:9995;overflow:visible;opacity:0;transition:opacity 2s ease';
-    // El viewBox ancla el dibujo: el tronco sale por abajo-derecha, las ramas llegan a la cima
-    svg.setAttribute('viewBox', '0 0 340 900');
-    svg.setAttribute('preserveAspectRatio', 'xMaxYMax meet');
-
-    svg.innerHTML = `
-      <defs>
-        <filter id="tree-blur-soft" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="1.5"/>
-        </filter>
-        <radialGradient id="orange-grad" cx="40%" cy="35%" r="60%">
-          <stop offset="0%" stop-color="#FFD04A"/>
-          <stop offset="55%" stop-color="#FF8C00"/>
-          <stop offset="100%" stop-color="#C45000"/>
-        </radialGradient>
-        <radialGradient id="orange-grad2" cx="38%" cy="32%" r="58%">
-          <stop offset="0%" stop-color="#FFE066"/>
-          <stop offset="50%" stop-color="#FF9A00"/>
-          <stop offset="100%" stop-color="#B84500"/>
-        </radialGradient>
-        <radialGradient id="leaf-grad" cx="40%" cy="30%" r="65%">
-          <stop offset="0%" stop-color="#6DBF47"/>
-          <stop offset="100%" stop-color="#2E7B1A"/>
-        </radialGradient>
-      </defs>
-
-      <!-- TRONCO PRINCIPAL: arranca desde muy abajo del viewBox y sube -->
-      <path d="M 255 920 C 248 820 240 700 235 580 C 228 440 225 300 220 160 C 218 100 215 40 212 -30"
-            fill="none" stroke="#5C3317" stroke-width="28" stroke-linecap="round"/>
-      <path d="M 255 920 C 250 820 244 700 239 580 C 232 440 229 300 224 160 C 222 100 219 40 216 -30"
-            fill="none" stroke="#7A4520" stroke-width="14" stroke-linecap="round" opacity=".45"/>
-
-      <!-- RAMA 1: sale hacia derecha arriba (visible en zona alta de pantalla) -->
-      <path d="M 228 130 C 258 110 295 85 340 55"
-            fill="none" stroke="#5C3317" stroke-width="14" stroke-linecap="round"/>
-      <path d="M 228 130 C 258 110 295 85 340 55"
-            fill="none" stroke="#7A4520" stroke-width="7" stroke-linecap="round" opacity=".4"/>
-      <!-- sub-ramas R1 -->
-      <path d="M 295 85 C 310 68 330 48 355 22" fill="none" stroke="#5C3317" stroke-width="8" stroke-linecap="round"/>
-      <path d="M 318 70 C 336 58 355 42 375 18" fill="none" stroke="#5C3317" stroke-width="5" stroke-linecap="round"/>
-      <path d="M 285 92 C 298 115 305 138 308 165" fill="none" stroke="#5C3317" stroke-width="7" stroke-linecap="round"/>
-
-      <!-- RAMA 2: sale hacia derecha, zona media-alta -->
-      <path d="M 225 240 C 260 220 300 198 345 175"
-            fill="none" stroke="#5C3317" stroke-width="13" stroke-linecap="round"/>
-      <path d="M 295 200 C 315 178 338 158 365 135" fill="none" stroke="#5C3317" stroke-width="7" stroke-linecap="round"/>
-      <path d="M 280 210 C 295 238 302 265 300 294" fill="none" stroke="#5C3317" stroke-width="7" stroke-linecap="round"/>
-
-      <!-- RAMA 3: zona media, cae un poco -->
-      <path d="M 230 380 C 265 368 305 358 350 345"
-            fill="none" stroke="#5C3317" stroke-width="12" stroke-linecap="round"/>
-      <path d="M 298 355 C 320 340 345 325 372 308" fill="none" stroke="#5C3317" stroke-width="6" stroke-linecap="round"/>
-      <path d="M 285 362 C 300 388 310 414 308 442" fill="none" stroke="#5C3317" stroke-width="6" stroke-linecap="round"/>
-
-      <!-- RAMA 4: zona media-baja, más horizontal -->
-      <path d="M 236 510 C 272 500 312 492 358 482"
-            fill="none" stroke="#5C3317" stroke-width="11" stroke-linecap="round"/>
-      <path d="M 305 490 C 330 475 358 460 385 442" fill="none" stroke="#5C3317" stroke-width="6" stroke-linecap="round"/>
-
-      <!-- HOJAS — grupos irregulares sobre cada zona de rama -->
-      <!-- hojas zona muy alta (arriba, casi fuera de pantalla) -->
-      <g opacity=".92" filter="url(#tree-blur-soft)">
-        <ellipse cx="340" cy="45" rx="28" ry="18" fill="url(#leaf-grad)" transform="rotate(-25,340,45)"/>
-        <ellipse cx="358" cy="28" rx="22" ry="14" fill="#3A9A22" transform="rotate(-40,358,28)"/>
-        <ellipse cx="370" cy="15" rx="18" ry="11" fill="#4DB830" transform="rotate(-15,370,15)"/>
-        <ellipse cx="352" cy="55" rx="24" ry="15" fill="#2E7B1A" transform="rotate(-50,352,55)"/>
-        <ellipse cx="325" cy="62" rx="20" ry="13" fill="#50C030" transform="rotate(10,325,62)"/>
-        <ellipse cx="378" cy="35" rx="16" ry="10" fill="#3A9A22" transform="rotate(-30,378,35)"/>
-        <ellipse cx="310" cy="78" rx="18" ry="12" fill="url(#leaf-grad)" transform="rotate(20,310,78)"/>
-      </g>
-      <!-- hojas rama 1 -->
-      <g opacity=".9">
-        <ellipse cx="308" cy="158" rx="26" ry="17" fill="url(#leaf-grad)" transform="rotate(30,308,158)"/>
-        <ellipse cx="292" cy="172" rx="22" ry="14" fill="#3A9A22" transform="rotate(-20,292,172)"/>
-        <ellipse cx="322" cy="143" rx="19" ry="12" fill="#4DB830" transform="rotate(-35,322,143)"/>
-        <ellipse cx="335" cy="165" rx="17" ry="11" fill="#2E7B1A" transform="rotate(45,335,165)"/>
-      </g>
-      <!-- hojas rama 2 -->
-      <g opacity=".9">
-        <ellipse cx="300" cy="288" rx="28" ry="18" fill="url(#leaf-grad)" transform="rotate(25,300,288)"/>
-        <ellipse cx="318" cy="270" rx="23" ry="15" fill="#3A9A22" transform="rotate(-15,318,270)"/>
-        <ellipse cx="285" cy="300" rx="20" ry="13" fill="#4DB830" transform="rotate(40,285,300)"/>
-        <ellipse cx="310" cy="308" rx="18" ry="11" fill="#2E7B1A" transform="rotate(-30,310,308)"/>
-        <ellipse cx="340" cy="175" rx="25" ry="16" fill="url(#leaf-grad)" transform="rotate(-20,340,175)"/>
-        <ellipse cx="360" cy="158" rx="20" ry="13" fill="#3A9A22" transform="rotate(-40,360,158)"/>
-      </g>
-      <!-- hojas zona media -->
-      <g opacity=".88">
-        <ellipse cx="308" cy="435" rx="27" ry="17" fill="url(#leaf-grad)" transform="rotate(20,308,435)"/>
-        <ellipse cx="292" cy="448" rx="22" ry="14" fill="#3A9A22" transform="rotate(-25,292,448)"/>
-        <ellipse cx="322" cy="420" rx="18" ry="12" fill="#50C030" transform="rotate(35,322,420)"/>
-        <ellipse cx="348" cy="345" rx="26" ry="17" fill="url(#leaf-grad)" transform="rotate(-15,348,345)"/>
-        <ellipse cx="366" cy="328" rx="20" ry="13" fill="#3A9A22" transform="rotate(-35,366,328)"/>
-      </g>
-      <!-- hojas zona baja-derecha -->
-      <g opacity=".85">
-        <ellipse cx="358" cy="475" rx="28" ry="18" fill="url(#leaf-grad)" transform="rotate(15,358,475)"/>
-        <ellipse cx="378" cy="458" rx="22" ry="14" fill="#3A9A22" transform="rotate(-20,378,458)"/>
-        <ellipse cx="345" cy="490" rx="20" ry="13" fill="#50C030" transform="rotate(30,345,490)"/>
-      </g>
-
-      <!-- NARANJAS — distribuidas por las ramas -->
-      <!-- zona alta -->
-      <circle cx="326" cy="72" r="10" fill="url(#orange-grad)"/>
-      <circle cx="326" cy="72" r="10" fill="none" stroke="#C45000" stroke-width=".8" opacity=".4"/>
-      <line x1="326" y1="62" x2="327" y2="56" stroke="#3A6B15" stroke-width="1.4" stroke-linecap="round"/>
-      <ellipse cx="328" cy="55" rx="4" ry="2.5" fill="#4A8820" transform="rotate(-20,328,55)"/>
-
-      <circle cx="348" cy="52" r="8.5" fill="url(#orange-grad2)"/>
-      <line x1="348" y1="43" x2="349" y2="37" stroke="#3A6B15" stroke-width="1.2" stroke-linecap="round"/>
-      <ellipse cx="350" cy="36" rx="3.5" ry="2" fill="#4A8820" transform="rotate(15,350,36)"/>
-
-      <!-- rama 1 -->
-      <circle cx="296" cy="160" r="11" fill="url(#orange-grad)"/>
-      <circle cx="296" cy="160" r="11" fill="none" stroke="#C45000" stroke-width=".8" opacity=".35"/>
-      <line x1="296" y1="149" x2="297" y2="143" stroke="#3A6B15" stroke-width="1.4" stroke-linecap="round"/>
-      <ellipse cx="298" cy="142" rx="4" ry="2.5" fill="#4A8820" transform="rotate(-10,298,142)"/>
-
-      <!-- rama 2 -->
-      <circle cx="315" cy="285" r="10.5" fill="url(#orange-grad2)"/>
-      <line x1="315" y1="274" x2="316" y2="268" stroke="#3A6B15" stroke-width="1.3" stroke-linecap="round"/>
-      <ellipse cx="317" cy="267" rx="3.8" ry="2.2" fill="#4A8820" transform="rotate(20,317,267)"/>
-
-      <circle cx="288" cy="298" r="9" fill="url(#orange-grad)"/>
-      <line x1="288" y1="289" x2="289" y2="283" stroke="#3A6B15" stroke-width="1.2" stroke-linecap="round"/>
-      <ellipse cx="290" cy="282" rx="3.5" ry="2" fill="#4A8820" transform="rotate(-15,290,282)"/>
-
-      <!-- media -->
-      <circle cx="306" cy="432" r="10" fill="url(#orange-grad)"/>
-      <line x1="306" y1="422" x2="307" y2="416" stroke="#3A6B15" stroke-width="1.3" stroke-linecap="round"/>
-      <ellipse cx="308" cy="415" rx="3.8" ry="2.2" fill="#4A8820" transform="rotate(10,308,415)"/>
-
-      <circle cx="350" cy="348" r="9.5" fill="url(#orange-grad2)"/>
-      <line x1="350" y1="338" x2="351" y2="332" stroke="#3A6B15" stroke-width="1.2" stroke-linecap="round"/>
-      <ellipse cx="352" cy="331" rx="3.5" ry="2" fill="#4A8820" transform="rotate(-25,352,331)"/>
-
-      <!-- baja -->
-      <circle cx="360" cy="470" r="11" fill="url(#orange-grad)"/>
-      <circle cx="360" cy="470" r="11" fill="none" stroke="#C45000" stroke-width=".8" opacity=".3"/>
-      <line x1="360" y1="459" x2="361" y2="453" stroke="#3A6B15" stroke-width="1.4" stroke-linecap="round"/>
-      <ellipse cx="362" cy="452" rx="4" ry="2.5" fill="#4A8820" transform="rotate(15,362,452)"/>
-
-      <!-- MUSGO/TEXTURA TRONCO (sombra lateral izquierda) -->
-      <path d="M 245 920 C 238 820 232 700 228 580 C 222 440 220 300 216 160 C 214 100 212 40 210 -30"
-            fill="none" stroke="#3D2010" stroke-width="5" stroke-linecap="round" opacity=".35"/>
-    `;
-
-    document.body.appendChild(svg);
-    // fade in suave
-    requestAnimationFrame(() => { svg.style.opacity = '1'; });
-  }
 
 
 
@@ -9145,8 +9001,26 @@ initThemePicker();
       else if (p.type === 'squirrel') {
         p.frameTimer += dt;
         if (p.frameTimer > 120) { p.frame = (p.frame+1)%4; p.frameTimer=0; }
+
+        // Lógica de peek-and-return
+        if (!p.returning) {
+          // Avanzando: ¿llegó al punto de giro?
+          if ((p.fromLeft && p.x >= p.turnX) || (!p.fromLeft && p.x <= p.turnX)) {
+            p.returning = true;
+            p.vx = -p.vx;           // invertir dirección
+            p.flipped = !p.flipped; // dar vuelta el sprite
+          }
+        }
+
         p.x += p.vx;
-        if ((p.vx > 0 && p.x > w+80) || (p.vx < 0 && p.x < -80)) { particles.splice(i,1); continue; }
+
+        // Eliminar cuando sale por el borde de origen
+        if (p.returning) {
+          if ((p.fromLeft && p.x < -80) || (!p.fromLeft && p.x > w + 80)) {
+            particles.splice(i,1); continue;
+          }
+        }
+
         const s = 22;
         ctx.save(); ctx.globalAlpha = 0.88;
         ctx.translate(p.x, p.y);
