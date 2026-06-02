@@ -1417,7 +1417,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 
   <div style="padding-top:5px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600">
-    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 2.5.8</div>
+    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 2.6.3</div>
   </div>
 </div>
 
@@ -6138,7 +6138,7 @@ initThemePicker();
         el('vtl-1'), el('vtl-2'), el('vtl-3'), el('vtl-4')
       ].filter(Boolean);
 
-      const texts = ['VICIOTV 2.5.8', 'Sincronizando entorno', 'Usuario detectado', 'Interfaz disponible'];
+      const texts = ['VICIOTV 2.6.3', 'Sincronizando entorno', 'Usuario detectado', 'Interfaz disponible'];
 
       const timings = [0, 280, 540, 820];
       for (let i = 0; i < lines.length; i++) {
@@ -6751,11 +6751,13 @@ initThemePicker();
   function startSoleado() {
     (function sunRayManager() {
       const MIN_ACTIVE = 2, MAX_ACTIVE = 4;
+      const MAX_MOBILE = 1;
       function scheduleNext() {
         const delay = 800 + Math.random() * 4200;
         const t = setTimeout(() => {
+          const isMob = W() < 600;
           const active = particles.filter(p => p.type === 'sunray').length;
-          if (active < MAX_ACTIVE) {
+          if (active < (isMob ? MAX_MOBILE : MAX_ACTIVE)) {
             particles.push(makeSunRay());
           }
           scheduleNext();
@@ -6764,7 +6766,8 @@ initThemePicker();
       }
       for (let i = 0; i < MIN_ACTIVE + 1; i++) {
         const t = setTimeout(() => {
-          if (particles.filter(p => p.type === 'sunray').length < MAX_ACTIVE) {
+          const isMob = W() < 600;
+          if (particles.filter(p => p.type === 'sunray').length < (isMob ? MAX_MOBILE : MAX_ACTIVE)) {
             particles.push(makeSunRay());
           }
         }, i * (2500 + Math.random() * 2000));
@@ -7168,53 +7171,43 @@ initThemePicker();
         if (t >= 1) { particles.splice(i,1); continue; }
         const life = t < 0.35 ? t/0.35 : t > 0.60 ? 1-(t-0.60)/0.40 : 1;
         const alpha = p.peak * life;
-        ctx.save();
-        ctx.translate(p.x0, p.y0);
-        ctx.rotate(p.angle - Math.PI/2);
 
         const hw    = p.spread / 2;
         const hwTip = (p.spreadTip || p.spread * 0.38) / 2;
-
         const offFrac = p.offscreen ? Math.min(p.offscreen / p.len, 0.55) : 0.25;
 
-        /* En desktop usamos ctx.filter (blur gaussiano real).
-           En mobile Safari/WebView ctx.filter no funciona → fake blur por capas. */
-        function drawRayFakeBlur(hwBase, hwTipBase, lenBase, stops, layers) {
-          for (let li = 0; li < layers.length; li++) {
-            const lhw    = hwBase    * layers[li].wMul;
-            const lhwTip = hwTipBase * layers[li].wMul;
-            const grd = ctx.createLinearGradient(0, 0, 0, lenBase);
-            stops.forEach(function(s) {
-              grd.addColorStop(s[0], 'hsla('+s[1]+','+s[2]+'%,'+s[3]+'%,'+(s[4]*layers[li].aMul)+')');
-            });
-            ctx.fillStyle = grd;
-            ctx.beginPath();
-            ctx.moveTo(-lhwTip, 0); ctx.lineTo(lhwTip, 0);
-            ctx.lineTo(lhw, lenBase); ctx.lineTo(-lhw, lenBase);
-            ctx.closePath(); ctx.fill();
-          }
-        }
+        if (w < 600) {
+          /* ── MOBILE: glow radial + rayo simple en coords absolutas ── */
+          const glowR = Math.max(w, h) * 0.75;
+          const glow = ctx.createRadialGradient(p.x0, p.y0, 0, p.x0, p.y0, glowR);
+          glow.addColorStop(0,   `hsla(${p.hue+5},100%,72%,${alpha * 0.13})`);
+          glow.addColorStop(0.3, `hsla(${p.hue},95%,60%,${alpha * 0.06})`);
+          glow.addColorStop(1,   `hsla(${p.hue},90%,50%,0)`);
+          ctx.fillStyle = glow;
+          ctx.fillRect(0, 0, w, h);
 
-        const isMobileRender = w < 600;
+          ctx.save();
+          ctx.translate(p.x0, p.y0);
+          ctx.rotate(p.angle - Math.PI/2);
+          const rayGrd = ctx.createLinearGradient(0, 0, 0, p.len);
+          rayGrd.addColorStop(0,           `hsla(${p.hue+14},100%,92%,0)`);
+          rayGrd.addColorStop(offFrac,     `hsla(${p.hue+8},100%,82%,${alpha * 0.9})`);
+          rayGrd.addColorStop(offFrac+0.3, `hsla(${p.hue},95%,65%,${alpha * 0.55})`);
+          rayGrd.addColorStop(0.8,         `hsla(${p.hue-8},88%,52%,${alpha * 0.15})`);
+          rayGrd.addColorStop(1,           `hsla(${p.hue-14},80%,42%,0)`);
+          ctx.fillStyle = rayGrd;
+          ctx.beginPath();
+          ctx.moveTo(-hwTip, 0); ctx.lineTo(hwTip, 0);
+          ctx.lineTo(hw, p.len); ctx.lineTo(-hw, p.len);
+          ctx.closePath(); ctx.fill();
+          ctx.restore();
 
-        if (p.cinematic) {
-          if (isMobileRender) {
-            drawRayFakeBlur(hw, hwTip, p.len, [
-              [0,            p.hue+14,100,92,0],
-              [offFrac*0.6,  p.hue+14,100,92,0],
-              [offFrac,      p.hue+8, 100,78,alpha*0.7],
-              [offFrac+0.25, p.hue,   95, 62,alpha*0.45],
-              [0.72,         p.hue-8, 88, 50,alpha*0.2],
-              [1,            p.hue-16,80, 40,0],
-            ], [{wMul:4.0,aMul:0.08},{wMul:2.8,aMul:0.18},{wMul:2.0,aMul:0.32},{wMul:1.4,aMul:0.55},{wMul:1.0,aMul:1.00}]);
-            drawRayFakeBlur(hw*0.32, hwTip*0.55, p.len*0.75, [
-              [0,           p.hue+18,100,97,0],
-              [offFrac*0.7, p.hue+18,100,97,0],
-              [offFrac,     p.hue+5, 100,78,alpha*0.5],
-              [0.65,        p.hue,   90, 62,alpha*0.2],
-              [1,           p.hue,   90, 62,0],
-            ], [{wMul:2.5,aMul:0.18},{wMul:1.5,aMul:0.50},{wMul:1.0,aMul:1.00}]);
-          } else {
+        } else {
+          ctx.save();
+          ctx.translate(p.x0, p.y0);
+          ctx.rotate(p.angle - Math.PI/2);
+
+          if (p.cinematic) {
             const grd = ctx.createLinearGradient(0, 0, 0, p.len);
             grd.addColorStop(0,              `hsla(${p.hue+14},100%,92%,0)`);
             grd.addColorStop(offFrac * 0.6,  `hsla(${p.hue+14},100%,92%,0)`);
@@ -7237,24 +7230,7 @@ initThemePicker();
             ctx.beginPath();
             ctx.moveTo(-hwTip2,0); ctx.lineTo(hwTip2,0); ctx.lineTo(hw2,p.len*0.75); ctx.lineTo(-hw2,p.len*0.75);
             ctx.closePath(); ctx.filter = 'blur(16px)'; ctx.fill();
-          }
-        } else {
-          if (isMobileRender) {
-            drawRayFakeBlur(hw, hwTip, p.len, [
-              [0,            p.hue+14,100,88,0],
-              [offFrac*0.55, p.hue+14,100,88,0],
-              [offFrac,      p.hue+8, 100,72,alpha*0.85],
-              [offFrac+0.28, p.hue,   95, 60,alpha*0.65],
-              [0.72,         p.hue-10,90, 50,alpha*0.3],
-              [1,            p.hue-16,85, 42,0],
-            ], [{wMul:3.5,aMul:0.07},{wMul:2.4,aMul:0.16},{wMul:1.7,aMul:0.32},{wMul:1.2,aMul:0.60},{wMul:1.0,aMul:1.00}]);
-            drawRayFakeBlur(hw*0.38, hwTip*0.55, p.len*0.75, [
-              [0,           p.hue+18,100,95,0],
-              [offFrac*0.6, p.hue+18,100,95,0],
-              [offFrac,     p.hue+5, 100,75,alpha*0.6],
-              [0.6,         p.hue,   90, 60,alpha*0.3],
-              [1,           p.hue,   90, 60,0],
-            ], [{wMul:2.2,aMul:0.16},{wMul:1.5,aMul:0.45},{wMul:1.0,aMul:1.00}]);
+
           } else {
             const grd = ctx.createLinearGradient(0, 0, 0, p.len);
             grd.addColorStop(0,              `hsla(${p.hue+14},100%,88%,0)`);
@@ -7278,10 +7254,10 @@ initThemePicker();
             ctx.moveTo(-hwTip*0.55,0); ctx.lineTo(hwTip*0.55,0); ctx.lineTo(hw*0.38,p.len*0.75); ctx.lineTo(-hw*0.38,p.len*0.75);
             ctx.closePath(); ctx.filter = 'blur(10px)'; ctx.fill();
           }
-        }
 
-        ctx.filter = 'none';
-        ctx.restore();
+          ctx.filter = 'none';
+          ctx.restore();
+        }
       }
 
       else if (p.type === 'snowflake') {
