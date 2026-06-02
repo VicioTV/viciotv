@@ -312,6 +312,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .theme-color.active-color{border-color:#fff;transform:scale(1.12)}
   .theme-reset{background:var(--bg3);color:var(--text2);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:6px;font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;text-align:center;transition:all .2s;margin-top:2px}
   .theme-reset:hover{color:var(--text);border-color:rgba(255,255,255,.3)}
+  .wb-btn{padding:6px 4px;border-radius:7px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:var(--text2);font-family:'Outfit',sans-serif;font-size:11px;cursor:pointer;transition:all .18s;text-align:center;width:100%}
+  .wb-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
+  .wb-btn.wb-active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
   .theme-picker-wrap{position:relative}
 
   /* ── CREATOR BADGE ── */
@@ -1417,6 +1420,25 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
   <div class="theme-colors" id="theme-colors"></div>
   <button class="theme-reset" onclick="resetTheme()">↺ Restaurar por defecto</button>
+  <!-- Divider -->
+  <div style="height:1px;background:rgba(255,255,255,.07);margin:2px 0"></div>
+
+  <!-- Ambiente -->
+  <span style="font-size:11px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase">Ambiente</span>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" id="weather-btns">
+    <button onclick="setWeatherMode('otono')"    id="wb-otono"   class="wb-btn">🍂 Otoño</button>
+    <button onclick="setWeatherMode('soleado')"  id="wb-soleado" class="wb-btn">☀️ Soleado</button>
+    <button onclick="setWeatherMode('tormenta')" id="wb-tormenta" class="wb-btn">⛈️ Tormenta</button>
+    <button onclick="setWeatherMode('nieve')"    id="wb-nieve"   class="wb-btn">❄️ Nieve</button>
+  </div>
+  <!-- Sub-switch de Tormenta -->
+  <div id="storm-switch-wrap" style="display:none;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;padding:6px 8px">
+    <div style="display:flex;background:rgba(0,0,0,.3);border-radius:7px;padding:3px;gap:3px">
+      <button onclick="setStormType('relampagos')" id="st-relampagos" style="flex:1;padding:6px 4px;border-radius:5px;border:none;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .18s;background:var(--accent);color:#fff">⚡ Relámpagos</button>
+      <button onclick="setStormType('rayos')"      id="st-rayos"      style="flex:1;padding:6px 4px;border-radius:5px;border:none;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .18s;background:transparent;color:var(--text3)">🌩️ Rayos</button>
+    </div>
+  </div>
+
   <div style="padding-top:5px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600">
     <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 2.3.8</div>
   </div>
@@ -4867,7 +4889,7 @@ function initApp() {
     }, 800);
   } else {
     // Si la intro ya se mostr� esta sesi�n, mostrar directamente
-    const introAlreadyDone = sessionStorage.getItem("vtv_intro_done");
+    const introAlreadyDone = window._vtvIntroDone;
     const pscreen = document.getElementById("profiles-screen");
     if (!introAlreadyDone) {
       pscreen.style.opacity = "0";
@@ -6463,12 +6485,13 @@ initThemePicker();
           runTerminal().then(() => {
             const introEl2 = el('vtv-intro');
             if (introEl2) {
-              sessionStorage.setItem('vtv_intro_done', '1');
+              window._vtvIntroDone = true;
               introEl2.style.transition = 'opacity 600ms cubic-bezier(0.4,0,0.2,1)';
               introEl2.style.opacity = '0';
               setTimeout(() => {
                 running = false;
                 introEl2.classList.add('hidden');
+                startAmbientLightning();
               }, 620);
             }
           });
@@ -6613,16 +6636,24 @@ initThemePicker();
   //  ARRANQUE
   // ─────────────────────────────────
   function finishIntro(intro) {
-    sessionStorage.setItem('vtv_intro_done', '1');
+    window._vtvIntroDone = true;
     intro.style.transition = 'opacity 600ms cubic-bezier(0.4,0,0.2,1)';
     intro.style.opacity = '0';
-    setTimeout(() => intro.classList.add('hidden'), 620);
+    setTimeout(() => {
+      intro.classList.add('hidden');
+      startAmbientLightning();
+    }, 620);
   }
+
+  // ── Rayos ambientales: entran desde los bordes, no llegan lejos ──────────
+  // ── Sistema de efectos climáticos ────────────────────────────────────────
+  function startAmbientLightning() { /* reemplazado por sistema de ambientes */ }
+
 
   async function runIntro() {
     const intro = el('vtv-intro');
     if (!intro) return;
-    if (sessionStorage.getItem('vtv_intro_done')) {
+    if (window._vtvIntroDone) {
       intro.classList.add('hidden');
       return;
     }
@@ -6699,6 +6730,8 @@ initThemePicker();
     -webkit-user-select: none;
     will-change: transform;
     overflow: visible;
+    transform: scale(0.5);
+    transform-origin: bottom center;
   }
   .mascot-bubble {
     position: absolute;
@@ -8354,70 +8387,613 @@ initThemePicker();
 
 })();
 
-// ─── SISTEMA DE RELÁMPAGOS (flashes de iluminación) ──────────────────────
+// ─── SISTEMA DE AMBIENTES ────────────────────────────────────────────────────
 (function() {
 
-  // Overlay de flash — mismo estilo que la intro
-  const flash = document.createElement('div');
-  flash.style.cssText = [
-    'position:fixed', 'inset:0', 'pointer-events:none', 'z-index:9997',
-    'opacity:0', 'will-change:opacity',
-    'background:radial-gradient(ellipse at var(--lx,50%) var(--ly,30%), rgba(200,210,255,0.22) 0%, rgba(160,170,255,0.10) 40%, transparent 75%)',
-  ].join(';');
-  document.body.appendChild(flash);
+  // Canvas compartido para todos los efectos
+  const cv = document.createElement('canvas');
+  cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9996;';
+  document.body.appendChild(cv);
+  const ctx = cv.getContext('2d');
+  function resize() { cv.width = window.innerWidth; cv.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
 
-  // ── Dispara un flash ──
-  function spawnFlash() {
-    // Origen del glow: aleatorio en la mitad superior
-    const lx = 20 + Math.random() * 60;
-    const ly = Math.random() * 45;
-    flash.style.setProperty('--lx', lx + '%');
-    flash.style.setProperty('--ly', ly + '%');
+  // Estado
+  let activeMode   = null;
+  let particles    = [];
+  let spawnerTmrs  = [];
+  let stormFlash   = null; // overlay flash de tormenta
 
-    // Intensidad aleatoria
-    const peak = 0.25 + Math.random() * 0.55;
-
-    // Secuencia de frames — un relámpago tiene 2–3 pulsos rápidos
-    const pulses = Math.random() < 0.45 ? 3 : 2;
-    const sequence = [];
-    for (let i = 0; i < pulses; i++) {
-      const p = peak * (i === 0 ? 1 : 0.35 + Math.random() * 0.4);
-      sequence.push({ op: p,   dur: 30  + Math.random() * 20  }); // encendido
-      sequence.push({ op: 0,   dur: 40  + Math.random() * 60  }); // apagado
-    }
-    sequence.push({ op: 0, dur: 0 }); // asegurar apagado final
-
-    let i = 0;
-    function next() {
-      if (i >= sequence.length) return;
-      const { op, dur } = sequence[i++];
-      flash.style.transition = `opacity ${dur}ms linear`;
-      flash.style.opacity = op;
-      setTimeout(next, dur + 8);
-    }
-    next();
+  // ── Limpiar todo ─────────────────────────────────────────────────────────
+  function clearAll() {
+    spawnerTmrs.forEach(t => clearTimeout(t));
+    spawnerTmrs = [];
+    particles   = [];
+    if (stormFlash) { stormFlash.remove(); stormFlash = null; }
+    const sw = document.getElementById('storm-switch-wrap');
+    if (sw) sw.style.display = 'none';
   }
 
-  // ── Scheduler realista ──
-  function scheduleNext() {
-    // Silencio entre relámpagos: 15–80 segundos
-    const silence = 8000 + Math.random() * 22000;
-    setTimeout(() => {
-      // Ráfaga de 1–3 relámpagos seguidos
-      const burst = 1 + Math.floor(Math.random() * 3);
-      let delay = 0;
-      for (let i = 0; i < burst; i++) {
-        delay += i === 0 ? 0 : 150 + Math.random() * 600;
-        setTimeout(spawnFlash, delay);
+  // ── Spawner con tracking ──────────────────────────────────────────────────
+  function spawnLoop(factory, interval, max) {
+    (function loop() {
+      const t = setTimeout(() => {
+        if (particles.filter(p => p.type === factory.type).length < max) particles.push(factory());
+        loop();
+      }, interval[0] + Math.random() * (interval[1] - interval[0]));
+      spawnerTmrs.push(t);
+    })();
+  }
+
+  const W = () => cv.width, H = () => cv.height;
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // FÁBRICAS DE PARTÍCULAS
+  // ══════════════════════════════════════════════════════════════════════════
+
+  // ── HOJA ─────────────────────────────────────────────────────────────────
+  function makeLeaf() {
+    const w = W(), h = H();
+    // Más peso en los laterales
+    const side = Math.random() < 0.55 ? (Math.random() < 0.5 ? 'left' : 'right') : 'top';
+    let x, y, vx, vy;
+    const wind = 0.5 + Math.random() * 1.2; // deriva horizontal constante
+    if (side === 'top')  { x = Math.random() * w; y = -12; vx = (Math.random() - 0.4) * wind; vy = 0.5 + Math.random() * 0.8; }
+    if (side === 'left') { x = -12; y = Math.random() * h * 0.8; vx = wind * (0.8 + Math.random() * 0.8); vy = 0.3 + Math.random() * 0.6; }
+    if (side === 'right'){ x = w + 12; y = Math.random() * h * 0.8; vx = -wind * (0.8 + Math.random() * 0.8); vy = 0.3 + Math.random() * 0.6; }
+    return { type: 'leaf',
+      x, y, vx, vy,
+      rot: Math.random() * Math.PI * 2, rotV: (Math.random() - 0.5) * 0.06,
+      wobble: Math.random() * Math.PI * 2, wobbleV: 0.03 + Math.random() * 0.03,
+      size: 6 + Math.random() * 9,
+      hue: 15 + Math.floor(Math.random() * 5) * 12, // marrón→naranja→rojo→amarillo
+      alpha: 0, fadeIn: true, life: 1,
+    };
+  }
+  makeLeaf.type = 'leaf';
+
+  // ── BELLOTA ───────────────────────────────────────────────────────────────
+  function makeAcorn() {
+    const w = W();
+    return { type: 'acorn',
+      x: w * (0.05 + Math.random() * 0.9), y: -16,
+      vy: 1.2 + Math.random() * 1.4, vx: (Math.random() - 0.5) * 0.4,
+      rot: 0, rotV: (Math.random() - 0.5) * 0.05,
+      size: 7 + Math.random() * 4,
+      life: 1, alpha: 0, fadeIn: true,
+    };
+  }
+  makeAcorn.type = 'acorn';
+
+  // ── ARDILLA ──────────────────────────────────────────────────────────────
+  function makeSquirrel() {
+    const h = H(), w = W();
+    const fromLeft = Math.random() < 0.5;
+    return { type: 'squirrel',
+      x: fromLeft ? -60 : w + 60, y: h * (0.6 + Math.random() * 0.35),
+      vx: fromLeft ? 1.8 + Math.random() * 1.2 : -(1.8 + Math.random() * 1.2),
+      frame: 0, frameTimer: 0, life: 1,
+      flipped: !fromLeft,
+    };
+  }
+  makeSquirrel.type = 'squirrel';
+
+  // ── MARIPOSA ─────────────────────────────────────────────────────────────
+  function makeButterfly() {
+    const w = W(), h = H();
+    const side = Math.random() < 0.5 ? 'left' : 'right';
+    const x = side === 'left' ? -10 : w + 10;
+    const y = h * (0.1 + Math.random() * 0.8);
+    const spd = 0.4 + Math.random() * 0.5;
+    return { type: 'butterfly',
+      x, y,
+      vx: side === 'left' ? spd : -spd,
+      vy: (Math.random() - 0.5) * 0.3,
+      wobble: Math.random() * Math.PI * 2, wobbleV: 0.025 + Math.random() * 0.02,
+      wingPhase: Math.random() * Math.PI * 2,
+      size: 7 + Math.random() * 6,
+      hue: [30, 50, 200, 280, 340][Math.floor(Math.random() * 5)],
+      life: 1, alpha: 0, fadeIn: true,
+      maxX: w * 0.25, // no pasa del 25% desde el borde
+      startX: x,
+    };
+  }
+  makeButterfly.type = 'butterfly';
+
+  // ── RAYO SOLAR (volumétrico, multigradient cálido) ────────────────────────
+  function makeSunRay() {
+    const w = W(), h = H();
+
+    // 15% de probabilidad: rayo cinematográfico muy ancho (fuente lejana)
+    const isCinematic = Math.random() < 0.15;
+
+    const side = Math.random() < 0.6 ? 'top' : (Math.random() < 0.5 ? 'left' : 'right');
+    let x0, y0, angle;
+    if (side === 'top')   { x0 = w * (0.05 + Math.random() * 0.9); y0 = 0; angle = Math.PI / 2 + (Math.random() - 0.5) * 0.7; }
+    if (side === 'left')  { x0 = 0; y0 = h * (0.02 + Math.random() * 0.45); angle = (Math.random() - 0.5) * 0.7; }
+    if (side === 'right') { x0 = w; y0 = h * (0.02 + Math.random() * 0.45); angle = Math.PI + (Math.random() - 0.5) * 0.7; }
+
+    // Paleta solar: amarillo brillante → naranja → rojo-naranja → ámbar
+    const hues = [52, 42, 30, 18];
+    const hue = hues[Math.floor(Math.random() * hues.length)];
+
+    if (isCinematic) {
+      // Rayo cinematográfico: muy ancho, largo, baja opacidad, expansión progresiva
+      const len    = Math.max(w, h) * (0.75 + Math.random() * 0.45);
+      const spreadBase = 320 + Math.random() * 280;  // muy ancho en la base
+      const spreadTip  = 30 + Math.random() * 60;    // estrecho en el origen (perspectiva)
+      return { type: 'sunray',
+        x0, y0, angle, len,
+        spread: spreadBase,       // spread máximo al final
+        spreadTip,                // spread en el punto de origen
+        cinematic: true,
+        peak: 0.10 + Math.random() * 0.14,  // más sutil para mayor realismo
+        duration: 5000 + Math.random() * 5000,
+        elapsed: 0,
+        hue,
+      };
+    } else {
+      const len    = Math.max(w, h) * (0.22 + Math.random() * 0.25);
+      const spread = 110 + Math.random() * 140;
+      return { type: 'sunray',
+        x0, y0, angle, len, spread,
+        cinematic: false,
+        spreadTip: spread * 0.08,
+        peak: 0.28 + Math.random() * 0.32,
+        duration: 2500 + Math.random() * 3500,
+        elapsed: 0,
+        hue,
+      };
+    }
+  }
+  makeSunRay.type = 'sunray';
+
+  // ── COPO DE NIEVE ────────────────────────────────────────────────────────
+  function makeSnowflake() {
+    const w = W();
+    return { type: 'snowflake',
+      x: Math.random() * w, y: -10,
+      vx: (Math.random() - 0.5) * 0.5, vy: 0.4 + Math.random() * 0.7,
+      wobble: Math.random() * Math.PI * 2, wobbleV: 0.02 + Math.random() * 0.025,
+      size: 2.5 + Math.random() * 5,
+      rot: Math.random() * Math.PI * 2,
+      alpha: 0, fadeIn: true, life: 1,
+    };
+  }
+  makeSnowflake.type = 'snowflake';
+
+  // ── RAYO DE TORMENTA (borde→interior) ────────────────────────────────────
+  function makeLightningSeg() {
+    const w = W(), h = H();
+    const side = Math.floor(Math.random() * 4);
+    const pen  = 0.08 + Math.random() * 0.14;
+    let x0, y0, dx, dy, len;
+    if (side === 0) { x0 = Math.random()*w; y0 = 0; const a = Math.PI/2+(Math.random()-.5)*.9; len=h*pen; dx=Math.cos(a)*len; dy=Math.sin(a)*len; }
+    else if(side===1){ x0=w; y0=Math.random()*h; const a=Math.PI+(Math.random()-.5)*.9; len=w*pen; dx=Math.cos(a)*len; dy=Math.sin(a)*len; }
+    else if(side===2){ x0=Math.random()*w; y0=h; const a=-Math.PI/2+(Math.random()-.5)*.9; len=h*pen; dx=Math.cos(a)*len; dy=Math.sin(a)*len; }
+    else { x0=0; y0=Math.random()*h; const a=(Math.random()-.5)*.9; len=w*pen; dx=Math.cos(a)*len; dy=Math.sin(a)*len; }
+    const pts = [[x0,y0]];
+    function sub(ax,ay,bx,by,d,sp){ if(d===0){pts.push([bx,by]);return;} const mx=(ax+bx)/2+(Math.random()-.5)*sp,my=(ay+by)/2+(Math.random()-.5)*sp*.4; sub(ax,ay,mx,my,d-1,sp*.55);sub(mx,my,bx,by,d-1,sp*.55); }
+    sub(x0,y0,x0+dx,y0+dy,3+Math.floor(Math.random()*2),len*.35);
+    const branches = [];
+    if(Math.random()<.5&&pts.length>3){ const bi=1+Math.floor(Math.random()*(pts.length-2)); const [bx0,by0]=pts[bi]; const ba=Math.atan2(dy,dx)+(Math.random()-.5)*1.2; const bl=len*(.2+Math.random()*.25); const bp=[[bx0,by0]]; sub(bx0,by0,bx0+Math.cos(ba)*bl,by0+Math.sin(ba)*bl,2,bl*.3); bp.push(...pts.slice(-3)); branches.push(bp.slice(0,4)); }
+    return { type:'lightning', pts, branches, intensity:.3+Math.random()*.5, duration:160+Math.random()*360, elapsed:0, wide:true };
+  }
+  makeLightningSeg.type = 'lightning';
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // MODOS
+  // ══════════════════════════════════════════════════════════════════════════
+
+  function startOtono() {
+    spawnLoop(makeLeaf,     [400, 1200], 22);
+    spawnLoop(makeAcorn,    [8000, 22000], 3);
+    // Ardilla: muy esporádica
+    (function squirrelLoop() {
+      const t = setTimeout(() => {
+        if (activeMode === 'otono') { particles.push(makeSquirrel()); squirrelLoop(); }
+      }, 25000 + Math.random() * 45000);
+      spawnerTmrs.push(t);
+    })();
+  }
+
+  function startSoleado() {
+    spawnLoop(makeSunRay,   [1500, 4000], 4);
+    // Rayos cinematográficos: baja frecuencia, destacan como eventos especiales
+    (function cinematicLoop() {
+      const t = setTimeout(() => {
+        if (activeMode !== 'soleado') return;
+        // Forzar un rayo cinematográfico independiente del azar
+        const w = W(), h = H();
+        const side = Math.random() < 0.6 ? 'top' : (Math.random() < 0.5 ? 'left' : 'right');
+        let x0, y0, angle;
+        if (side === 'top')   { x0 = w * (0.05 + Math.random() * 0.9); y0 = 0; angle = Math.PI / 2 + (Math.random() - 0.5) * 0.55; }
+        if (side === 'left')  { x0 = 0; y0 = h * (0.02 + Math.random() * 0.45); angle = (Math.random() - 0.5) * 0.55; }
+        if (side === 'right') { x0 = w; y0 = h * (0.02 + Math.random() * 0.45); angle = Math.PI + (Math.random() - 0.5) * 0.55; }
+        const hues = [52, 42, 30, 18];
+        const hue = hues[Math.floor(Math.random() * hues.length)];
+        const len = Math.max(w, h) * (0.8 + Math.random() * 0.5);
+        particles.push({
+          type: 'sunray', x0, y0, angle, len,
+          spread: 350 + Math.random() * 300,
+          spreadTip: 20 + Math.random() * 40,
+          cinematic: true,
+          peak: 0.09 + Math.random() * 0.12,
+          duration: 6000 + Math.random() * 6000,
+          elapsed: 0, hue,
+        });
+        cinematicLoop();
+      }, 14000 + Math.random() * 22000);  // cada 14-36s
+      spawnerTmrs.push(t);
+    })();
+    spawnLoop(makeButterfly,[3000, 7000], 6);
+    // Flash atmosférico suave (no tormenta)
+    (function sunFlashLoop() {
+      const t = setTimeout(() => {
+        if (activeMode !== 'soleado') return;
+        spawnSunFlash();
+        sunFlashLoop();
+      }, 12000 + Math.random() * 30000);
+      spawnerTmrs.push(t);
+    })();
+  }
+
+  let stormType = 'relampagos'; // default
+
+  function startTormenta() {
+    // Mostrar sub-switch
+    const sw = document.getElementById('storm-switch-wrap');
+    if (sw) sw.style.display = 'block';
+    applyStormType();
+  }
+
+  function applyStormType() {
+    // Limpiar solo partículas de tormenta y flash, no el modo
+    spawnerTmrs.forEach(t => clearTimeout(t));
+    spawnerTmrs = [];
+    particles = particles.filter(p => p.type !== 'lightning');
+    if (stormFlash) { stormFlash.remove(); stormFlash = null; }
+
+    // Ambos modos tienen flash de relámpago (overlay ambiental)
+    stormFlash = document.createElement('div');
+    stormFlash.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9997;opacity:0;will-change:opacity;background:radial-gradient(ellipse at var(--lx,50%) var(--ly,30%),rgba(200,210,255,0.22) 0%,rgba(160,170,255,0.10) 40%,transparent 75%)';
+    document.body.appendChild(stormFlash);
+    (function stormFlashLoop() {
+      const t = setTimeout(() => {
+        if (activeMode !== 'tormenta') return;
+        doStormFlash();
+        stormFlashLoop();
+      }, 2500 + Math.random() * 7000);
+      spawnerTmrs.push(t);
+    })();
+    setTimeout(doStormFlash, 600);
+
+    if (stormType === 'rayos') {
+      // Rayos: flash overlay + rayos de borde atmosféricos (haces luminosos más anchos)
+      spawnLoop(makeLightningSeg, [600, 2200], 8);
+      setTimeout(() => { for(let i=0;i<3;i++) setTimeout(()=>particles.push(makeLightningSeg()),i*120); }, 400);
+    }
+    // Si stormType === 'relampagos': solo el flash overlay (ya iniciado arriba)
+  }
+
+  window.setStormType = function(type) {
+    stormType = type;
+    // UI
+    document.getElementById('st-relampagos').style.background = type === 'relampagos' ? 'var(--accent)' : 'transparent';
+    document.getElementById('st-relampagos').style.color      = type === 'relampagos' ? '#fff' : 'var(--text3)';
+    document.getElementById('st-rayos').style.background      = type === 'rayos'      ? 'var(--accent)' : 'transparent';
+    document.getElementById('st-rayos').style.color           = type === 'rayos'      ? '#fff' : 'var(--text3)';
+    localStorage.setItem('vtv_storm_type', type);
+    if (activeMode === 'tormenta') applyStormType();
+  };
+
+  function startNieve() {
+    spawnLoop(makeSnowflake, [200, 700], 55);
+  }
+
+  // ── Flash de tormenta ─────────────────────────────────────────────────────
+  function doStormFlash() {
+    if (!stormFlash) return;
+    stormFlash.style.setProperty('--lx', (20 + Math.random()*60) + '%');
+    stormFlash.style.setProperty('--ly', (Math.random()*40) + '%');
+    const peak = 0.2 + Math.random() * 0.45;
+    const pulses = Math.random() < 0.4 ? 3 : 2;
+    const seq = [];
+    for(let i=0;i<pulses;i++){
+      const p = peak*(i===0?1:0.3+Math.random()*.4);
+      seq.push({op:p,dur:25+Math.random()*20},{op:0,dur:35+Math.random()*55});
+    }
+    seq.push({op:0,dur:0});
+    let i=0;
+    (function next(){ if(i>=seq.length)return; const{op,dur}=seq[i++]; stormFlash.style.transition=`opacity ${dur}ms linear`; stormFlash.style.opacity=op; setTimeout(next,dur+8); })();
+  }
+
+  // ── Flash solar suave ─────────────────────────────────────────────────────
+  function spawnSunFlash() {
+    const d = document.createElement('div');
+    d.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9994;opacity:0;transition:opacity 600ms ease;background:radial-gradient(ellipse at '+(30+Math.random()*40)+'% '+(5+Math.random()*25)+'%,rgba(255,220,120,0.08) 0%,transparent 60%)';
+    document.body.appendChild(d);
+    d.getBoundingClientRect();
+    d.style.opacity = '1';
+    setTimeout(() => { d.style.opacity = '0'; setTimeout(() => d.remove(), 700); }, 800);
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // RENDER
+  // ══════════════════════════════════════════════════════════════════════════
+  let lastTs = 0;
+  function tick(ts) {
+    const dt = Math.min(ts - lastTs, 50); lastTs = ts;
+    const w = W(), h = H();
+    ctx.clearRect(0, 0, w, h);
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+
+      // Fade in
+      if (p.fadeIn) { p.alpha = Math.min(1, (p.alpha || 0) + 0.025); if (p.alpha >= 1) p.fadeIn = false; }
+      else { p.alpha = p.alpha ?? 1; }
+
+      // ── Hoja ──
+      if (p.type === 'leaf') {
+        p.wobble += p.wobbleV;
+        p.x += p.vx + Math.sin(p.wobble) * 0.6;
+        p.y += p.vy;
+        p.rot += p.rotV;
+        if (p.y > h + 20 || p.x < -40 || p.x > w + 40) { particles.splice(i,1); continue; }
+        ctx.save(); ctx.globalAlpha = p.alpha * 0.82;
+        ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.beginPath();
+        ctx.moveTo(0, -p.size);
+        ctx.bezierCurveTo(p.size*.8,-p.size*.3,p.size*.6,p.size*.5,0,p.size);
+        ctx.bezierCurveTo(-p.size*.6,p.size*.5,-p.size*.8,-p.size*.3,0,-p.size);
+        ctx.fillStyle = `hsl(${p.hue},72%,40%)`;
+        ctx.shadowColor = `hsl(${p.hue},60%,30%)`; ctx.shadowBlur = 3;
+        ctx.fill();
+        ctx.strokeStyle = `hsl(${p.hue+10},55%,28%)`; ctx.lineWidth = 0.7;
+        ctx.beginPath(); ctx.moveTo(0,-p.size); ctx.lineTo(0,p.size); ctx.stroke();
+        ctx.restore();
       }
-      scheduleNext();
-    }, silence);
-  }
 
-  // Primer relámpago entre 8 y 25 segundos
-  setTimeout(scheduleNext, 3000 + Math.random() * 5000);
+      // ── Bellota ──
+      else if (p.type === 'acorn') {
+        p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.rot += p.rotV;
+        if (p.y > h + 20) { particles.splice(i,1); continue; }
+        ctx.save(); ctx.globalAlpha = p.alpha * 0.88;
+        ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        const s = p.size;
+        // Cuerpo
+        ctx.beginPath(); ctx.ellipse(0, s*.2, s*.55, s*.65, 0, 0, Math.PI*2);
+        ctx.fillStyle = '#8B5E3C'; ctx.fill();
+        // Sombrero
+        ctx.beginPath(); ctx.ellipse(0, -s*.3, s*.62, s*.35, 0, 0, Math.PI*2);
+        ctx.fillStyle = '#5C3D1E'; ctx.fill();
+        // Palito
+        ctx.strokeStyle='#4a3020'; ctx.lineWidth=1.5; ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(0,-s*.6); ctx.lineTo(0,-s*1.1); ctx.stroke();
+        ctx.restore();
+      }
+
+      // ── Ardilla ──
+      else if (p.type === 'squirrel') {
+        p.frameTimer += dt;
+        if (p.frameTimer > 120) { p.frame = (p.frame+1)%4; p.frameTimer=0; }
+        p.x += p.vx;
+        if ((p.vx > 0 && p.x > w+80) || (p.vx < 0 && p.x < -80)) { particles.splice(i,1); continue; }
+        const s = 22;
+        ctx.save(); ctx.globalAlpha = 0.88;
+        ctx.translate(p.x, p.y);
+        if (p.flipped) { ctx.scale(-1,1); }
+        // Cuerpo
+        ctx.fillStyle = '#C47A2F';
+        ctx.beginPath(); ctx.ellipse(-2,0,s*.55,s*.38,-.2,0,Math.PI*2); ctx.fill();
+        // Cabeza
+        ctx.beginPath(); ctx.ellipse(s*.5,-s*.15,s*.32,s*.28,0.3,0,Math.PI*2); ctx.fill();
+        // Ojo
+        ctx.fillStyle='#1a0a00'; ctx.beginPath(); ctx.arc(s*.68,-s*.2,2,0,Math.PI*2); ctx.fill();
+        // Oreja
+        ctx.fillStyle='#C47A2F'; ctx.beginPath(); ctx.ellipse(s*.45,-s*.4,4,6,.3,0,Math.PI*2); ctx.fill();
+        // Cola esponjosa
+        ctx.strokeStyle='#A0601C'; ctx.lineWidth=7; ctx.lineCap='round';
+        ctx.beginPath(); ctx.moveTo(-s*.5,0); ctx.quadraticCurveTo(-s*.8,-s*.5,-s*.3,-s*.7); ctx.stroke();
+        // Patitas animadas
+        const legOff = Math.sin(p.frame*Math.PI/2)*5;
+        ctx.strokeStyle='#8B4513'; ctx.lineWidth=3;
+        ctx.beginPath(); ctx.moveTo(0,s*.3); ctx.lineTo(-6,s*.65+legOff); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(s*.2,s*.3); ctx.lineTo(s*.3,s*.65-legOff); ctx.stroke();
+        ctx.restore();
+      }
+
+      // ── Mariposa ──
+      else if (p.type === 'butterfly') {
+        p.wobble += p.wobbleV; p.wingPhase += 0.18;
+        p.x += p.vx + Math.sin(p.wobble) * 0.5;
+        p.y += p.vy + Math.cos(p.wobble * 0.7) * 0.3;
+        // Rebotar si pasa del límite de borde
+        const distFromEdge = p.vx > 0 ? p.x : w - p.x;
+        if (distFromEdge > p.maxX) { p.life -= 0.02; }
+        p.life -= 0.0015;
+        if (p.life <= 0 || p.y < -20 || p.y > h + 20) { particles.splice(i,1); continue; }
+        ctx.save(); ctx.globalAlpha = Math.min(p.alpha, p.life) * 0.85;
+        ctx.translate(p.x, p.y);
+        const flap = Math.abs(Math.sin(p.wingPhase));
+        for (let w2=0;w2<4;w2++) {
+          const mir=w2<2?1:-1, top=w2%2===0;
+          ctx.beginPath();
+          ctx.ellipse(mir*(p.size*.5+flap*p.size*.4), top?-p.size*.35:p.size*.28, p.size*.5*flap+.5, p.size*(top?.48:.32), mir*Math.PI*.22, 0, Math.PI*2);
+          ctx.fillStyle=`hsla(${p.hue+w2*12},85%,58%,${Math.min(p.alpha,p.life)*.75})`;
+          ctx.shadowColor=`hsla(${p.hue},70%,65%,.3)`; ctx.shadowBlur=5;
+          ctx.fill();
+        }
+        ctx.fillStyle=`rgba(20,10,5,${Math.min(p.alpha,p.life)*.8})`;
+        ctx.beginPath(); ctx.ellipse(0,0,1,p.size*.42,0,0,Math.PI*2); ctx.fill();
+        ctx.restore();
+      }
+
+      // ── Rayo solar volumétrico ──
+      else if (p.type === 'sunray') {
+        p.elapsed += dt;
+        const t = p.elapsed / p.duration;
+        if (t >= 1) { particles.splice(i,1); continue; }
+        const life = t < 0.2 ? t/0.2 : t > 0.72 ? 1-(t-0.72)/0.28 : 1;
+        const alpha = p.peak * life;
+        ctx.save();
+        ctx.translate(p.x0, p.y0);
+        ctx.rotate(p.angle - Math.PI/2);
+
+        const hw = p.spread / 2;         // mitad del ancho en el extremo lejano
+        const hwTip = (p.spreadTip || p.spread * 0.08) / 2;  // mitad en el origen
+
+        if (p.cinematic) {
+          // ── Rayo cinematográfico: trapezoide que se expande con perspectiva ──
+          // Haz principal — gradiente muy suave y amplio
+          const grd = ctx.createLinearGradient(0, 0, 0, p.len);
+          grd.addColorStop(0,    `hsla(${p.hue+14},100%,92%,${alpha * 0.9})`);
+          grd.addColorStop(0.12, `hsla(${p.hue+8},100%,78%,${alpha * 0.7})`);
+          grd.addColorStop(0.35, `hsla(${p.hue},95%,62%,${alpha * 0.45})`);
+          grd.addColorStop(0.65, `hsla(${p.hue-8},88%,50%,${alpha * 0.2})`);
+          grd.addColorStop(1,    `hsla(${p.hue-16},80%,40%,0)`);
+          ctx.fillStyle = grd;
+          ctx.beginPath();
+          ctx.moveTo(-hwTip, 0);
+          ctx.lineTo( hwTip, 0);
+          ctx.lineTo( hw,    p.len);
+          ctx.lineTo(-hw,    p.len);
+          ctx.closePath();
+          ctx.filter = 'blur(38px)';
+          ctx.fill();
+
+          // Segunda capa interior más brillante pero más estrecha
+          const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.6);
+          grd2.addColorStop(0,   `hsla(${p.hue+18},100%,97%,${alpha * 0.55})`);
+          grd2.addColorStop(0.5, `hsla(${p.hue+5},100%,78%,${alpha * 0.25})`);
+          grd2.addColorStop(1,   `hsla(${p.hue},90%,62%,0)`);
+          ctx.fillStyle = grd2;
+          const hw2 = hw * 0.32, hwTip2 = hwTip * 0.4;
+          ctx.beginPath();
+          ctx.moveTo(-hwTip2, 0);
+          ctx.lineTo( hwTip2, 0);
+          ctx.lineTo( hw2,    p.len * 0.6);
+          ctx.lineTo(-hw2,    p.len * 0.6);
+          ctx.closePath();
+          ctx.filter = 'blur(16px)';
+          ctx.fill();
+
+        } else {
+          // ── Rayo normal (lógica original con mejoras menores) ──
+          const grd = ctx.createLinearGradient(0, 0, 0, p.len);
+          grd.addColorStop(0,    `hsla(${p.hue+14},100%,88%,${alpha})`);
+          grd.addColorStop(0.15, `hsla(${p.hue+8},100%,72%,${alpha*0.85})`);
+          grd.addColorStop(0.38, `hsla(${p.hue},95%,60%,${alpha*0.65})`);
+          grd.addColorStop(0.65, `hsla(${p.hue-10},90%,50%,${alpha*0.35})`);
+          grd.addColorStop(1,    `hsla(${p.hue-16},85%,42%,0)`);
+          ctx.fillStyle = grd;
+          ctx.beginPath();
+          ctx.moveTo(-hwTip, 0);
+          ctx.lineTo( hwTip, 0);
+          ctx.lineTo( hw, p.len);
+          ctx.lineTo(-hw, p.len);
+          ctx.closePath();
+          ctx.filter = 'blur(22px)';
+          ctx.fill();
+
+          // Segunda capa central brillante
+          const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.7);
+          grd2.addColorStop(0,   `hsla(${p.hue+18},100%,95%,${alpha*0.7})`);
+          grd2.addColorStop(0.4, `hsla(${p.hue+5},100%,75%,${alpha*0.4})`);
+          grd2.addColorStop(1,   `hsla(${p.hue},90%,60%,0)`);
+          ctx.fillStyle = grd2;
+          ctx.beginPath();
+          ctx.moveTo(-hwTip*0.5, 0);
+          ctx.lineTo( hwTip*0.5, 0);
+          ctx.lineTo( hw*0.35, p.len*0.7);
+          ctx.lineTo(-hw*0.35, p.len*0.7);
+          ctx.closePath();
+          ctx.filter = 'blur(10px)';
+          ctx.fill();
+        }
+
+        ctx.filter = 'none';
+        ctx.restore();
+      }
+
+      // ── Copo de nieve ──
+      else if (p.type === 'snowflake') {
+        p.wobble += p.wobbleV; p.x += p.vx + Math.sin(p.wobble)*.4; p.y += p.vy; p.rot += 0.015;
+        if (p.y > h + 20) { particles.splice(i,1); continue; }
+        ctx.save(); ctx.globalAlpha = p.alpha * 0.8;
+        ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+        ctx.strokeStyle = 'rgba(215,230,255,0.9)'; ctx.lineWidth = 0.9;
+        ctx.shadowBlur = 5; ctx.shadowColor = 'rgba(200,220,255,.5)';
+        for (let a=0;a<6;a++) {
+          ctx.save(); ctx.rotate(a*Math.PI/3);
+          ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(0,p.size);
+          ctx.moveTo(0,p.size*.5); ctx.lineTo(p.size*.22,p.size*.32);
+          ctx.moveTo(0,p.size*.5); ctx.lineTo(-p.size*.22,p.size*.32);
+          ctx.stroke(); ctx.restore();
+        }
+        ctx.restore();
+      }
+
+      // ── Rayo de tormenta ──
+      else if (p.type === 'lightning') {
+        p.elapsed += dt;
+        const t = p.elapsed / p.duration;
+        if (t >= 1) { particles.splice(i,1); continue; }
+        const alpha = p.intensity * Math.pow(1-t, 1.6);
+        const W2 = p.wide ? 2.2 : 1; // factor de ancho para modo Rayos
+        const draw = (pts, lw, blur, col) => {
+          if(pts.length<2) return;
+          ctx.save(); ctx.globalAlpha=alpha; ctx.strokeStyle=col;
+          ctx.lineWidth=lw*W2; ctx.lineCap='round'; ctx.shadowBlur=blur*W2; ctx.shadowColor=col;
+          ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+          pts.forEach(([x,y])=>ctx.lineTo(x,y)); ctx.stroke(); ctx.restore();
+        };
+        draw(p.pts, 4, 14, 'rgba(160,180,255,.7)');
+        draw(p.pts, 1.2, 0, 'rgba(255,255,255,1)');
+        p.branches.forEach(b=>{ draw(b,2.5,8,'rgba(140,160,255,.5)'); draw(b,.8,0,'rgba(255,255,255,.9)'); });
+      }
+    }
+
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // ══════════════════════════════════════════════════════════════════════════
+  // API PÚBLICA
+  // ══════════════════════════════════════════════════════════════════════════
+  window.setWeatherMode = function(mode) {
+    // Toggle: si ya está activo, desactivar
+    const newMode = mode === activeMode ? null : mode;
+    activeMode = newMode;
+    clearAll();
+
+    // UI
+    document.querySelectorAll('.wb-btn').forEach(b => b.classList.remove('wb-active'));
+    if (newMode) {
+      const btn = document.getElementById('wb-' + newMode);
+      if (btn) btn.classList.add('wb-active');
+      localStorage.setItem('vtv_weather_mode', newMode);
+      if (newMode === 'otono')    startOtono();
+      if (newMode === 'soleado')  startSoleado();
+      if (newMode === 'tormenta') startTormenta();
+      if (newMode === 'nieve')    startNieve();
+    } else {
+      localStorage.removeItem('vtv_weather_mode');
+    }
+  };
+
+  // Restaurar preferencia guardada, o elegir un modo al azar
+  const saved = localStorage.getItem('vtv_weather_mode');
+  const savedStorm = localStorage.getItem('vtv_storm_type');
+  if (savedStorm) stormType = savedStorm;
+  const modeToLoad = saved || ['otono','soleado','tormenta','nieve'][Math.floor(Math.random() * 4)];
+  setTimeout(() => window.setWeatherMode(modeToLoad), 500);
 
 })();
+
+
 
 
 // Se llama desde selectProfile, con el perfil ya elegido
