@@ -6751,7 +6751,7 @@ initThemePicker();
   function startSoleado() {
     (function sunRayManager() {
       const MIN_ACTIVE = 2, MAX_ACTIVE = 4;
-      const MAX_MOBILE = 2;
+      const MAX_MOBILE = 0;
       function scheduleNext() {
         const delay = 800 + Math.random() * 4200;
         const t = setTimeout(() => {
@@ -7452,7 +7452,7 @@ initThemePicker();
   const saved = localStorage.getItem('vtv_weather_mode');
   const savedStorm = localStorage.getItem('vtv_storm_type');
   if (savedStorm) stormType = savedStorm;
-  const modeToLoad = saved || 'soleado';
+  const modeToLoad = saved || 'otono';
   setTimeout(() => window.setWeatherMode(modeToLoad), 500);
 
 })();
