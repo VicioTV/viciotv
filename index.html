@@ -1146,7 +1146,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
     /* Tabs — fila 2 */
     .nav-tabs{order:99;width:100%;display:flex;justify-content:space-around;padding:6px 0 8px;gap:0;border-top:1px solid rgba(255,255,255,.06);margin-top:2px}
-    .nav-tab{flex:1;text-align:center;padding:6px 4px;font-size:11px;border-radius:6px}
+    .nav-tab{flex:1;text-align:center;padding:6px 4px;font-size:11px;border-radius:6px;border:1px solid rgba(255,255,255,.1)!important;margin:0 2px}
+    .nav-tab.active{border-color:transparent!important}
 
     /* Ajuste del hero para el nav de 2 filas (~100px de altura) */
     .hero-content{padding:80px 16px 16px}
@@ -1471,6 +1472,18 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <span class="sb-label">
         <span class="sb-title">Mejores Anime</span>
         <span class="sb-sub">Por puntuación</span>
+      </span>
+    </span>
+  </button>
+
+  <button class="sidebar-btn focusable" id="sb-animacion" onclick="switchTab('animacion')">
+    <span class="sb-icon">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+    </span>
+    <span class="sb-text">
+      <span class="sb-label">
+        <span class="sb-title">Animación</span>
+        <span class="sb-sub">Películas animadas</span>
       </span>
     </span>
   </button>
@@ -4300,14 +4313,8 @@ function buildTabFiltersBar(tabKey){
       ["3","Pixar"],
       ["521","DreamWorks Animation"],
       ["2251","Illumination"],
-      ["1435","Sony Pictures Animation"],
-      ["7505","Studio Ghibli"],
+      ["7505","Studios Ghibli"],
       ["6704","Blue Sky Studios"],
-      ["10104","Laika Entertainment"],
-      ["17109","Cartoon Saloon"],
-      ["3675","Aardman Animations"],
-      ["11535","Warner Animation Group"],
-      ["14861","Nickelodeon Movies"],
       ["9993","Netflix Animation"]
     ];
 
@@ -6627,8 +6634,8 @@ initThemePicker();
       };
     } else {
       const len    = Math.max(w, h) * (0.45 + Math.random() * 0.35) + offscreen;
-      const spread = (isMobile ? 90 : 130) + Math.random() * 120;
-      const spreadTip = spread * (isMobile ? 0.55 : 0.38);
+      const spread = (isMobile ? 140 : 130) + Math.random() * 120;
+      const spreadTip = spread * (isMobile ? 0.45 : 0.38);
       return { type: 'sunray',
         x0, y0, angle, len, spread,
         cinematic: false,
@@ -7219,7 +7226,7 @@ initThemePicker();
           ctx.lineTo( hw, p.len);
           ctx.lineTo(-hw, p.len);
           ctx.closePath();
-          ctx.filter = 'blur(22px)';
+          ctx.filter = isMobile ? 'blur(34px)' : 'blur(22px)';
           ctx.fill();
 
           const grd2 = ctx.createLinearGradient(0, 0, 0, p.len * 0.75);
@@ -7235,8 +7242,27 @@ initThemePicker();
           ctx.lineTo( hw*0.38, p.len*0.75);
           ctx.lineTo(-hw*0.38, p.len*0.75);
           ctx.closePath();
-          ctx.filter = 'blur(10px)';
+          ctx.filter = isMobile ? 'blur(16px)' : 'blur(10px)';
           ctx.fill();
+
+          /* Capa extra de núcleo luminoso — solo en mobile para profundidad 3D */
+          if (isMobile) {
+            const grd3 = ctx.createLinearGradient(0, 0, 0, p.len * 0.5);
+            grd3.addColorStop(0,             `hsla(${p.hue+22},100%,99%,0)`);
+            grd3.addColorStop(offFrac * 0.7, `hsla(${p.hue+22},100%,99%,0)`);
+            grd3.addColorStop(offFrac,       `hsla(${p.hue+10},100%,92%,${alpha*0.45})`);
+            grd3.addColorStop(0.55,          `hsla(${p.hue},95%,70%,${alpha*0.18})`);
+            grd3.addColorStop(1,             `hsla(${p.hue},90%,60%,0)`);
+            ctx.fillStyle = grd3;
+            ctx.beginPath();
+            ctx.moveTo(-hwTip*0.22, 0);
+            ctx.lineTo( hwTip*0.22, 0);
+            ctx.lineTo( hw*0.14, p.len*0.5);
+            ctx.lineTo(-hw*0.14, p.len*0.5);
+            ctx.closePath();
+            ctx.filter = 'blur(6px)';
+            ctx.fill();
+          }
         }
 
         ctx.filter = 'none';
