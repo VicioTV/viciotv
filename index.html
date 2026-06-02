@@ -6754,7 +6754,7 @@ initThemePicker();
   function startSoleado() {
     (function sunRayManager() {
       const MIN_ACTIVE = 2, MAX_ACTIVE = 4;
-      const MAX_MOBILE = 2;
+      const MAX_MOBILE = 1;
       function scheduleNext() {
         const delay = 800 + Math.random() * 4200;
         const t = setTimeout(() => {
@@ -6914,7 +6914,7 @@ initThemePicker();
   let lastTs = 0;
   // Caps per particle type — mirrors the limits in spawnLoop / spawner logic
   const PARTICLE_CAPS = {
-    sunray:    () => mobileMax(4, 2),
+    sunray:    () => mobileMax(4, 1),
     leaf:      () => mobileMax(22, 14),
     squirrel:  1,
     butterfly: () => mobileMax(5, 3),
@@ -7186,11 +7186,12 @@ initThemePicker();
 
         if (isMobileViewport()) {
           /* ── MOBILE: resplandor amplio, sin nucleo superpuesto ── */
-          const mobileAlpha = alpha * (p.cinematic ? 0.72 : 0.62);
-          const ambientR = Math.max(w, h) * 0.9;
+          const mobileAlpha = alpha * (p.cinematic ? 0.58 : 0.48);
+          const ambientR = Math.max(w, h) * 1.08;
           const ambient = ctx.createRadialGradient(p.x0, p.y0, 0, p.x0, p.y0, ambientR);
-          ambient.addColorStop(0,    `hsla(${p.hue+10},100%,78%,${mobileAlpha * 0.16})`);
-          ambient.addColorStop(0.32, `hsla(${p.hue},95%,62%,${mobileAlpha * 0.08})`);
+          ambient.addColorStop(0,    `hsla(${p.hue+10},100%,80%,${mobileAlpha * 0.24})`);
+          ambient.addColorStop(0.36, `hsla(${p.hue},95%,64%,${mobileAlpha * 0.12})`);
+          ambient.addColorStop(0.7,  `hsla(${p.hue-8},90%,52%,${mobileAlpha * 0.04})`);
           ambient.addColorStop(1,    `hsla(${p.hue-12},85%,46%,0)`);
           ctx.fillStyle = ambient;
           ctx.fillRect(0, 0, w, h);
@@ -7204,17 +7205,17 @@ initThemePicker();
           const outer = ctx.createLinearGradient(0, 0, 0, p.len);
           outer.addColorStop(0,                   `hsla(${p.hue+14},100%,92%,0)`);
           outer.addColorStop(mobileOff * 0.6,     `hsla(${p.hue+14},100%,92%,0)`);
-          outer.addColorStop(mobileOff,           `hsla(${p.hue+8},100%,78%,${mobileAlpha * 0.34})`);
-          outer.addColorStop(mobileOff + 0.32,    `hsla(${p.hue},95%,64%,${mobileAlpha * 0.24})`);
-          outer.addColorStop(0.78,                `hsla(${p.hue-8},88%,52%,${mobileAlpha * 0.1})`);
+          outer.addColorStop(mobileOff,           `hsla(${p.hue+8},100%,80%,${mobileAlpha * 0.26})`);
+          outer.addColorStop(mobileOff + 0.34,    `hsla(${p.hue},95%,66%,${mobileAlpha * 0.18})`);
+          outer.addColorStop(0.8,                 `hsla(${p.hue-8},88%,54%,${mobileAlpha * 0.07})`);
           outer.addColorStop(1,                   `hsla(${p.hue-16},80%,40%,0)`);
           ctx.fillStyle = outer;
-          ctx.shadowColor = `hsla(${p.hue+8},100%,70%,${mobileAlpha * 0.65})`;
-          ctx.shadowBlur = p.cinematic ? 48 : 40;
+          ctx.shadowColor = `hsla(${p.hue+8},100%,72%,${mobileAlpha * 0.8})`;
+          ctx.shadowBlur = p.cinematic ? 76 : 62;
           ctx.beginPath();
-          ctx.moveTo(-hwTip * 1.5, 0); ctx.lineTo(hwTip * 1.5, 0);
-          ctx.lineTo(hw * 1.75, p.len); ctx.lineTo(-hw * 1.75, p.len);
-          ctx.closePath(); ctx.filter = `blur(${p.cinematic ? 42 : 36}px)`; ctx.fill();
+          ctx.moveTo(-hwTip * 2.2, 0); ctx.lineTo(hwTip * 2.2, 0);
+          ctx.lineTo(hw * 2.65, p.len); ctx.lineTo(-hw * 2.65, p.len);
+          ctx.closePath(); ctx.filter = `blur(${p.cinematic ? 70 : 58}px)`; ctx.fill();
 
           ctx.filter = 'none';
           ctx.shadowBlur = 0;
