@@ -911,7 +911,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .live-badge{font-size:10px;background:var(--accent);color:#fff;padding:2px 6px;border-radius:3px;font-weight:700;letter-spacing:.5px;margin-left:auto;flex-shrink:0}
 
   /* ===== MODAL ===== */
-  #modal-overlay{display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 16px;padding-bottom:max(24px,env(safe-area-inset-bottom))}
+  #modal-overlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 16px;padding-bottom:max(24px,env(safe-area-inset-bottom))}
   #modal-overlay.open{display:flex}
   #modal{background:var(--bg2);border-radius:16px;width:100%;max-width:960px;position:relative;animation:modalIn .3s cubic-bezier(.34,1.56,.64,1)}
   @keyframes modalIn{from{opacity:0;transform:scale(.92) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
@@ -1048,11 +1048,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .skeleton-card{width:var(--card-w);height:calc(var(--card-h) + 56px);flex-shrink:0}
 
   /* ===== TOAST ===== */
-  #toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:12px 24px;border-radius:8px;font-size:14px;z-index:9999;transition:transform .3s ease;pointer-events:none}
+  #toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg3);border:1px solid rgba(255,255,255,.1);color:var(--text);padding:12px 24px;border-radius:8px;font-size:14px;z-index:10001;transition:transform .3s ease;pointer-events:none}
   #toast.show{transform:translateX(-50%) translateY(0)}
 
   /* ===== LONG PRESS TOAST ===== */
-  .cw-long-press-toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--bg2);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:10px;align-items:center;z-index:9000;opacity:0;pointer-events:none;transition:all .3s ease;min-width:260px}
+  .cw-long-press-toast{position:fixed;bottom:60px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--bg2);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:16px 20px;display:flex;flex-direction:column;gap:10px;align-items:center;z-index:10001;opacity:0;pointer-events:none;transition:all .3s ease;min-width:260px}
   .cw-long-press-toast.visible{opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)}
   .cw-long-press-toast__text{font-size:14px;color:var(--text2)}
   .cw-long-press-toast__confirm{background:var(--accent);color:#fff;border:none;padding:8px 20px;border-radius:6px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:background .2s}
@@ -1177,7 +1177,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     .row-header{padding:16px 12px 24px}
     #sec-catalog{padding-top:8px!important}
     #section-favs,#sec-popular,#sec-nowplaying,#sec-tvtrending{padding-top:4px!important}
-    #sec-movies-filters,#sec-series-filters,#sec-anime-filters{padding-top:8px!important}
+    #sec-movies-filters,#sec-series-filters,#sec-anime-filters,#sec-animacion-filters{padding-top:8px!important}
     /* Filtros mobile: scroll horizontal de chips */
     /* Filtros mobile: grilla 2 columnas, todos visibles */
     /* Filtros mobile: 3 cols fila1 (Género|Año|Ordenar), 3 cols fila2 (Plataforma|País|Limpiar) */
@@ -1216,7 +1216,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       border-radius:10px!important;
       box-sizing:border-box!important;
     }
-    #sec-movies-filters .row-header,#sec-series-filters .row-header,#sec-anime-filters .row-header{padding-top:8px!important}
+    #sec-movies-filters .row-header,#sec-series-filters .row-header,#sec-anime-filters .row-header,#sec-animacion-filters .row-header{padding-top:8px!important}
     .tab-infinite-grid{padding:8px 12px 0!important}
     #sec-canales{padding-top:8px!important}
     #sec-netflixtop10,#sec-top100,#sec-mas-populares,#sec-mas-recientes,#sec-mejores-anime,#sec-proximamente{padding-top:8px!important}
@@ -1344,6 +1344,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <button class="nav-tab focusable" data-tab="peliculas" onclick="switchTab('peliculas')">Películas</button>
     <button class="nav-tab focusable" data-tab="series" onclick="switchTab('series')">Series</button>
     <button class="nav-tab focusable" data-tab="anime" onclick="switchTab('anime')">Anime</button>
+    <button class="nav-tab focusable" data-tab="animacion" onclick="switchTab('animacion')">Animación</button>
     <button class="nav-tab focusable" data-tab="proximamente" onclick="openSidebarSection('proximamente')">Próximamente</button>
   </div>
   <div style="flex:1;min-width:32px"></div>
@@ -1415,7 +1416,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 
   <div style="padding-top:5px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600">
-    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 2.5.5</div>
+    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 2.3.8</div>
   </div>
 </div>
 
@@ -1676,6 +1677,20 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <div class="infinite-trigger" id="tabtrigger-anime">
       <div class="load-more-spinner skeleton" id="tabspinner-anime" style="width:32px;height:32px;border-radius:50%;display:none;animation:spin .8s linear infinite"></div>
       <div id="tabend-anime" style="color:var(--text3);font-size:.85rem;display:none">— Llegaste al final —</div>
+    </div>
+  </div>
+
+  <div id="sec-animacion-filters" class="row-section" style="display:none;padding-top:80px">
+    <div class="row-header" style="padding-bottom:8px;padding-left:22px;padding-right:22px">
+      <span class="row-title">ANIMACIÓN</span>
+    </div>
+    <div class="filters-bar tab-filters-bar" id="filters-bar-animacion" style="padding:16px 22px 16px;display:flex;gap:8px;flex-wrap:wrap;flex-direction:column"></div>
+  </div>
+  <div id="sec-tab-animacion" class="row-section" style="display:none">
+    <div class="tab-infinite-grid" id="tabgrid-animacion"></div>
+    <div class="infinite-trigger" id="tabtrigger-animacion">
+      <div class="load-more-spinner skeleton" id="tabspinner-animacion" style="width:32px;height:32px;border-radius:50%;display:none;animation:spin .8s linear infinite"></div>
+      <div id="tabend-animacion" style="color:var(--text3);font-size:.85rem;display:none">— Llegaste al final —</div>
     </div>
   </div>
 
@@ -1971,10 +1986,12 @@ let catalogState = { tab:null, page:1, totalPages:1, loading:false, ended:false,
 let catalogObserver = null;
 
 const CATALOG_TABS = {
-  movies: { title:"PELÍCULAS", endpoint:"/discover/movie", type:"movie", defaultSort:"popularity.desc" },
-  series: { title:"SERIES",    endpoint:"/discover/tv",    type:"tv",    defaultSort:"popularity.desc" },
-  anime:  { title:"ANIME",     endpoint:"/discover/tv",    type:"tv",    defaultSort:"popularity.desc",
-             extraParams:{ with_genres:"16", with_original_language:"ja" } },
+  movies:    { title:"PELÍCULAS", endpoint:"/discover/movie", type:"movie", defaultSort:"popularity.desc" },
+  series:    { title:"SERIES",    endpoint:"/discover/tv",    type:"tv",    defaultSort:"popularity.desc" },
+  anime:     { title:"ANIME",     endpoint:"/discover/tv",    type:"tv",    defaultSort:"popularity.desc",
+               extraParams:{ with_genres:"16", with_original_language:"ja" } },
+  animacion: { title:"ANIMACIÓN", endpoint:"/discover/movie", type:"movie", defaultSort:"popularity.desc",
+               extraParams:{ with_genres:"16" } },
 };
 
 /* ─── STATE ─── */
@@ -3077,6 +3094,7 @@ function switchTab(tab) {
     "sec-movies-filters","sec-tab-movies",
     "sec-series-filters","sec-tab-series",
     "sec-anime-filters","sec-tab-anime",
+    "sec-animacion-filters","sec-tab-animacion",
     "sec-canales","sec-search","sec-catalog",
     "section-favs","viciotv-cw-container",
     "sec-netflixtop10","sec-top100","sec-mas-populares","sec-mas-recientes","sec-mejores-anime","sec-proximamente"
@@ -3112,6 +3130,12 @@ function switchTab(tab) {
     if(filterSec){ filterSec.style.display="block"; buildTabFiltersBar("anime"); }
     document.getElementById("sec-tab-anime").style.display = "block";
     openTabInfiniteGrid("anime");
+  } else if (tab === "animacion") {
+    document.getElementById("hero").style.display = "none";
+    const filterSec = document.getElementById("sec-animacion-filters");
+    if(filterSec){ filterSec.style.display="block"; buildTabFiltersBar("animacion"); }
+    document.getElementById("sec-tab-animacion").style.display = "block";
+    openTabInfiniteGrid("animacion");
   } else if (tab === "canales") {
     document.getElementById("hero").style.display = "none";
     document.getElementById("sec-canales").style.display = "";
@@ -4131,11 +4155,12 @@ function _initDragScroll(row, onScrollNearEnd) {
 
 /* ── SISTEMA DE SCROLL INFINITO POR TAB (Películas / Series / Anime) ── */
 const _tabState = {
-  movies: { page:1, totalPages:1, loading:false, ended:false, session:0, filters:{genre:null,year:null,sort:null,platform:null,country:null} },
-  series: { page:1, totalPages:1, loading:false, ended:false, session:0, filters:{genre:null,year:null,sort:null,platform:null,country:null} },
-  anime:  { page:1, totalPages:1, loading:false, ended:false, session:0, filters:{genre:null,year:null,sort:null,platform:null,country:null} },
+  movies:    { page:1, totalPages:1, loading:false, ended:false, session:0, filters:{genre:null,year:null,sort:null,platform:null,country:null} },
+  series:    { page:1, totalPages:1, loading:false, ended:false, session:0, filters:{genre:null,year:null,sort:null,platform:null,country:null} },
+  anime:     { page:1, totalPages:1, loading:false, ended:false, session:0, filters:{genre:null,year:null,sort:null,platform:null,country:null} },
+  animacion: { page:1, totalPages:1, loading:false, ended:false, session:0, filters:{genre:null,year:null,sort:null,platform:null,country:null,audience:null,studio:null} },
 };
-const _tabObservers = { movies:null, series:null, anime:null };
+const _tabObservers = { movies:null, series:null, anime:null, animacion:null };
 
 function openTabInfiniteGrid(tabKey){
   _resetTabGrid(tabKey);
@@ -4202,6 +4227,7 @@ async function _loadTabPage(tabKey){
       params.set("watch_region","AR");
     }
     if(s.filters.country) params.set("with_origin_country", s.filters.country);
+    if(s.filters.studio) params.set("with_companies", s.filters.studio);
     if(s.filters.year){
       if(cfg.type==="movie") params.set("primary_release_year", s.filters.year);
       else params.set("first_air_date_year", s.filters.year);
@@ -4254,44 +4280,129 @@ function _setupTabObserver(tabKey){
 
 /* ── FILTROS PARA TABS DE PELÍCULAS / SERIES / ANIME ── */
 function buildTabFiltersBar(tabKey){
-  const barId = `filters-bar-${tabKey}`;
+  const barId = "filters-bar-" + tabKey;
   const bar = document.getElementById(barId);
   if(!bar) return;
   if(bar.dataset.built) return;
   bar.dataset.built = "1";
 
-  const selStyle="background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;outline:none;transition:border-color .2s;width:160px;box-sizing:border-box";
+  const selStyle = "background:var(--bg3);color:var(--text);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:7px 12px;font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;outline:none;transition:border-color .2s;width:160px;box-sizing:border-box";
   const cfg = CATALOG_TABS[tabKey]; if(!cfg) return;
   const state = _tabState[tabKey];
 
-  function applyFilter(){
-    _resetTabGrid(tabKey);
+  function applyFilter(){ _resetTabGrid(tabKey); }
+
+  /* ── Filtros especiales para ANIMACIÓN ── */
+  if(tabKey === "animacion"){
+    const ANIMATION_STUDIOS = [
+      ["","Estudio"],
+      ["2","Walt Disney Pictures"],
+      ["3","Pixar"],
+      ["521","DreamWorks Animation"],
+      ["2251","Illumination"],
+      ["1435","Sony Pictures Animation"],
+      ["7505","Studio Ghibli"],
+      ["6704","Blue Sky Studios"],
+      ["10104","Laika Entertainment"],
+      ["17109","Cartoon Saloon"],
+      ["3675","Aardman Animations"],
+      ["11535","Warner Animation Group"],
+      ["14861","Nickelodeon Movies"],
+      ["9993","Netflix Animation"]
+    ];
+
+    /* Fila 1: chips Todos / Infantil / Adultos */
+    var chipRow = document.createElement("div");
+    chipRow.style.cssText = "display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%;margin-bottom:8px";
+    var chipDefs = [["todos","🎬 Todos",null],["infantil","👶 Infantil","family"],["adultos","🔞 Adultos","adult"]];
+    var chipEls = [];
+    chipDefs.forEach(function(def){
+      var ckey = def[0], clabel = def[1], cval = def[2];
+      var chip = document.createElement("button");
+      chip.textContent = clabel;
+      chip.style.cssText = "padding:7px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap";
+      if(ckey === "todos"){ chip.style.background = "var(--accent)"; chip.style.color = "#fff"; chip.style.borderColor = "var(--accent)"; }
+      chip.addEventListener("click", function(){
+        chipEls.forEach(function(b){ b.style.background="transparent"; b.style.color="var(--text2)"; b.style.borderColor="rgba(255,255,255,.15)"; });
+        chip.style.background = "var(--accent)"; chip.style.color = "#fff"; chip.style.borderColor = "var(--accent)";
+        state.filters.audience = cval;
+        if(cval === "family"){
+          cfg.endpoint = "/discover/movie";
+          cfg.extraParams = { with_genres:"16", certification_country:"US", "certification.lte":"PG" };
+        } else if(cval === "adult"){
+          cfg.endpoint = "/discover/movie";
+          cfg.extraParams = { with_genres:"16", certification_country:"US", "certification.gte":"PG-13" };
+        } else {
+          cfg.endpoint = "/discover/movie";
+          cfg.extraParams = { with_genres:"16" };
+        }
+        applyFilter();
+      });
+      chipEls.push(chip);
+      chipRow.appendChild(chip);
+    });
+    bar.appendChild(chipRow);
+
+    /* Fila 2: Estudio / Año / Ordenar / Limpiar */
+    var row2 = document.createElement("div");
+    row2.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;width:100%";
+
+    var stSel = document.createElement("select"); stSel.style.cssText = selStyle;
+    stSel.innerHTML = ANIMATION_STUDIOS.map(function(s){ return '<option value="'+s[0]+'">'+s[1]+'</option>'; }).join("");
+    stSel.addEventListener("change", function(){ state.filters.studio = stSel.value || null; applyFilter(); });
+    row2.appendChild(stSel);
+
+    var ys2 = document.createElement("select"); ys2.style.cssText = selStyle;
+    ys2.innerHTML = '<option value="">Año</option>' + Array.from({length:36},function(_,i){ return 2026-i; }).map(function(y){ return '<option value="'+y+'">'+y+'</option>'; }).join("");
+    ys2.addEventListener("change", function(){ state.filters.year = ys2.value || null; applyFilter(); });
+    row2.appendChild(ys2);
+
+    var ss2 = document.createElement("select"); ss2.style.cssText = selStyle;
+    ss2.innerHTML = [["","Ordenar"],["popularity.desc","Más popular"],["vote_average.desc","Mejor valorado"],["release_date.desc","Más reciente"],["revenue.desc","Mayor taquilla"]].map(function(o){ return '<option value="'+o[0]+'">'+o[1]+'</option>'; }).join("");
+    ss2.addEventListener("change", function(){ state.filters.sort = ss2.value || null; applyFilter(); });
+    row2.appendChild(ss2);
+
+    var rb2 = document.createElement("button");
+    rb2.style.cssText = "background:transparent;color:var(--text3);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap";
+    rb2.textContent = "Limpiar";
+    rb2.addEventListener("click", function(){
+      stSel.value = ""; ys2.value = ""; ss2.value = "";
+      state.filters = {genre:null,year:null,sort:null,platform:null,country:null,audience:null,studio:null};
+      cfg.endpoint = "/discover/movie";
+      cfg.extraParams = { with_genres:"16" };
+      chipEls.forEach(function(b,i){ b.style.background = i===0?"var(--accent)":"transparent"; b.style.color = i===0?"#fff":"var(--text2)"; b.style.borderColor = i===0?"var(--accent)":"rgba(255,255,255,.15)"; });
+      applyFilter();
+    });
+    row2.appendChild(rb2);
+    bar.appendChild(row2);
+    return;
   }
 
+  /* ── Filtros estándar (movies / series / anime) ── */
   const genres = cfg.type==="movie" ? MOVIE_GENRES : TV_GENRES;
   const gs = document.createElement("select"); gs.style.cssText=selStyle;
-  gs.innerHTML=`<option value="">Género</option>`+Object.entries(genres).map(([id,n])=>`<option value="${id}">${n}</option>`).join("");
+  gs.innerHTML="<option value=''>Género</option>"+Object.entries(genres).map(([id,n])=>"<option value='"+id+"'>"+n+"</option>").join("");
   gs.addEventListener("change",()=>{ state.filters.genre=gs.value||null; applyFilter(); });
   bar.appendChild(gs);
 
   const ps = document.createElement("select"); ps.style.cssText=selStyle;
-  ps.innerHTML=`<option value="">Plataforma</option>`+STREAMING_PLATFORMS.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");
+  ps.innerHTML="<option value=''>Plataforma</option>"+STREAMING_PLATFORMS.map(p=>"<option value='"+p.id+"'>"+p.name+"</option>").join("");
   ps.addEventListener("change",()=>{ state.filters.platform=ps.value||null; applyFilter(); });
   bar.appendChild(ps);
 
   const ys = document.createElement("select"); ys.style.cssText=selStyle;
-  ys.innerHTML=`<option value="">Año</option>`+Array.from({length:36},(_,i)=>2026-i).map(y=>`<option value="${y}">${y}</option>`).join("");
+  ys.innerHTML="<option value=''>Año</option>"+Array.from({length:36},(_,i)=>2026-i).map(y=>"<option value='"+y+"'>"+y+"</option>").join("");
   ys.addEventListener("change",()=>{ state.filters.year=ys.value||null; applyFilter(); });
   bar.appendChild(ys);
 
   const ss = document.createElement("select"); ss.style.cssText=selStyle;
-  ss.innerHTML=[["","Ordenar"],["popularity.desc","Más popular"],["vote_average.desc","Mejor valorado"],["release_date.desc","Más reciente"],["revenue.desc","Mayor taquilla"]].map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+  ss.innerHTML=[["","Ordenar"],["popularity.desc","Más popular"],["vote_average.desc","Mejor valorado"],["release_date.desc","Más reciente"],["revenue.desc","Mayor taquilla"]].map(([v,l])=>"<option value='"+v+"'>"+l+"</option>").join("");
   ss.addEventListener("change",()=>{ state.filters.sort=ss.value||null; applyFilter(); });
   bar.appendChild(ss);
 
   const cs = document.createElement("select"); cs.style.cssText=selStyle;
   const COUNTRIES=[["","País"],["AR","🇦🇷 Argentina"],["US","🇺🇸 EEUU"],["GB","🇬🇧 Reino Unido"],["FR","🇫🇷 Francia"],["DE","🇩🇪 Alemania"],["IT","🇮🇹 Italia"],["ES","🇪🇸 España"],["MX","🇲🇽 México"],["BR","🇧🇷 Brasil"],["CO","🇨🇴 Colombia"],["CL","🇨🇱 Chile"],["JP","🇯🇵 Japón"],["KR","🇰🇷 Corea del Sur"],["CN","🇨🇳 China"],["IN","🇮🇳 India"],["AU","🇦🇺 Australia"],["CA","🇨🇦 Canadá"],["RU","🇷🇺 Rusia"],["TR","🇹🇷 Turquía"],["SE","🇸🇪 Suecia"]];
-  cs.innerHTML=COUNTRIES.map(([v,l])=>`<option value="${v}">${l}</option>`).join("");
+  cs.innerHTML=COUNTRIES.map(([v,l])=>"<option value='"+v+"'>"+l+"</option>").join("");
   cs.addEventListener("change",()=>{ state.filters.country=cs.value||null; applyFilter(); });
   bar.appendChild(cs);
 
@@ -4989,6 +5100,7 @@ function openSidebarSection(key){
     "sec-movies-filters","sec-tab-movies",
     "sec-series-filters","sec-tab-series",
     "sec-anime-filters","sec-tab-anime",
+    "sec-animacion-filters","sec-tab-animacion",
     "sec-canales","sec-search","sec-catalog",
     "section-favs","viciotv-cw-container",
     "sec-netflixtop10","sec-top100","sec-mas-populares","sec-mas-recientes","sec-mejores-anime","sec-proximamente"
