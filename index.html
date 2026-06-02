@@ -7111,7 +7111,7 @@ initThemePicker();
     mouse_fast: [
       "Buscando algo específico, ¿eh?", "Vas rápido hoy.", "¿Perdiste algo?",
       "Parece que estás cazando una serie.", "Mucha exploración por aquí.",
-      "Creo que estás indeciso.", "Tus movimientos me están mareando.",
+      "Creo que estás indeciso.", "Explorando todo, ¿no? 👀",
       "Veo actividad interesante.",
     ],
 
@@ -7268,7 +7268,7 @@ initThemePicker();
     tab_movies:  ["¡A las pelis! 🎬", "Tantas pelis, tan poco tiempo…", "¿Qué vemos hoy?", "Palomitas en mano. 🍿"],
     tab_series:  ["Series mode ON 📺", "¿Qué serie encaramos?", "Cuidado con el binge-watch 😂", "Una por semana... mentira, todas."],
     tab_anime:   ["¡ANIME! 🎌✨", "¡Eso sí que es cultura!", "¡Sugoi! ✨", "Opening en loop mentalmente 🎵"],
-    scroll_fast: ["¡Para, para! 😵", "¡Che, qué apurado!", "¡No me mareés! 🌀", "¿Perdiste algo?", "Mucha exploración por aquí."],
+    scroll_fast: ["¡Para, para! 😵", "¡Che, qué apurado!", "¡Velocidad máxima! 🚀", "¿Perdiste algo?", "Mucha exploración por aquí."],
     theme_change:["¡Qué colores! 🎨", "¡Diseñador de lujo! ✨", "¡Le pegaste onda a la app!"],
     modal_close: ["Entendido.", "¿No te convenció?", "¡Seguí buscando!", "¿Para otra? 👀", "Hay miles más ahí…"],
     continue_watch: ["¡Seguís viéndola! 🎬", "¿Dónde habías quedado? 🤔", "¡A terminarla!", "¡Ese sí que es compromiso!"],
@@ -7279,6 +7279,12 @@ initThemePicker();
     weather_change: [
       "Buena elección de clima. 🌦️", "Me gusta el ambiente nuevo.", "Ahora sí, más inmersivo.",
       "¿Soleado o tormenta? Difícil elegir.", "El ambiente cambia todo.", "Así se disfruta más. ✨",
+    ],
+    snowball_hit: [
+      "¡NIEVE EN LA CARA! ❄️😤", "¡¿Quién tiró eso?!", "¡Frío frío FRÍO! 🥶",
+      "¡Eso no vale!", "¡Uy, me dio!", "¡Cubierto de nieve! ⛄",
+      "¡No vi venir eso! ❄️", "¡Muy gracioso! 😤", "¡Esto significa guerra! ☃️",
+      "...me pegó una bola de nieve. Clásico.", "¡HELADA! 🥶",
     ],
     panel_open: [
       "A personalizar se ha dicho. 🎨", "Buena idea hacerlo a tu gusto.", "Dale tu toque personal. ✨",
@@ -8425,6 +8431,11 @@ initThemePicker();
     _manager.instances.length = 0;
   };
 
+  // Exponer instancias para sistemas externos (colisión con partículas de ambiente)
+  window._vtvMascots = _manager.instances;
+  // Exponer frases para acceso desde sistemas externos
+  window._vtvFRASES = FRASES;
+
 })();
 
 // ─── SISTEMA DE AMBIENTES ────────────────────────────────────────────────────
@@ -8453,6 +8464,13 @@ initThemePicker();
     if (stormFlash) { stormFlash.remove(); stormFlash = null; }
     const sw = document.getElementById('storm-switch-wrap');
     if (sw) sw.style.display = 'none';
+    // Ocultar árbol de naranjas si existe
+    (function() {
+      const tr = document.getElementById('vtv-orange-tree');
+      if (!tr) return;
+      tr.style.opacity = '0';
+      setTimeout(() => { if (tr.parentNode) tr.remove(); }, 2100);
+    })();
   }
 
   // ── Spawner con tracking ──────────────────────────────────────────────────
@@ -8720,6 +8738,25 @@ initThemePicker();
   }
   makeLightningSeg.type = 'lightning';
 
+  // ── LIBÉLULA (solo soleado) ──────────────────────────────────────────────
+  function makeDragonfly() {
+    const w = W(), h = H();
+    const fromLeft = Math.random() < 0.5;
+    const y = h * (0.08 + Math.random() * 0.55);
+    const spd = 0.55 + Math.random() * 0.65;
+    return { type: 'dragonfly',
+      x: fromLeft ? -20 : w + 20,
+      y, vy: (Math.random() - 0.5) * 0.22,
+      vx: fromLeft ? spd : -spd,
+      wobble: Math.random() * Math.PI * 2, wobbleV: 0.04 + Math.random() * 0.03,
+      wingPhase: Math.random() * Math.PI * 2,
+      size: 9 + Math.random() * 7,
+      hue: [170, 190, 150, 210, 80][Math.floor(Math.random() * 5)],
+      alpha: 0, fadeIn: true, life: 1,
+    };
+  }
+  makeDragonfly.type = 'dragonfly';
+
   // ══════════════════════════════════════════════════════════════════════════
   // MODOS
   // ══════════════════════════════════════════════════════════════════════════
@@ -8727,6 +8764,8 @@ initThemePicker();
   function startOtono() {
     spawnLoop(makeLeaf,     [400, 1200], 22);
     spawnLoop(makeAcorn,    [8000, 22000], 3);
+    // Mariposas: algunas vuelan por otoño también
+    spawnLoop(makeButterfly,[5000, 12000], 3);
     // Ardilla: muy esporádica
     (function squirrelLoop() {
       const t = setTimeout(() => {
@@ -8734,7 +8773,168 @@ initThemePicker();
       }, 25000 + Math.random() * 45000);
       spawnerTmrs.push(t);
     })();
+    // Árbol de naranjas decorativo
+    _showOrangeTree();
   }
+
+  function _showOrangeTree() {
+    if (document.getElementById('vtv-orange-tree')) return;
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.id = 'vtv-orange-tree';
+    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    svg.style.cssText = 'position:fixed;bottom:0;right:0;width:340px;height:100vh;pointer-events:none;z-index:9995;overflow:visible;opacity:0;transition:opacity 2s ease';
+    // El viewBox ancla el dibujo: el tronco sale por abajo-derecha, las ramas llegan a la cima
+    svg.setAttribute('viewBox', '0 0 340 900');
+    svg.setAttribute('preserveAspectRatio', 'xMaxYMax meet');
+
+    svg.innerHTML = `
+      <defs>
+        <filter id="tree-blur-soft" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="1.5"/>
+        </filter>
+        <radialGradient id="orange-grad" cx="40%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#FFD04A"/>
+          <stop offset="55%" stop-color="#FF8C00"/>
+          <stop offset="100%" stop-color="#C45000"/>
+        </radialGradient>
+        <radialGradient id="orange-grad2" cx="38%" cy="32%" r="58%">
+          <stop offset="0%" stop-color="#FFE066"/>
+          <stop offset="50%" stop-color="#FF9A00"/>
+          <stop offset="100%" stop-color="#B84500"/>
+        </radialGradient>
+        <radialGradient id="leaf-grad" cx="40%" cy="30%" r="65%">
+          <stop offset="0%" stop-color="#6DBF47"/>
+          <stop offset="100%" stop-color="#2E7B1A"/>
+        </radialGradient>
+      </defs>
+
+      <!-- TRONCO PRINCIPAL: arranca desde muy abajo del viewBox y sube -->
+      <path d="M 255 920 C 248 820 240 700 235 580 C 228 440 225 300 220 160 C 218 100 215 40 212 -30"
+            fill="none" stroke="#5C3317" stroke-width="28" stroke-linecap="round"/>
+      <path d="M 255 920 C 250 820 244 700 239 580 C 232 440 229 300 224 160 C 222 100 219 40 216 -30"
+            fill="none" stroke="#7A4520" stroke-width="14" stroke-linecap="round" opacity=".45"/>
+
+      <!-- RAMA 1: sale hacia derecha arriba (visible en zona alta de pantalla) -->
+      <path d="M 228 130 C 258 110 295 85 340 55"
+            fill="none" stroke="#5C3317" stroke-width="14" stroke-linecap="round"/>
+      <path d="M 228 130 C 258 110 295 85 340 55"
+            fill="none" stroke="#7A4520" stroke-width="7" stroke-linecap="round" opacity=".4"/>
+      <!-- sub-ramas R1 -->
+      <path d="M 295 85 C 310 68 330 48 355 22" fill="none" stroke="#5C3317" stroke-width="8" stroke-linecap="round"/>
+      <path d="M 318 70 C 336 58 355 42 375 18" fill="none" stroke="#5C3317" stroke-width="5" stroke-linecap="round"/>
+      <path d="M 285 92 C 298 115 305 138 308 165" fill="none" stroke="#5C3317" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- RAMA 2: sale hacia derecha, zona media-alta -->
+      <path d="M 225 240 C 260 220 300 198 345 175"
+            fill="none" stroke="#5C3317" stroke-width="13" stroke-linecap="round"/>
+      <path d="M 295 200 C 315 178 338 158 365 135" fill="none" stroke="#5C3317" stroke-width="7" stroke-linecap="round"/>
+      <path d="M 280 210 C 295 238 302 265 300 294" fill="none" stroke="#5C3317" stroke-width="7" stroke-linecap="round"/>
+
+      <!-- RAMA 3: zona media, cae un poco -->
+      <path d="M 230 380 C 265 368 305 358 350 345"
+            fill="none" stroke="#5C3317" stroke-width="12" stroke-linecap="round"/>
+      <path d="M 298 355 C 320 340 345 325 372 308" fill="none" stroke="#5C3317" stroke-width="6" stroke-linecap="round"/>
+      <path d="M 285 362 C 300 388 310 414 308 442" fill="none" stroke="#5C3317" stroke-width="6" stroke-linecap="round"/>
+
+      <!-- RAMA 4: zona media-baja, más horizontal -->
+      <path d="M 236 510 C 272 500 312 492 358 482"
+            fill="none" stroke="#5C3317" stroke-width="11" stroke-linecap="round"/>
+      <path d="M 305 490 C 330 475 358 460 385 442" fill="none" stroke="#5C3317" stroke-width="6" stroke-linecap="round"/>
+
+      <!-- HOJAS — grupos irregulares sobre cada zona de rama -->
+      <!-- hojas zona muy alta (arriba, casi fuera de pantalla) -->
+      <g opacity=".92" filter="url(#tree-blur-soft)">
+        <ellipse cx="340" cy="45" rx="28" ry="18" fill="url(#leaf-grad)" transform="rotate(-25,340,45)"/>
+        <ellipse cx="358" cy="28" rx="22" ry="14" fill="#3A9A22" transform="rotate(-40,358,28)"/>
+        <ellipse cx="370" cy="15" rx="18" ry="11" fill="#4DB830" transform="rotate(-15,370,15)"/>
+        <ellipse cx="352" cy="55" rx="24" ry="15" fill="#2E7B1A" transform="rotate(-50,352,55)"/>
+        <ellipse cx="325" cy="62" rx="20" ry="13" fill="#50C030" transform="rotate(10,325,62)"/>
+        <ellipse cx="378" cy="35" rx="16" ry="10" fill="#3A9A22" transform="rotate(-30,378,35)"/>
+        <ellipse cx="310" cy="78" rx="18" ry="12" fill="url(#leaf-grad)" transform="rotate(20,310,78)"/>
+      </g>
+      <!-- hojas rama 1 -->
+      <g opacity=".9">
+        <ellipse cx="308" cy="158" rx="26" ry="17" fill="url(#leaf-grad)" transform="rotate(30,308,158)"/>
+        <ellipse cx="292" cy="172" rx="22" ry="14" fill="#3A9A22" transform="rotate(-20,292,172)"/>
+        <ellipse cx="322" cy="143" rx="19" ry="12" fill="#4DB830" transform="rotate(-35,322,143)"/>
+        <ellipse cx="335" cy="165" rx="17" ry="11" fill="#2E7B1A" transform="rotate(45,335,165)"/>
+      </g>
+      <!-- hojas rama 2 -->
+      <g opacity=".9">
+        <ellipse cx="300" cy="288" rx="28" ry="18" fill="url(#leaf-grad)" transform="rotate(25,300,288)"/>
+        <ellipse cx="318" cy="270" rx="23" ry="15" fill="#3A9A22" transform="rotate(-15,318,270)"/>
+        <ellipse cx="285" cy="300" rx="20" ry="13" fill="#4DB830" transform="rotate(40,285,300)"/>
+        <ellipse cx="310" cy="308" rx="18" ry="11" fill="#2E7B1A" transform="rotate(-30,310,308)"/>
+        <ellipse cx="340" cy="175" rx="25" ry="16" fill="url(#leaf-grad)" transform="rotate(-20,340,175)"/>
+        <ellipse cx="360" cy="158" rx="20" ry="13" fill="#3A9A22" transform="rotate(-40,360,158)"/>
+      </g>
+      <!-- hojas zona media -->
+      <g opacity=".88">
+        <ellipse cx="308" cy="435" rx="27" ry="17" fill="url(#leaf-grad)" transform="rotate(20,308,435)"/>
+        <ellipse cx="292" cy="448" rx="22" ry="14" fill="#3A9A22" transform="rotate(-25,292,448)"/>
+        <ellipse cx="322" cy="420" rx="18" ry="12" fill="#50C030" transform="rotate(35,322,420)"/>
+        <ellipse cx="348" cy="345" rx="26" ry="17" fill="url(#leaf-grad)" transform="rotate(-15,348,345)"/>
+        <ellipse cx="366" cy="328" rx="20" ry="13" fill="#3A9A22" transform="rotate(-35,366,328)"/>
+      </g>
+      <!-- hojas zona baja-derecha -->
+      <g opacity=".85">
+        <ellipse cx="358" cy="475" rx="28" ry="18" fill="url(#leaf-grad)" transform="rotate(15,358,475)"/>
+        <ellipse cx="378" cy="458" rx="22" ry="14" fill="#3A9A22" transform="rotate(-20,378,458)"/>
+        <ellipse cx="345" cy="490" rx="20" ry="13" fill="#50C030" transform="rotate(30,345,490)"/>
+      </g>
+
+      <!-- NARANJAS — distribuidas por las ramas -->
+      <!-- zona alta -->
+      <circle cx="326" cy="72" r="10" fill="url(#orange-grad)"/>
+      <circle cx="326" cy="72" r="10" fill="none" stroke="#C45000" stroke-width=".8" opacity=".4"/>
+      <line x1="326" y1="62" x2="327" y2="56" stroke="#3A6B15" stroke-width="1.4" stroke-linecap="round"/>
+      <ellipse cx="328" cy="55" rx="4" ry="2.5" fill="#4A8820" transform="rotate(-20,328,55)"/>
+
+      <circle cx="348" cy="52" r="8.5" fill="url(#orange-grad2)"/>
+      <line x1="348" y1="43" x2="349" y2="37" stroke="#3A6B15" stroke-width="1.2" stroke-linecap="round"/>
+      <ellipse cx="350" cy="36" rx="3.5" ry="2" fill="#4A8820" transform="rotate(15,350,36)"/>
+
+      <!-- rama 1 -->
+      <circle cx="296" cy="160" r="11" fill="url(#orange-grad)"/>
+      <circle cx="296" cy="160" r="11" fill="none" stroke="#C45000" stroke-width=".8" opacity=".35"/>
+      <line x1="296" y1="149" x2="297" y2="143" stroke="#3A6B15" stroke-width="1.4" stroke-linecap="round"/>
+      <ellipse cx="298" cy="142" rx="4" ry="2.5" fill="#4A8820" transform="rotate(-10,298,142)"/>
+
+      <!-- rama 2 -->
+      <circle cx="315" cy="285" r="10.5" fill="url(#orange-grad2)"/>
+      <line x1="315" y1="274" x2="316" y2="268" stroke="#3A6B15" stroke-width="1.3" stroke-linecap="round"/>
+      <ellipse cx="317" cy="267" rx="3.8" ry="2.2" fill="#4A8820" transform="rotate(20,317,267)"/>
+
+      <circle cx="288" cy="298" r="9" fill="url(#orange-grad)"/>
+      <line x1="288" y1="289" x2="289" y2="283" stroke="#3A6B15" stroke-width="1.2" stroke-linecap="round"/>
+      <ellipse cx="290" cy="282" rx="3.5" ry="2" fill="#4A8820" transform="rotate(-15,290,282)"/>
+
+      <!-- media -->
+      <circle cx="306" cy="432" r="10" fill="url(#orange-grad)"/>
+      <line x1="306" y1="422" x2="307" y2="416" stroke="#3A6B15" stroke-width="1.3" stroke-linecap="round"/>
+      <ellipse cx="308" cy="415" rx="3.8" ry="2.2" fill="#4A8820" transform="rotate(10,308,415)"/>
+
+      <circle cx="350" cy="348" r="9.5" fill="url(#orange-grad2)"/>
+      <line x1="350" y1="338" x2="351" y2="332" stroke="#3A6B15" stroke-width="1.2" stroke-linecap="round"/>
+      <ellipse cx="352" cy="331" rx="3.5" ry="2" fill="#4A8820" transform="rotate(-25,352,331)"/>
+
+      <!-- baja -->
+      <circle cx="360" cy="470" r="11" fill="url(#orange-grad)"/>
+      <circle cx="360" cy="470" r="11" fill="none" stroke="#C45000" stroke-width=".8" opacity=".3"/>
+      <line x1="360" y1="459" x2="361" y2="453" stroke="#3A6B15" stroke-width="1.4" stroke-linecap="round"/>
+      <ellipse cx="362" cy="452" rx="4" ry="2.5" fill="#4A8820" transform="rotate(15,362,452)"/>
+
+      <!-- MUSGO/TEXTURA TRONCO (sombra lateral izquierda) -->
+      <path d="M 245 920 C 238 820 232 700 228 580 C 222 440 220 300 216 160 C 214 100 212 40 210 -30"
+            fill="none" stroke="#3D2010" stroke-width="5" stroke-linecap="round" opacity=".35"/>
+    `;
+
+    document.body.appendChild(svg);
+    // fade in suave
+    requestAnimationFrame(() => { svg.style.opacity = '1'; });
+  }
+
+
 
   function startSoleado() {
     // Sistema de rayos solares desincronizado: 2-4 activos, fades independientes
@@ -8790,7 +8990,8 @@ initThemePicker();
       }, 14000 + Math.random() * 22000);  // cada 14-36s
       spawnerTmrs.push(t);
     })();
-    spawnLoop(makeButterfly,[3000, 7000], 6);
+    spawnLoop(makeButterfly,[2000, 5000], 8);
+    spawnLoop(makeDragonfly,[8000,18000], 3);
     // Flash atmosférico suave (no tormenta)
     (function sunFlashLoop() {
       const t = setTimeout(() => {
@@ -8996,7 +9197,55 @@ initThemePicker();
         ctx.restore();
       }
 
-      // ── Rayo solar volumétrico ──
+      // ── Libélula ──
+      else if (p.type === 'dragonfly') {
+        p.wobble   += p.wobbleV;
+        p.wingPhase += 0.28;
+        p.x += p.vx + Math.sin(p.wobble * 1.3) * 0.4;
+        p.y += p.vy + Math.sin(p.wobble * 0.9) * 0.25;
+        p.life -= 0.0008;
+        if (p.life <= 0 || p.x < -60 || p.x > W() + 60 || p.y < -40 || p.y > H() + 40) { particles.splice(i,1); continue; }
+        const dfA = Math.min(p.alpha, p.life);
+        ctx.save();
+        ctx.globalAlpha = dfA * 0.88;
+        ctx.translate(p.x, p.y);
+        if (p.vx < 0) ctx.scale(-1, 1);
+        const s = p.size;
+        const flap = Math.abs(Math.sin(p.wingPhase));
+        // Alas superiores (más grandes, translúcidas)
+        for (const [sx, sy, rx, ry] of [
+          [s * .55, -s * .22, s * .72 * flap + 1, s * .3],
+          [-s * .55, -s * .22, s * .72 * flap + 1, s * .3],
+          [s * .45, s * .18, s * .55 * flap + 1, s * .2],
+          [-s * .45, s * .18, s * .55 * flap + 1, s * .2],
+        ]) {
+          ctx.beginPath();
+          ctx.ellipse(sx, sy, rx, ry, 0, 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${p.hue}, 75%, 65%, ${dfA * .38})`;
+          ctx.strokeStyle = `hsla(${p.hue}, 60%, 55%, ${dfA * .5})`;
+          ctx.lineWidth = .6;
+          ctx.fill(); ctx.stroke();
+        }
+        // Cuerpo (segmentado, largo y delgado)
+        ctx.beginPath();
+        ctx.ellipse(0, 0, s * .12, s * .62, 0, 0, Math.PI * 2);
+        ctx.fillStyle = `hsl(${p.hue}, 80%, 32%)`;
+        ctx.fill();
+        // Segmentos del abdomen
+        for (let seg = 0; seg < 4; seg++) {
+          const sy2 = s * .05 + seg * s * .16;
+          ctx.beginPath();
+          ctx.arc(0, sy2, s * .095, 0, Math.PI * 2);
+          ctx.fillStyle = `hsl(${p.hue + seg * 8}, 72%, ${38 + seg * 4}%)`;
+          ctx.fill();
+        }
+        // Cabeza
+        ctx.beginPath();
+        ctx.arc(0, -s * .6, s * .16, 0, Math.PI * 2);
+        ctx.fillStyle = `hsl(${p.hue}, 65%, 28%)`;
+        ctx.fill();
+        ctx.restore();
+      }
       else if (p.type === 'sunray') {
         p.elapsed += dt;
         const t = p.elapsed / p.duration;
@@ -9090,8 +9339,15 @@ initThemePicker();
       // ── Copo de nieve ──
       else if (p.type === 'snowflake') {
         p.wobble += p.wobbleV; p.x += p.vx + Math.sin(p.wobble)*.4; p.y += p.vy; p.rot += 0.015;
+        // Las partículas de splash tienen vx/vy propios; decrementar life si está < 1
+        if (p.life !== undefined && p.life < 1) {
+          p.life -= 0.018;
+          p.vy += 0.08; // gravedad suave
+          if (p.life <= 0) { particles.splice(i,1); continue; }
+        }
         if (p.y > h + 20) { particles.splice(i,1); continue; }
-        ctx.save(); ctx.globalAlpha = p.alpha * 0.8;
+        const snowA = (p.life !== undefined && p.life < 1) ? p.alpha * p.life : p.alpha;
+        ctx.save(); ctx.globalAlpha = snowA * 0.8;
         ctx.translate(p.x, p.y); ctx.rotate(p.rot);
         ctx.strokeStyle = 'rgba(215,230,255,0.9)'; ctx.lineWidth = 0.9;
         ctx.shadowBlur = 5; ctx.shadowColor = 'rgba(200,220,255,.5)';
@@ -9198,6 +9454,65 @@ initThemePicker();
           ctx.restore();
         }
 
+        // ── Colisión con mascotas ──
+        if (!p.hitCooldown) p.hitCooldown = 0;
+        p.hitCooldown = Math.max(0, p.hitCooldown - dt);
+        const mascots = window._vtvMascots;
+        if (mascots && p.hitCooldown <= 0) {
+          for (const m of mascots) {
+            if (!m.el || !m.running) continue;
+            // La mascota tiene su origen en bottom=0, posición: x = m.x, y desde abajo = m.y
+            // En coordenadas de pantalla: screenX = m.x + 44, screenY = H - m.y - 88
+            const mScreenX = m.x + 44;  // centro horizontal aprox
+            const mScreenY = h - m.y - 44; // centro vertical aprox (MASCOT_SIZE=88, centro≈44)
+            const dx = p.x - mScreenX;
+            const dy = p.y - mScreenY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const hitRadius = r + 38; // radio bola + radio colisión mascota
+            if (dist < hitRadius) {
+              // Rebotar la bola: invertir vx y darle un pequeño rebote vy
+              p.vx *= -0.6;
+              p.vy = -(Math.abs(p.vx) * 0.4 + 0.3);
+              p.hitCooldown = 1200; // 1.2s cooldown para no re-chocar
+              // Explotar con nieve: partículas pequeñas de nieve
+              for (let k = 0; k < 8; k++) {
+                const angle = (k / 8) * Math.PI * 2;
+                const spd = 1.5 + Math.random() * 2;
+                particles.push({
+                  type: 'snowflake',
+                  x: p.x, y: p.y,
+                  vx: Math.cos(angle) * spd,
+                  vy: Math.sin(angle) * spd - 1,
+                  wobble: Math.random() * Math.PI * 2, wobbleV: 0.05,
+                  size: 3 + Math.random() * 4,
+                  rot: Math.random() * Math.PI * 2,
+                  alpha: 1, fadeIn: false, life: 0.8,
+                });
+              }
+              // Reacción de la mascota
+              if (m.canReact(2000)) {
+                const prevState = m.state;
+                m.setState('fall', 900);
+              const snowHitPhrases = (window._vtvFRASES && window._vtvFRASES.snowball_hit)
+                    ? window._vtvFRASES.snowball_hit
+                    : ['¡NIEVE! ❄️', '¡Frío! 🥶', '¡Me dio! 😤'];
+                m.showBubble(
+                  snowHitPhrases[Math.floor(Math.random() * snowHitPhrases.length)],
+                  2200, true
+                );
+                setTimeout(() => {
+                  if (m.state === 'fall') {
+                    m.vx = (Math.random() < 0.5 ? 1 : -1) * (1.2 + Math.random() * 0.6);
+                    m.setState('run');
+                    setTimeout(() => { if (m.state === 'run') m.setState('walk'); }, 1500);
+                  }
+                }, 900);
+              }
+              break; // solo una colisión por frame por bola
+            }
+          }
+        }
+
         // ── Dibujar la bola ──
         ctx.save();
         ctx.translate(p.x, p.y);
@@ -9269,24 +9584,21 @@ initThemePicker();
   // API PÚBLICA
   // ══════════════════════════════════════════════════════════════════════════
   window.setWeatherMode = function(mode) {
-    // Toggle: si ya está activo, desactivar
-    const newMode = mode === activeMode ? null : mode;
-    activeMode = newMode;
+    // Nunca se puede deseleccionar: si ya está activo, no hace nada
+    if (mode === activeMode) return;
+    activeMode = mode;
     clearAll();
 
     // UI
     document.querySelectorAll('.wb-btn').forEach(b => b.classList.remove('wb-active'));
-    if (newMode) {
-      const btn = document.getElementById('wb-' + newMode);
-      if (btn) btn.classList.add('wb-active');
-      localStorage.setItem('vtv_weather_mode', newMode);
-      if (newMode === 'otono')    startOtono();
-      if (newMode === 'soleado')  startSoleado();
-      if (newMode === 'tormenta') startTormenta();
-      if (newMode === 'nieve')    startNieve();
-    } else {
-      localStorage.removeItem('vtv_weather_mode');
-    }
+    const btn = document.getElementById('wb-' + mode);
+    if (btn) btn.classList.add('wb-active');
+    localStorage.setItem('vtv_weather_mode', mode);
+
+    if (mode === 'otono')    startOtono();
+    if (mode === 'soleado')  startSoleado();
+    if (mode === 'tormenta') startTormenta();
+    if (mode === 'nieve')    startNieve();
   };
 
   // Restaurar preferencia guardada, o elegir un modo al azar
