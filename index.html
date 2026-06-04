@@ -1202,12 +1202,12 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       -webkit-appearance:auto!important;
       cursor:pointer!important;
     }
-    /* Fila 1: Género | Año | Ordenar  —  Fila 2: Plataforma | País | Limpiar */
+    /* Fila 1: Género | Año | País  —  Fila 2: Plataforma | Ordenar | Limpiar */
     .tab-filters-bar select:nth-child(1){ grid-column:1; grid-row:1; } /* Género */
-    .tab-filters-bar select:nth-child(2){ grid-column:1; grid-row:2; } /* Plataforma */
-    .tab-filters-bar select:nth-child(3){ grid-column:2; grid-row:1; } /* Año */
-    .tab-filters-bar select:nth-child(4){ grid-column:3; grid-row:1; } /* Ordenar */
-    .tab-filters-bar select:nth-child(5){ grid-column:2; grid-row:2; } /* País */
+    .tab-filters-bar select:nth-child(2){ grid-column:2; grid-row:1; } /* Año */
+    .tab-filters-bar select:nth-child(3){ grid-column:3; grid-row:1; } /* País */
+    .tab-filters-bar select:nth-child(4){ grid-column:1; grid-row:2; } /* Plataforma */
+    .tab-filters-bar select:nth-child(5){ grid-column:2; grid-row:2; } /* Ordenar */
     .tab-filters-bar button{
       grid-column:3!important;
       grid-row:2!important;
@@ -4318,10 +4318,10 @@ function buildTabFiltersBar(tabKey){
       ["9993","Netflix Animation"]
     ];
 
-    /* Fila 1: chips Todos / Infantil / Adultos */
+    /* Fila 1: chips Todos / Infantil */
     var chipRow = document.createElement("div");
     chipRow.style.cssText = "display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%;margin-bottom:8px";
-    var chipDefs = [["todos","🎬 Todos",null],["infantil","👶 Infantil","family"],["adultos","🔞 Adultos","adult"]];
+    var chipDefs = [["todos","🎬 Todos",null],["infantil","👶 Infantil","family"]];
     var chipEls = [];
     chipDefs.forEach(function(def){
       var ckey = def[0], clabel = def[1], cval = def[2];
@@ -4386,32 +4386,34 @@ function buildTabFiltersBar(tabKey){
   }
 
   /* ── Filtros estándar (movies / series / anime) ── */
+  /* Orden visible: Género · Año · País · Plataforma · Ordenar · Limpiar */
   const genres = cfg.type==="movie" ? MOVIE_GENRES : TV_GENRES;
   const gs = document.createElement("select"); gs.style.cssText=selStyle;
   gs.innerHTML="<option value=''>Género</option>"+Object.entries(genres).map(([id,n])=>"<option value='"+id+"'>"+n+"</option>").join("");
   gs.addEventListener("change",()=>{ state.filters.genre=gs.value||null; applyFilter(); });
-  bar.appendChild(gs);
-
-  const ps = document.createElement("select"); ps.style.cssText=selStyle;
-  ps.innerHTML="<option value=''>Plataforma</option>"+STREAMING_PLATFORMS.map(p=>"<option value='"+p.id+"'>"+p.name+"</option>").join("");
-  ps.addEventListener("change",()=>{ state.filters.platform=ps.value||null; applyFilter(); });
-  bar.appendChild(ps);
 
   const ys = document.createElement("select"); ys.style.cssText=selStyle;
   ys.innerHTML="<option value=''>Año</option>"+Array.from({length:36},(_,i)=>2026-i).map(y=>"<option value='"+y+"'>"+y+"</option>").join("");
   ys.addEventListener("change",()=>{ state.filters.year=ys.value||null; applyFilter(); });
-  bar.appendChild(ys);
-
-  const ss = document.createElement("select"); ss.style.cssText=selStyle;
-  ss.innerHTML=[["","Ordenar"],["popularity.desc","Más popular"],["vote_average.desc","Mejor valorado"],["release_date.desc","Más reciente"],["revenue.desc","Mayor taquilla"]].map(([v,l])=>"<option value='"+v+"'>"+l+"</option>").join("");
-  ss.addEventListener("change",()=>{ state.filters.sort=ss.value||null; applyFilter(); });
-  bar.appendChild(ss);
 
   const cs = document.createElement("select"); cs.style.cssText=selStyle;
   const COUNTRIES=[["","País"],["AR","🇦🇷 Argentina"],["US","🇺🇸 EEUU"],["GB","🇬🇧 Reino Unido"],["FR","🇫🇷 Francia"],["DE","🇩🇪 Alemania"],["IT","🇮🇹 Italia"],["ES","🇪🇸 España"],["MX","🇲🇽 México"],["BR","🇧🇷 Brasil"],["CO","🇨🇴 Colombia"],["CL","🇨🇱 Chile"],["JP","🇯🇵 Japón"],["KR","🇰🇷 Corea del Sur"],["CN","🇨🇳 China"],["IN","🇮🇳 India"],["AU","🇦🇺 Australia"],["CA","🇨🇦 Canadá"],["RU","🇷🇺 Rusia"],["TR","🇹🇷 Turquía"],["SE","🇸🇪 Suecia"]];
   cs.innerHTML=COUNTRIES.map(([v,l])=>"<option value='"+v+"'>"+l+"</option>").join("");
   cs.addEventListener("change",()=>{ state.filters.country=cs.value||null; applyFilter(); });
+
+  const ps = document.createElement("select"); ps.style.cssText=selStyle;
+  ps.innerHTML="<option value=''>Plataforma</option>"+STREAMING_PLATFORMS.map(p=>"<option value='"+p.id+"'>"+p.name+"</option>").join("");
+  ps.addEventListener("change",()=>{ state.filters.platform=ps.value||null; applyFilter(); });
+
+  const ss = document.createElement("select"); ss.style.cssText=selStyle;
+  ss.innerHTML=[["","Ordenar"],["popularity.desc","Más popular"],["vote_average.desc","Mejor valorado"],["release_date.desc","Más reciente"],["revenue.desc","Mayor taquilla"]].map(([v,l])=>"<option value='"+v+"'>"+l+"</option>").join("");
+  ss.addEventListener("change",()=>{ state.filters.sort=ss.value||null; applyFilter(); });
+
+  bar.appendChild(gs);
+  bar.appendChild(ys);
   bar.appendChild(cs);
+  bar.appendChild(ps);
+  bar.appendChild(ss);
 
   const rb = document.createElement("button");
   rb.style.cssText="background:transparent;color:var(--text3);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer;white-space:nowrap";
