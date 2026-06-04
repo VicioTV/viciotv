@@ -4336,9 +4336,6 @@ function buildTabFiltersBar(tabKey){
         if(cval === "family"){
           cfg.endpoint = "/discover/movie";
           cfg.extraParams = { with_genres:"16", certification_country:"US", "certification.lte":"PG" };
-        } else if(cval === "adult"){
-          cfg.endpoint = "/discover/movie";
-          cfg.extraParams = { with_genres:"16", certification_country:"US", "certification.gte":"PG-13" };
         } else {
           cfg.endpoint = "/discover/movie";
           cfg.extraParams = { with_genres:"16" };
