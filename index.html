@@ -4318,38 +4318,6 @@ function buildTabFiltersBar(tabKey){
       ["9993","Netflix Animation"]
     ];
 
-    /* Fila 1: chips Todos / Infantil / Adultos */
-    var chipRow = document.createElement("div");
-    chipRow.style.cssText = "display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%;margin-bottom:8px";
-    var chipDefs = [["todos","🎬 Todos",null],["infantil","👶 Infantil","family"],["adultos","🔞 Adultos","adult"]];
-    var chipEls = [];
-    chipDefs.forEach(function(def){
-      var ckey = def[0], clabel = def[1], cval = def[2];
-      var chip = document.createElement("button");
-      chip.textContent = clabel;
-      chip.style.cssText = "padding:7px 18px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--text2);font-family:'Outfit',sans-serif;font-size:13px;cursor:pointer;transition:all .2s;white-space:nowrap";
-      if(ckey === "todos"){ chip.style.background = "var(--accent)"; chip.style.color = "#fff"; chip.style.borderColor = "var(--accent)"; }
-      chip.addEventListener("click", function(){
-        chipEls.forEach(function(b){ b.style.background="transparent"; b.style.color="var(--text2)"; b.style.borderColor="rgba(255,255,255,.15)"; });
-        chip.style.background = "var(--accent)"; chip.style.color = "#fff"; chip.style.borderColor = "var(--accent)";
-        state.filters.audience = cval;
-        if(cval === "family"){
-          cfg.endpoint = "/discover/movie";
-          cfg.extraParams = { with_genres:"16", certification_country:"US", "certification.lte":"PG" };
-        } else if(cval === "adult"){
-          cfg.endpoint = "/discover/movie";
-          cfg.extraParams = { with_genres:"16", certification_country:"US", "certification.gte":"PG-13" };
-        } else {
-          cfg.endpoint = "/discover/movie";
-          cfg.extraParams = { with_genres:"16" };
-        }
-        applyFilter();
-      });
-      chipEls.push(chip);
-      chipRow.appendChild(chip);
-    });
-    bar.appendChild(chipRow);
-
     /* Fila 2: Estudio / Año / Ordenar / Limpiar */
     var row2 = document.createElement("div");
     row2.style.cssText = "display:flex;gap:8px;flex-wrap:wrap;width:100%";
