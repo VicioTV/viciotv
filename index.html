@@ -4318,10 +4318,10 @@ function buildTabFiltersBar(tabKey){
       ["9993","Netflix Animation"]
     ];
 
-    /* Fila 1: chips Todos / Infantil */
+    /* Fila 1: chips Todos / Infantil / Adultos */
     var chipRow = document.createElement("div");
     chipRow.style.cssText = "display:flex;gap:8px;align-items:center;flex-wrap:wrap;width:100%;margin-bottom:8px";
-    var chipDefs = [["todos","🎬 Todos",null],["infantil","👶 Infantil","family"];
+    var chipDefs = [["todos","🎬 Todos",null],["infantil","👶 Infantil","family"],["adultos","🔞 Adultos","adult"]];
     var chipEls = [];
     chipDefs.forEach(function(def){
       var ckey = def[0], clabel = def[1], cval = def[2];
@@ -4336,6 +4336,9 @@ function buildTabFiltersBar(tabKey){
         if(cval === "family"){
           cfg.endpoint = "/discover/movie";
           cfg.extraParams = { with_genres:"16", certification_country:"US", "certification.lte":"PG" };
+        } else if(cval === "adult"){
+          cfg.endpoint = "/discover/movie";
+          cfg.extraParams = { with_genres:"16", certification_country:"US", "certification.gte":"PG-13" };
         } else {
           cfg.endpoint = "/discover/movie";
           cfg.extraParams = { with_genres:"16" };
