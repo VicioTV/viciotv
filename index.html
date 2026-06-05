@@ -471,9 +471,15 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     padding:6px;
     display:none;flex-direction:column;gap:2px;
     min-width:165px;
+    max-height:min(80vh,480px);
+    overflow-y:auto;
+    scrollbar-width:thin;
+    scrollbar-color:var(--accent) transparent;
     box-shadow:8px 0 28px rgba(0,0,0,.6);
     z-index:1500;
   }
+  .sb-submenu::-webkit-scrollbar{width:3px}
+  .sb-submenu::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
   .sb-submenu.open{display:flex}
   .sb-submenu-header{
     font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;
@@ -1363,7 +1369,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <button class="nav-tab focusable" data-tab="peliculas" onclick="switchTab('peliculas')">Películas</button>
     <button class="nav-tab focusable" data-tab="series" onclick="switchTab('series')">Series</button>
     <button class="nav-tab focusable" data-tab="anime" onclick="switchTab('anime')">Anime</button>
-    <button class="nav-tab focusable" data-tab="animacion" onclick="switchTab('animacion')">Animación</button>
+    <button class="nav-tab focusable" data-tab="canales" onclick="switchTab('canales')">TV Live</button>
     <button class="nav-tab focusable" data-tab="proximamente" onclick="openSidebarSection('proximamente')">Próximamente</button>
   </div>
   <div style="flex:1;min-width:32px"></div>
@@ -1524,8 +1530,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
     <span class="sb-text">
       <span class="sb-label">
-        <span class="sb-title">En Vivo</span>
-        <span class="sb-sub">Canales &amp; TV</span>
+        <span class="sb-title">Canales y TV</span>
+        <span class="sb-sub">TV y Eventos</span>
       </span>
     </span>
     <span class="sb-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
@@ -1607,13 +1613,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 </div>
 
 <div class="sb-submenu" id="sb-live-menu">
-  <div class="sb-submenu-header">Canales en vivo</div>
-  <button class="sb-submenu-item" onclick="openLiveTV('Canal 49 · Sky Sports F1')">
-    <span class="sb-plat-dot" style="background:#22c55e;box-shadow:0 0 8px #22c55e"></span>Canal 49 · Sky Sports F1
-  </button>
+  <div class="sb-submenu-header">Canales destacados</div>
+  <div id="sb-live-named"></div>
   <div class="sb-divider" style="margin:4px 6px"></div>
   <button class="sb-submenu-item" onclick="goLiveSection()" style="color:var(--accent)">
-    <span class="sb-plat-dot" style="background:var(--accent)"></span>Ver todos los canales →
+    <span class="sb-plat-dot" style="background:var(--accent)"></span>Ver todos los canales y eventos →
   </button>
 </div>
 
@@ -3450,6 +3454,7 @@ function showHome() {
 /* ─── CANALES EN VIVO ─── */
 const LIVE_CHANNELS = [
   /* Canales 1 a 80 — embeds streams.center */
+  { name:"TNT Sports 1", embed:"https://embedsports.top/embed/golf/22740/1", badge:"EN VIVO", cat:"AR", named:true },
   { name:"Canal 1", embed:"https://streams.center/embed/ch1.php", badge:"EN VIVO", cat:"AR" },
   { name:"Canal 2", embed:"https://streams.center/embed/ch2.php", badge:"EN VIVO", cat:"AR" },
   { name:"Canal 3", embed:"https://streams.center/embed/ch3.php", badge:"EN VIVO", cat:"AR" },
@@ -3533,9 +3538,7 @@ const LIVE_CHANNELS = [
 ];
 /* Nombres conocidos (confirmados funcionando). El resto queda como "Canal N". */
 const LIVE_NAMES = {
-  "17":"Canal 17 · MLB", "18":"Canal 18 · MLB", "19":"Canal 19 · MLB",
-  "20":"Canal 20 · MLB", "21":"Canal 21 · MLB", "22":"Canal 22 · MLB",
-  "23":"Canal 23 · MLB",
+  "17":"Canal · MLB",
   "47":"Canal 47 · TNT Sports 2", "49":"Canal 49 · Sky Sports F1",
   "50":"Canal 50 · News 9", "70":"Canal 70 · ION", "71":"Canal 71 · WGU"
 };
@@ -3543,7 +3546,7 @@ const LIVE_NAMES = {
 LIVE_CHANNELS.forEach(ch => {
   ch._type = "live";
   const num = ((ch.embed || "").match(/ch(\d+)\.php/) || [])[1];
-  if (num && LIVE_NAMES[num]) ch.name = LIVE_NAMES[num];
+  if (num && LIVE_NAMES[num]) { ch.name = LIVE_NAMES[num]; ch.named = true; }
   ch.id = "live:" + (ch.embed || ch.sensa || ch.name);
 });
 function renderLiveChannels(filter) {
@@ -3578,7 +3581,11 @@ function renderLiveChannels(filter) {
     });
   }
 
-  const filtered = LIVE_CHANNELS.filter(ch => filter === "ALL" || ch.cat === filter);
+  const filtered = LIVE_CHANNELS
+    .filter(ch => filter === "ALL" || ch.cat === filter)
+    .map((ch, i) => [ch, i])
+    .sort((a, b) => ((b[0].named ? 1 : 0) - (a[0].named ? 1 : 0)) || (a[1] - b[1]))
+    .map(p => p[0]);
   filtered.forEach(ch => {
     const card = document.createElement("div");
     card.className = "live-card focusable";
@@ -3612,6 +3619,9 @@ function _sportsImg(p){
 }
 let _sportsCache = { ts:0, matches:[] };
 let _sportsFilter = "ALL";
+const SPORTS_BATCH = 12;        // cuántos eventos mostrar antes de "Ver más"
+let _sportsLimit = SPORTS_BATCH;
+let _sportsShownList = [];
 
 async function _fetchSportsMatches(){
   if(Date.now() - _sportsCache.ts < 60000 && _sportsCache.matches.length) return _sportsCache.matches;
@@ -3657,10 +3667,25 @@ async function renderSportsEvents(){
     return (a.date||0)-(b.date||0);
   });
   buildSportsFilterBar(matches);
-  const shown = matches.filter(m => _sportsFilter==="ALL" || (m.category||"")===_sportsFilter);
+  _sportsShownList = matches.filter(m => _sportsFilter==="ALL" || (m.category||"")===_sportsFilter);
+  _renderSportsGrid();
+}
+
+function _renderSportsGrid(){
+  const grid = document.getElementById("sports-grid");
+  if(!grid) return;
   grid.innerHTML = "";
-  if(!shown.length){ grid.innerHTML = `<div class="sports-empty">No hay eventos en esta categoría.</div>`; return; }
-  shown.slice(0,60).forEach(m => grid.appendChild(buildSportCard(m)));
+  const list = _sportsShownList;
+  if(!list.length){ grid.innerHTML = `<div class="sports-empty">No hay eventos en esta categoría.</div>`; return; }
+  list.slice(0, _sportsLimit).forEach(m => grid.appendChild(buildSportCard(m)));
+  if(list.length > _sportsLimit){
+    const btn = document.createElement("button");
+    btn.className = "nav-tab";
+    btn.style.cssText = "grid-column:1/-1;justify-self:center;margin-top:8px;padding:10px 28px;font-size:14px";
+    btn.textContent = `Ver más (${list.length - _sportsLimit})`;
+    btn.addEventListener("click", ()=>{ _sportsLimit += SPORTS_BATCH; _renderSportsGrid(); });
+    grid.appendChild(btn);
+  }
 }
 
 function buildSportsFilterBar(matches){
@@ -3673,7 +3698,7 @@ function buildSportsFilterBar(matches){
     b.className="nav-tab"+(_sportsFilter===id?" active":"");
     b.style.cssText="font-size:13px;padding:7px 16px;white-space:nowrap";
     b.textContent=label;
-    b.addEventListener("click",()=>{ _sportsFilter=id; renderSportsEvents(); });
+    b.addEventListener("click",()=>{ _sportsFilter=id; _sportsLimit=SPORTS_BATCH; renderSportsEvents(); });
     return b;
   };
   bar.appendChild(mk("ALL","Todos"));
@@ -5555,6 +5580,7 @@ document.addEventListener("click", function(e){
 /* ── TOGGLE SUBMENU EN VIVO ── */
 function _openLiveMenu(){
   _closePlatformMenu();
+  buildLiveSubmenu();
   const menu = document.getElementById("sb-live-menu");
   const btn  = document.getElementById("sb-envivo");
   const sidebar = document.getElementById("sidebar");
@@ -5577,6 +5603,23 @@ function _closeLiveMenu(){
   if(menu) menu.classList.remove("open");
   if(btn){ btn.classList.remove("active"); btn.classList.remove("sb-live-open"); }
   if(sidebar) sidebar.classList.remove("sb-pinned");
+}
+function buildLiveSubmenu(){
+  const cont = document.getElementById("sb-live-named");
+  if(!cont) return;
+  const named = LIVE_CHANNELS.filter(c => c.named);
+  if(!named.length){
+    cont.innerHTML = `<div style="padding:8px 14px;color:var(--text3);font-size:12px">Sin canales destacados aún</div>`;
+    return;
+  }
+  cont.innerHTML = "";
+  named.forEach(c => {
+    const b = document.createElement("button");
+    b.className = "sb-submenu-item";
+    b.onclick = () => openLiveTV(c.name);
+    b.innerHTML = `<span class="sb-plat-dot" style="background:#22c55e;box-shadow:0 0 8px #22c55e"></span>${c.name}`;
+    cont.appendChild(b);
+  });
 }
 function toggleLiveMenu(e){
   e.stopPropagation();
