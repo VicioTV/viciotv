@@ -460,6 +460,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   .sb-chevron svg{width:12px;height:12px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;}
   #sidebar:hover .sb-chevron{opacity:1;}
   #sidebar:hover .sb-top10-open .sb-chevron{transform:rotate(90deg);}
+  #sidebar:hover .sb-live-open .sb-chevron{transform:rotate(90deg);}
+  #sidebar.sb-pinned .sb-live-open .sb-chevron{transform:rotate(90deg);}
   /* Submenu plataformas */
   .sb-submenu{
     position:fixed;
@@ -909,6 +911,22 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
   .live-name{font-size:14px;font-weight:500}
   .live-badge{font-size:10px;background:var(--accent);color:#fff;padding:2px 6px;border-radius:3px;font-weight:700;letter-spacing:.5px;margin-left:auto;flex-shrink:0}
+
+  /* ===== EVENTOS DEPORTIVOS (API streamed) ===== */
+  .sports-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;padding:0 32px}
+  .sport-card{position:relative;background:var(--bg3);border-radius:var(--radius);overflow:hidden;cursor:pointer;border:1px solid rgba(255,255,255,.05);transition:all var(--transition)}
+  .sport-card:hover{border-color:var(--accent);transform:translateY(-3px)}
+  .sport-card-poster{width:100%;aspect-ratio:16/9;object-fit:cover;background:#0a0a0a;display:block}
+  .sport-card-noposter{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;gap:10px;background:linear-gradient(135deg,#1c1c1c,#2b2b2b)}
+  .sport-card-badge-img{width:42px;height:42px;object-fit:contain}
+  .sport-card-body{padding:10px 12px}
+  .sport-card-title{font-size:13px;font-weight:600;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .sport-card-meta{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:11px;color:var(--text3)}
+  .sport-live-pill{position:absolute;top:8px;left:8px;z-index:2;display:flex;align-items:center;gap:5px;background:rgba(220,38,38,.95);color:#fff;font-size:10px;font-weight:700;padding:3px 7px;border-radius:4px;letter-spacing:.5px}
+  .sport-live-pill .live-dot{width:6px;height:6px;background:#fff;box-shadow:none}
+  .sport-soon-pill{position:absolute;top:8px;left:8px;z-index:2;background:rgba(0,0,0,.7);color:#fff;font-size:10px;font-weight:600;padding:3px 7px;border-radius:4px}
+  .sports-filter-bar{display:flex;gap:6px;padding:0 32px 16px;flex-wrap:wrap}
+  .sports-empty,.sports-error{padding:18px 32px;color:var(--text3);font-size:14px;line-height:1.5}
 
   /* ===== MODAL ===== */
   #modal-overlay{display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.88);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 16px;padding-bottom:max(24px,env(safe-area-inset-bottom))}
@@ -1500,6 +1518,19 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
   </button>
 
+  <button class="sidebar-btn focusable" id="sb-envivo" onclick="toggleLiveMenu(event)">
+    <span class="sb-icon">
+      <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+    </span>
+    <span class="sb-text">
+      <span class="sb-label">
+        <span class="sb-title">En Vivo</span>
+        <span class="sb-sub">Canales &amp; TV</span>
+      </span>
+    </span>
+    <span class="sb-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
+  </button>
+
   <div class="sb-divider"></div>
 
   <button class="sidebar-btn focusable" id="sb-favs" onclick="sbGoFavs()">
@@ -1572,6 +1603,17 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </button>
   <button class="sb-submenu-item" onclick="openTop10Platform('crunchyroll','283','Crunchyroll')">
     <span class="sb-plat-dot" style="background:#f47521"></span>Crunchyroll
+  </button>
+</div>
+
+<div class="sb-submenu" id="sb-live-menu">
+  <div class="sb-submenu-header">Canales en vivo</div>
+  <button class="sb-submenu-item" onclick="openLiveTV('Canal 49 · Sky Sports F1')">
+    <span class="sb-plat-dot" style="background:#22c55e;box-shadow:0 0 8px #22c55e"></span>Canal 49 · Sky Sports F1
+  </button>
+  <div class="sb-divider" style="margin:4px 6px"></div>
+  <button class="sb-submenu-item" onclick="goLiveSection()" style="color:var(--accent)">
+    <span class="sb-plat-dot" style="background:var(--accent)"></span>Ver todos los canales →
   </button>
 </div>
 
@@ -1708,7 +1750,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 
   <div id="sec-canales" class="row-section" style="display:none;padding-top:80px">
-    <div class="row-header"><span class="row-title">Canales en Vivo</span></div>
+    <div class="row-header"><span class="row-title">Eventos en Vivo</span></div>
+    <div class="sports-filter-bar" id="sports-filter-bar"></div>
+    <div class="sports-grid" id="sports-grid"><div class="sports-empty">Cargando eventos…</div></div>
+    <div class="row-header" style="margin-top:24px"><span class="row-title">Canales en Vivo</span></div>
     <div class="live-grid" id="live-grid"></div>
   </div>
 
@@ -3153,6 +3198,7 @@ function switchTab(tab) {
     document.getElementById("hero").style.display = "none";
     document.getElementById("sec-canales").style.display = "";
     renderLiveChannels();
+    renderSportsEvents();
   }
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -3178,7 +3224,7 @@ function loadTabContent(secId) {
     _hrowRender(key);
     return;
   }
-  if (secId === "sec-canales") renderLiveChannels();
+  if (secId === "sec-canales") { renderLiveChannels(); renderSportsEvents(); }
 }
 /* ── CACHE ── */
 const _apiCache = new Map();
@@ -3403,58 +3449,134 @@ function showHome() {
 
 /* ─── CANALES EN VIVO ─── */
 const LIVE_CHANNELS = [
-  /* IDs confirmados por el usuario — actualizar si dejan de funcionar */
-  /* ── ARGENTINA · NOTICIAS ── */
-  { name:"TN",         id:"cb12KmMMDJA", badge:"NOTICIA", cat:"AR" },
-  { name:"C5N",        id:"VWhQ6xspnSc", badge:"NOTICIA", cat:"AR" },
-  { name:"A24",        id:"ArKbAx1K-2U", badge:"NOTICIA", cat:"AR" },
-  { name:"LN+",        id:"DVZ2rJQb_0g", badge:"NOTICIA", cat:"AR" },
-  { name:"Crónica",    id:"JC7f3EUDaqw", badge:"NOTICIA", cat:"AR" },
-  { name:"Canal 26",   id:"JrmCaXL5GZs", badge:"NOTICIA", cat:"AR" },
-  /* ── ARGENTINA · GENERAL ── */
-  { name:"Canal 9",    id:"mCvoIRBgMU0", badge:"GENERAL", cat:"AR" },
-  { name:"TV Pública", id:"JoaoPpRWp8o", badge:"GENERAL", cat:"AR" },
-  { name:"América TV", id:"hJxoqRhCHFQ", badge:"GENERAL", cat:"AR" },
-  { name:"El Trece",   id:"rV10gIPWf_k", badge:"GENERAL", cat:"AR" },
-  { name:"Luzu TV",    id:"GtWNthI-BBY", badge:"ENTRET.", cat:"AR" },
-  /* ── LATINOAMÉRICA ── */
-  { name:"CNN Español",id:"C8r9BPRNhiU", badge:"NOTICIA", cat:"LAT" },
-  { name:"NTN24",      id:"QuQvl9f3PH0", badge:"NOTICIA", cat:"LAT" },
-  { name:"DW Español", id:"rp0-m6MNR0A", badge:"NOTICIA", cat:"LAT" },
-  /* ── INTERNACIONAL ── */
-  { name:"Al Jazeera", id:"F-POzaABmSE", badge:"INTER.",  cat:"INT" },
-  { name:"BBC News",   id:"w_Ma8oQLmSM", badge:"INTER.",  cat:"INT" },
-  { name:"euronews",   id:"l-KNaCiTiJM", badge:"INTER.",  cat:"INT" },
-  { name:"NASA TV",    id:"21X5lGlDOfg", badge:"NASA",    cat:"INT" },
-  /* ── SENSA (requiere login de tu proveedor de internet) ── */
-  { name:"ESPN",        sensa:"https://player.sensa.com.ar/#spa/fullscreen/21?type=TV_CHANNEL",  badge:"DEPORTE", cat:"AR" },
+  /* Canales 1 a 80 — embeds streams.center */
+  { name:"Canal 1", embed:"https://streams.center/embed/ch1.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 2", embed:"https://streams.center/embed/ch2.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 3", embed:"https://streams.center/embed/ch3.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 4", embed:"https://streams.center/embed/ch4.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 5", embed:"https://streams.center/embed/ch5.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 6", embed:"https://streams.center/embed/ch6.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 7", embed:"https://streams.center/embed/ch7.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 8", embed:"https://streams.center/embed/ch8.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 9", embed:"https://streams.center/embed/ch9.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 10", embed:"https://streams.center/embed/ch10.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 11", embed:"https://streams.center/embed/ch11.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 12", embed:"https://streams.center/embed/ch12.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 13", embed:"https://streams.center/embed/ch13.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 14", embed:"https://streams.center/embed/ch14.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 15", embed:"https://streams.center/embed/ch15.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 16", embed:"https://streams.center/embed/ch16.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 17", embed:"https://streams.center/embed/ch17.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 18", embed:"https://streams.center/embed/ch18.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 19", embed:"https://streams.center/embed/ch19.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 20", embed:"https://streams.center/embed/ch20.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 21", embed:"https://streams.center/embed/ch21.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 22", embed:"https://streams.center/embed/ch22.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 23", embed:"https://streams.center/embed/ch23.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 24", embed:"https://streams.center/embed/ch24.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 25", embed:"https://streams.center/embed/ch25.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 26", embed:"https://streams.center/embed/ch26.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 27", embed:"https://streams.center/embed/ch27.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 28", embed:"https://streams.center/embed/ch28.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 29", embed:"https://streams.center/embed/ch29.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 30", embed:"https://streams.center/embed/ch30.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 31", embed:"https://streams.center/embed/ch31.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 32", embed:"https://streams.center/embed/ch32.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 33", embed:"https://streams.center/embed/ch33.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 34", embed:"https://streams.center/embed/ch34.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 35", embed:"https://streams.center/embed/ch35.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 36", embed:"https://streams.center/embed/ch36.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 37", embed:"https://streams.center/embed/ch37.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 38", embed:"https://streams.center/embed/ch38.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 39", embed:"https://streams.center/embed/ch39.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 40", embed:"https://streams.center/embed/ch40.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 41", embed:"https://streams.center/embed/ch41.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 42", embed:"https://streams.center/embed/ch42.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 43", embed:"https://streams.center/embed/ch43.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 44", embed:"https://streams.center/embed/ch44.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 45", embed:"https://streams.center/embed/ch45.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 46", embed:"https://streams.center/embed/ch46.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 47", embed:"https://streams.center/embed/ch47.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 48", embed:"https://streams.center/embed/ch48.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 49", embed:"https://streams.center/embed/ch49.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 50", embed:"https://streams.center/embed/ch50.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 51", embed:"https://streams.center/embed/ch51.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 52", embed:"https://streams.center/embed/ch52.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 53", embed:"https://streams.center/embed/ch53.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 54", embed:"https://streams.center/embed/ch54.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 55", embed:"https://streams.center/embed/ch55.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 56", embed:"https://streams.center/embed/ch56.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 57", embed:"https://streams.center/embed/ch57.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 58", embed:"https://streams.center/embed/ch58.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 59", embed:"https://streams.center/embed/ch59.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 60", embed:"https://streams.center/embed/ch60.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 61", embed:"https://streams.center/embed/ch61.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 62", embed:"https://streams.center/embed/ch62.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 63", embed:"https://streams.center/embed/ch63.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 64", embed:"https://streams.center/embed/ch64.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 65", embed:"https://streams.center/embed/ch65.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 66", embed:"https://streams.center/embed/ch66.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 67", embed:"https://streams.center/embed/ch67.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 68", embed:"https://streams.center/embed/ch68.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 69", embed:"https://streams.center/embed/ch69.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 70", embed:"https://streams.center/embed/ch70.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 71", embed:"https://streams.center/embed/ch71.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 72", embed:"https://streams.center/embed/ch72.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 73", embed:"https://streams.center/embed/ch73.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 74", embed:"https://streams.center/embed/ch74.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 75", embed:"https://streams.center/embed/ch75.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 76", embed:"https://streams.center/embed/ch76.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 77", embed:"https://streams.center/embed/ch77.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 78", embed:"https://streams.center/embed/ch78.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 79", embed:"https://streams.center/embed/ch79.php", badge:"EN VIVO", cat:"AR" },
+  { name:"Canal 80", embed:"https://streams.center/embed/ch80.php", badge:"EN VIVO", cat:"AR" },
 ];
+/* Nombres conocidos (confirmados funcionando). El resto queda como "Canal N". */
+const LIVE_NAMES = {
+  "17":"Canal 17 · MLB", "18":"Canal 18 · MLB", "19":"Canal 19 · MLB",
+  "20":"Canal 20 · MLB", "21":"Canal 21 · MLB", "22":"Canal 22 · MLB",
+  "23":"Canal 23 · MLB",
+  "47":"Canal 47 · TNT Sports 2", "49":"Canal 49 · Sky Sports F1",
+  "50":"Canal 50 · News 9", "70":"Canal 70 · ION", "71":"Canal 71 · WGU"
+};
+/* Marca cada canal como tipo "live" y le asigna un id estable para Favoritos. */
+LIVE_CHANNELS.forEach(ch => {
+  ch._type = "live";
+  const num = ((ch.embed || "").match(/ch(\d+)\.php/) || [])[1];
+  if (num && LIVE_NAMES[num]) ch.name = LIVE_NAMES[num];
+  ch.id = "live:" + (ch.embed || ch.sensa || ch.name);
+});
 function renderLiveChannels(filter) {
   filter = filter || "ALL";
   const grid = document.getElementById("live-grid");
   if (!grid) return;
   grid.innerHTML = "";
 
+  // Sin filtro de región: se muestran todos los canales.
   const cats = [
     { id:"ALL", label:"Todos" },
-    { id:"AR",  label:"🇦🇷 Argentina" },
   ];
   let filterBar = document.getElementById("live-filter-bar");
-  if (!filterBar) {
-    filterBar = document.createElement("div");
-    filterBar.id = "live-filter-bar";
-    filterBar.style.cssText = "display:flex;gap:6px;padding:0 32px 20px";
-    grid.parentElement.insertBefore(filterBar, grid);
+  if (cats.length <= 1) {
+    // Una sola categoría no aporta nada como filtro: ocultamos la barra.
+    if (filterBar) filterBar.remove();
+  } else {
+    if (!filterBar) {
+      filterBar = document.createElement("div");
+      filterBar.id = "live-filter-bar";
+      filterBar.style.cssText = "display:flex;gap:6px;padding:0 32px 20px";
+      grid.parentElement.insertBefore(filterBar, grid);
+    }
+    filterBar.innerHTML = "";
+    cats.forEach(cat => {
+      const btn = document.createElement("button");
+      btn.className = "nav-tab" + (filter === cat.id ? " active" : "");
+      btn.style.cssText = "font-size:13px;padding:7px 18px";
+      btn.textContent = cat.label;
+      btn.addEventListener("click", () => renderLiveChannels(cat.id));
+      filterBar.appendChild(btn);
+    });
   }
-  filterBar.innerHTML = "";
-  cats.forEach(cat => {
-    const btn = document.createElement("button");
-    btn.className = "nav-tab" + (filter === cat.id ? " active" : "");
-    btn.style.cssText = "font-size:13px;padding:7px 18px";
-    btn.textContent = cat.label;
-    btn.addEventListener("click", () => renderLiveChannels(cat.id));
-    filterBar.appendChild(btn);
-  });
 
   const filtered = LIVE_CHANNELS.filter(ch => filter === "ALL" || ch.cat === filter);
   filtered.forEach(ch => {
@@ -3471,6 +3593,174 @@ function renderLiveChannels(filter) {
     grid.appendChild(card);
   });
 }
+/* ═══ MÓDULO EVENTOS DEPORTIVOS (API streamed.pk) ═══ */
+const SPORTS_API = {
+  base: "https://streamed.pk",   // si el dominio rota, cambialo SOLO acá
+  proxy: "",                     // si CORS falla, poné tu proxy con ?url= al final: "https://xxx.workers.dev/?url="
+  // deportes a consultar si /all-today no existe (football confirmado; el resto son los slugs habituales)
+  sports: ["football","basketball","tennis","fight","motor-sports","baseball","american-football","hockey","cricket","rugby","golf","darts","other"]
+};
+function _sportsUrl(path){
+  const full = SPORTS_API.base + path;
+  return SPORTS_API.proxy ? SPORTS_API.proxy + encodeURIComponent(full) : full;
+}
+function _sportsImg(p){
+  if(!p) return "";
+  if(p.startsWith("http")) return p;
+  const full = SPORTS_API.base + p;
+  return SPORTS_API.proxy ? SPORTS_API.proxy + encodeURIComponent(full) : full;
+}
+let _sportsCache = { ts:0, matches:[] };
+let _sportsFilter = "ALL";
+
+async function _fetchSportsMatches(){
+  if(Date.now() - _sportsCache.ts < 60000 && _sportsCache.matches.length) return _sportsCache.matches;
+  const tryFetch = async (path) => {
+    try { const r = await fetch(_sportsUrl(path)); if(!r.ok) return null; return await r.json(); }
+    catch(e){ return null; }
+  };
+  let all = [];
+  const today = await tryFetch("/api/matches/all-today");
+  if(Array.isArray(today) && today.length){
+    all = today;
+  } else {
+    for(const sp of SPORTS_API.sports){
+      const m = await tryFetch(`/api/matches/${sp}`);
+      if(Array.isArray(m)) all = all.concat(m);
+    }
+  }
+  if(!all.length) throw new Error("sin datos");
+  const seen = new Set();
+  all = all.filter(m => { if(!m || seen.has(m.id)) return false; seen.add(m.id); return true; });
+  _sportsCache = { ts:Date.now(), matches:all };
+  return all;
+}
+
+function _isLiveNow(m){
+  const now = Date.now();
+  return m.date && m.date <= now && (now - m.date) < 4*60*60*1000; // empezó hace menos de 4h
+}
+
+async function renderSportsEvents(){
+  const grid = document.getElementById("sports-grid");
+  if(!grid) return;
+  if(!grid.children.length || grid.querySelector(".sports-error")) grid.innerHTML = `<div class="sports-empty">Cargando eventos…</div>`;
+  let matches;
+  try { matches = await _fetchSportsMatches(); }
+  catch(e){
+    grid.innerHTML = `<div class="sports-error">No se pudieron cargar los eventos.<br>Si en la consola (F12) ves un error de <b>CORS</b>, hay que usar un proxy: configurá <code>SPORTS_API.proxy</code> en el código.</div>`;
+    return;
+  }
+  matches.sort((a,b)=>{
+    const la=_isLiveNow(a)?0:1, lb=_isLiveNow(b)?0:1;
+    if(la!==lb) return la-lb;
+    return (a.date||0)-(b.date||0);
+  });
+  buildSportsFilterBar(matches);
+  const shown = matches.filter(m => _sportsFilter==="ALL" || (m.category||"")===_sportsFilter);
+  grid.innerHTML = "";
+  if(!shown.length){ grid.innerHTML = `<div class="sports-empty">No hay eventos en esta categoría.</div>`; return; }
+  shown.slice(0,60).forEach(m => grid.appendChild(buildSportCard(m)));
+}
+
+function buildSportsFilterBar(matches){
+  const bar = document.getElementById("sports-filter-bar");
+  if(!bar) return;
+  const cats = Array.from(new Set(matches.map(m=>m.category).filter(Boolean))).sort();
+  bar.innerHTML = "";
+  const mk = (id,label)=>{
+    const b=document.createElement("button");
+    b.className="nav-tab"+(_sportsFilter===id?" active":"");
+    b.style.cssText="font-size:13px;padding:7px 16px;white-space:nowrap";
+    b.textContent=label;
+    b.addEventListener("click",()=>{ _sportsFilter=id; renderSportsEvents(); });
+    return b;
+  };
+  bar.appendChild(mk("ALL","Todos"));
+  cats.forEach(c => bar.appendChild(mk(c, c.charAt(0).toUpperCase()+c.slice(1))));
+}
+
+function buildSportCard(m){
+  const live = _isLiveNow(m);
+  const card = document.createElement("div");
+  card.className = "sport-card focusable";
+  card.tabIndex = 0;
+  const home = m.teams && m.teams.home, away = m.teams && m.teams.away;
+  const badgeImg = (b)=> b ? _sportsImg(`/api/images/badge/${b}.webp`) : "";
+  const time = m.date ? new Date(m.date).toLocaleString('es-AR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : "";
+  const fallback = `<div class="sport-card-noposter">${home&&home.badge?`<img class="sport-card-badge-img" src="${badgeImg(home.badge)}" onerror="this.remove()">`:''}<span style="color:#fff;font-size:20px">🏟️</span>${away&&away.badge?`<img class="sport-card-badge-img" src="${badgeImg(away.badge)}" onerror="this.remove()">`:''}</div>`;
+  const poster = m.poster ? _sportsImg(m.poster) : "";
+  const media = poster
+    ? `<img class="sport-card-poster" src="${poster}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">${fallback.replace('class="sport-card-noposter"','class="sport-card-noposter" style="display:none"')}`
+    : fallback;
+  const pill = live
+    ? `<span class="sport-live-pill"><span class="live-dot"></span>EN VIVO</span>`
+    : (m.date>Date.now() ? `<span class="sport-soon-pill">${time}</span>` : "");
+  card.innerHTML = `
+    ${pill}
+    ${media}
+    <div class="sport-card-body">
+      <div class="sport-card-title">${m.title || "Evento"}</div>
+      <div class="sport-card-meta"><span>${(m.category||"").toUpperCase()}</span>${!live&&m.date?`<span>•</span><span>${time}</span>`:""}</div>
+    </div>`;
+  card.addEventListener("click", ()=> openSportEvent(m));
+  card.addEventListener("keydown", e=>{ if(e.key==="Enter") openSportEvent(m); });
+  return card;
+}
+
+async function openSportEvent(m){
+  document.getElementById("modal-title").textContent = m.title || "Evento";
+  document.getElementById("modal-overview").textContent = "Evento deportivo · cargando stream…";
+  document.getElementById("modal-meta-row").innerHTML = `<span class="modal-meta-pill">🔴 EN VIVO</span><span class="modal-meta-pill modal-rating">● ${(m.category||"DEPORTE").toUpperCase()}</span>`;
+  document.getElementById("modal-cast-section").style.display = "none";
+  document.getElementById("modal-similar-section").style.display = "none";
+  document.getElementById("episodes-panel").classList.remove("visible");
+  document.getElementById("tv-selectors").classList.remove("visible");
+  document.getElementById("sub-tip-bar").style.display = "none";
+  document.getElementById("provider-bar").style.display = "none";
+
+  // Los eventos son efímeros (terminan), así que no se agregan a Favoritos.
+  currentItem = null;
+  const _fb = document.getElementById("fav-btn"), _ft = document.getElementById("fav-btn-text");
+  if(_fb) _fb.classList.remove("active");
+  if(_ft) _ft.textContent = "Favoritos";
+
+  _createMovieFrame();
+  const frame = getFrame();
+  if(frame){
+    frame.removeAttribute("sandbox");
+    frame.setAttribute("allow","accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share");
+    frame.setAttribute("referrerpolicy","strict-origin-when-cross-origin");
+    frame.allowFullscreen = true;
+    frame.src = "about:blank";
+  }
+
+  const modalAlreadyOpen = document.getElementById("modal-overlay").classList.contains("open");
+  document.getElementById("modal-overlay").classList.add("open");
+  const _ov = document.getElementById("modal-overlay"); if(_ov) _ov.scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  if(!modalAlreadyOpen) history.pushState({ modal:true }, "");
+
+  const src = (m.sources || [])[0];
+  if(!src){ document.getElementById("modal-overview").textContent = "Este evento no tiene fuentes disponibles."; return; }
+  try {
+    const r = await fetch(_sportsUrl(`/api/stream/${src.source}/${src.id}`));
+    const streams = await r.json();
+    const s = Array.isArray(streams) ? (streams.find(x => x && x.embedUrl) || streams[0]) : null;
+    const embed = s && (s.embedUrl || s.url || s.embed);
+    if(embed && frame){
+      frame.src = embed;
+      document.getElementById("modal-overview").textContent = "Evento deportivo en vivo · Stream en tiempo real";
+    } else if(frame){
+      frame.src = `${SPORTS_API.base}/watch/${m.id}/${src.source}/1`;
+      document.getElementById("modal-overview").textContent = "Evento deportivo en vivo · Stream en tiempo real";
+    }
+  } catch(e){
+    document.getElementById("modal-overview").textContent = "No se pudo cargar el stream (posible CORS o fuente caída).";
+  }
+}
+window.renderSportsEvents = renderSportsEvents;
+
 function openLiveChannel(ch) {
   document.getElementById("modal-title").textContent = ch.name;
   document.getElementById("modal-overview").textContent = "Canal en vivo · Stream en tiempo real";
@@ -3482,6 +3772,11 @@ function openLiveChannel(ch) {
   document.getElementById("sub-tip-bar").style.display = "none";
   document.getElementById("provider-bar").style.display = "none";
 
+  // Registrar el canal como ítem actual para que Favoritos funcione.
+  currentItem = ch;
+  currentType = "live";
+  updateFavBtn(ch);
+
   _createMovieFrame();
   const frame = getFrame();
   if (frame) {
@@ -3491,6 +3786,8 @@ function openLiveChannel(ch) {
     frame.allowFullscreen = true;
     if (ch.sensa) {
       frame.src = ch.sensa;
+    } else if (ch.embed) {
+      frame.src = ch.embed;
     } else {
       frame.src = `https://www.youtube.com/embed/${ch.id}?autoplay=1`;
     }
@@ -3937,6 +4234,41 @@ async function _hrowRender(key) {
 }
 
 function buildHeroCard(m) {
+  // ── Canal en vivo: tarjeta simple, sin llamadas a TMDB ──
+  if (m._type === "live") {
+    const favNow = (function(){ try { return isFav(m.id); } catch(e){ return false; } })();
+    const card = document.createElement("div");
+    card.className = "hcard hcard-live";
+    card.innerHTML = `
+      <div class="hcard-no-img" style="display:flex;align-items:center;justify-content:center;font-size:38px">📡</div>
+      <div class="hcard-grad"></div>
+      <div class="hcard-badge badge-serie">EN VIVO</div>
+      <div class="hcard-info">
+        <div class="hcard-title">${m.name || "Canal"}</div>
+        <div class="hcard-meta">
+          <span class="hcard-rating">🔴 ${m.badge || "EN VIVO"}</span>
+        </div>
+        <div class="hcard-actions">
+          <button class="hcard-play">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            Ver
+          </button>
+          <button class="hcard-fav ${favNow ? 'is-fav' : ''}" data-id="${m.id}">
+            <svg viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </button>
+        </div>
+      </div>`;
+    card.addEventListener("click", () => openLiveChannel(m));
+    card.querySelector(".hcard-play").addEventListener("click", e => { e.stopPropagation(); openLiveChannel(m); });
+    const fb = card.querySelector(".hcard-fav");
+    fb.addEventListener("click", e => {
+      e.stopPropagation();
+      toggleFav(m);
+      fb.classList.toggle("is-fav", isFav(m.id));
+    });
+    return card;
+  }
+
   const isTV    = m._type === "tv";
   const isAnime = m._cat === "anime" || (m._type === "tv" && (m.genre_ids||[]).includes(16) && (m.origin_country||[]).includes("JP"));
   const title   = m.title || m.name || "Sin título";
@@ -5029,6 +5361,7 @@ function showSidebar(){
   if(s){ s.classList.add("visible"); document.body.classList.add("sidebar-open"); }
   _sbMobileInit();
   if(window._sbHoverSetup) window._sbHoverSetup();
+  if(window._sbLiveHoverSetup) window._sbLiveHoverSetup();
 }
 
 function _sbMobileInit(){
@@ -5137,6 +5470,7 @@ function openSidebarSection(key){
 
 /* ── TOGGLE SUBMENU PLATAFORMAS ── */
 function _openPlatformMenu(){
+  if(typeof _closeLiveMenu === "function") _closeLiveMenu();
   const menu = document.getElementById("sb-platform-menu");
   const btn  = document.getElementById("sb-top10");
   const sidebar = document.getElementById("sidebar");
@@ -5217,6 +5551,100 @@ document.addEventListener("click", function(e){
     _closePlatformMenu();
   }
 });
+
+/* ── TOGGLE SUBMENU EN VIVO ── */
+function _openLiveMenu(){
+  _closePlatformMenu();
+  const menu = document.getElementById("sb-live-menu");
+  const btn  = document.getElementById("sb-envivo");
+  const sidebar = document.getElementById("sidebar");
+  if(!menu || !btn || !sidebar) return;
+  const rect = btn.getBoundingClientRect();
+  const sRect = sidebar.getBoundingClientRect();
+  menu.style.top  = rect.top + "px";
+  const isMobile = window.innerWidth <= 640;
+  const sidebarRight = isMobile ? sRect.left + sRect.width : sRect.left + 210;
+  menu.style.left = (sidebarRight + 6) + "px";
+  menu.classList.add("open");
+  btn.classList.add("active");
+  btn.classList.add("sb-live-open");
+  if(!isMobile) sidebar.classList.add("sb-pinned");
+}
+function _closeLiveMenu(){
+  const menu = document.getElementById("sb-live-menu");
+  const btn  = document.getElementById("sb-envivo");
+  const sidebar = document.getElementById("sidebar");
+  if(menu) menu.classList.remove("open");
+  if(btn){ btn.classList.remove("active"); btn.classList.remove("sb-live-open"); }
+  if(sidebar) sidebar.classList.remove("sb-pinned");
+}
+function toggleLiveMenu(e){
+  e.stopPropagation();
+  const menu = document.getElementById("sb-live-menu");
+  if(menu && menu.classList.contains("open")) _closeLiveMenu();
+  else _openLiveMenu();
+}
+
+(function(){
+  let _leaveTimer = null;
+  function cancelLeave(){ if(_leaveTimer){ clearTimeout(_leaveTimer); _leaveTimer=null; } }
+  function scheduleClose(){ cancelLeave(); _leaveTimer = setTimeout(()=>{ _closeLiveMenu(); }, 120); }
+  window._sbLiveHoverSetup = function(){
+    const btn  = document.getElementById("sb-envivo");
+    const menu = document.getElementById("sb-live-menu");
+    if(!btn || !menu || btn._hoverReady) return;
+    btn._hoverReady = true;
+    btn.addEventListener("mouseenter", function(){
+      if(window.innerWidth <= 640) return;
+      cancelLeave(); setTimeout(()=>{ _openLiveMenu(); }, 80);
+    });
+    btn.addEventListener("mouseleave", function(){
+      if(window.innerWidth <= 640) return; scheduleClose();
+    });
+    menu.addEventListener("mouseenter", function(){
+      if(window.innerWidth <= 640) return; cancelLeave();
+    });
+    menu.addEventListener("mouseleave", function(){
+      if(window.innerWidth <= 640) return; scheduleClose();
+    });
+  };
+})();
+
+document.addEventListener("click", function(e){
+  const menu = document.getElementById("sb-live-menu");
+  const btn  = document.getElementById("sb-envivo");
+  if(menu && btn && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+    _closeLiveMenu();
+  }
+});
+
+/* Abrir un canal desde el submenú EN VIVO */
+function openLiveTV(name){
+  _closeLiveMenu();
+  const ch = LIVE_CHANNELS.find(c => c.name === name);
+  if(!ch){ console.warn("Canal no encontrado:", name); return; }
+  if(window.innerWidth <= 640){
+    const sidebar = document.getElementById("sidebar");
+    if(sidebar){ sidebar.classList.remove("mob-expanded"); sidebar.classList.remove("sb-pinned"); }
+    document.body.classList.remove("sidebar-mob-expanded");
+    const icon  = document.getElementById("sb-expand-icon");
+    const title = document.getElementById("sb-salir-title");
+    if(icon) icon.innerHTML = '<svg viewBox="0 0 24 24" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round"><polyline points="13 17 18 12 13 7"/><polyline points="6 17 11 12 6 7"/></svg>';
+    if(title) title.textContent = "Expandir";
+  }
+  openLiveChannel(ch);
+}
+
+/* Ir a la sección completa de canales */
+function goLiveSection(){
+  _closeLiveMenu();
+  if(window.innerWidth <= 640){
+    const sidebar = document.getElementById("sidebar");
+    if(sidebar){ sidebar.classList.remove("mob-expanded"); sidebar.classList.remove("sb-pinned"); }
+    document.body.classList.remove("sidebar-mob-expanded");
+  }
+  switchTab("canales");
+}
 
 /* ── Favoritos y Continuar Viendo desde sidebar ── */
 function _sbCollapseMobile(){
