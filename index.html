@@ -1369,7 +1369,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <button class="nav-tab focusable" data-tab="peliculas" onclick="switchTab('peliculas')">Películas</button>
     <button class="nav-tab focusable" data-tab="series" onclick="switchTab('series')">Series</button>
     <button class="nav-tab focusable" data-tab="anime" onclick="switchTab('anime')">Anime</button>
-    <button class="nav-tab focusable" data-tab="canales" onclick="switchTab('canales')">TV en Vivo</button>
+    <button class="nav-tab focusable" data-tab="canales" onclick="window.open('https://creador100k.github.io/ViceandoTV/','_blank')">TV en Vivo</button>
     <button class="nav-tab focusable" data-tab="proximamente" onclick="openSidebarSection('proximamente')">Próximamente</button>
   </div>
   <div style="flex:1;min-width:32px"></div>
@@ -1524,18 +1524,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </span>
   </button>
 
-  <button class="sidebar-btn focusable" id="sb-envivo" onclick="toggleLiveMenu(event)">
-    <span class="sb-icon">
-      <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-    </span>
-    <span class="sb-text">
-      <span class="sb-label">
-        <span class="sb-title">Canales y TV</span>
-        <span class="sb-sub">TV y Eventos</span>
-      </span>
-    </span>
-    <span class="sb-chevron"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></span>
-  </button>
+
 
   <div class="sb-divider"></div>
 
