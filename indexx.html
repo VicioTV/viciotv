@@ -3021,7 +3021,11 @@ async function openHeroTrailer(item) {
   const type = item._type || "movie";
   try {
     const key = await getTrailerKey(type, item.id);
-    if (!key) { showToast("Trailer no disponible"); return; }
+    if (!key) {
+      const q = encodeURIComponent((item.title||item.name||"")+" trailer");
+      window.open(`https://www.youtube.com/results?search_query=${q}`,"_blank","noopener");
+      return;
+    }
     document.getElementById("trailer-title").textContent = item.title || item.name || "";
     document.getElementById("trailer-iframe").src = `https://www.youtube.com/embed/${key}?autoplay=1`;
     const movieFrame = document.getElementById("movie-frame");
@@ -6025,7 +6029,28 @@ function _proxRenderAll(){
     const nb = newCard.querySelector(".hcard-play");
     const fb = newCard.querySelector(".hcard-fav");
 
-    if(nb){ nb.innerHTML=`${ICON_TMDB} Trailer`; nb.onclick=e=>{e.stopPropagation();openHeroTrailer(m);}; }
+    tmdb(`/${m._type||'movie'}/${m.id}/videos`)
+      .then(data=>{
+        const trailer = (data.results||[]).find(v=>v.site==="YouTube"&&(v.type==="Trailer"||v.type==="Teaser"));
+        if(trailer){
+          if(nb){ nb.innerHTML=`${ICON_TMDB} Trailer`; nb.onclick=e=>{e.stopPropagation();openHeroTrailer(m);}; }
+        } else {
+          const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent((m.title||m.name||"")+" trailer")}`;
+          if(nb){
+            nb.innerHTML=`${ICON_YT} YouTube`;
+            nb.style.background="rgba(255,0,0,.75)";
+            nb.style.border="none";
+            nb.onclick=e=>{e.stopPropagation();window.open(ytUrl,"_blank","noopener");};
+          }
+        }
+      }).catch(()=>{
+        const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent((m.title||m.name||"")+" trailer")}`;
+        if(nb){
+          nb.innerHTML=`${ICON_YT} YouTube`;
+          nb.style.background="rgba(255,0,0,.75)";
+          nb.onclick=e=>{e.stopPropagation();window.open(ytUrl,"_blank","noopener");};
+        }
+      });
 
     if(fb){
       fb.addEventListener("click", e=>{
