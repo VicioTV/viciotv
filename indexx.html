@@ -3045,7 +3045,7 @@ async function openHeroTrailer(item) {
     const key = await getTrailerKey(type, item.id);
     if (!key) { showToast("Trailer no disponible"); return; }
     document.getElementById("trailer-title").textContent = item.title || item.name || "";
-    document.getElementById("trailer-iframe").src = `https://www.youtube-nocookie.com/embed/${key}?autoplay=1&rel=0&origin=${encodeURIComponent(location.origin)}`;
+    document.getElementById("trailer-iframe").src = `https://www.youtube-nocookie.com/embed/${key}?autoplay=1&rel=0&modestbranding=1&origin=${encodeURIComponent(location.origin)}`;
     const movieFrame = document.getElementById("movie-frame");
     if (movieFrame && movieFrame.src && movieFrame.src !== location.href) {
       movieFrame.dataset.pausedSrc = movieFrame.src;
