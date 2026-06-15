@@ -1935,8 +1935,16 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 <div id="trailer-modal" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,.92);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);align-items:center;justify-content:center;flex-direction:column;gap:16px">
   <button onclick="closeTrailer()" style="position:absolute;top:20px;right:20px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;width:40px;height:40px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
   <div id="trailer-title" style="font-family:'Bebas Neue',cursive;font-size:24px;letter-spacing:3px;color:#fff;text-align:center;padding:0 60px"></div>
-  <div style="width:90vw;max-width:900px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.8)">
-    <iframe id="trailer-iframe" width="100%" height="100%" frameborder="0" allowfullscreen allow="autoplay;fullscreen"></iframe>
+  <div id="trailer-player-wrap" style="width:90vw;max-width:900px;aspect-ratio:16/9;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.8);position:relative">
+    <iframe id="trailer-iframe" width="100%" height="100%" frameborder="0" allowfullscreen allow="autoplay; fullscreen; encrypted-media; picture-in-picture"></iframe>
+    <div id="trailer-embed-fallback" style="display:none;position:absolute;inset:0;background:#0a0a0f;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+      <div style="font-size:14px;color:rgba(255,255,255,.5);text-align:center">Este video no permite reproducción embebida</div>
+      <a id="trailer-yt-fallback-btn" href="#" target="_blank" rel="noopener noreferrer"
+         style="display:flex;align-items:center;gap:8px;background:#ff0000;color:#fff;padding:12px 24px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;text-decoration:none">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="#fff"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>
+        Ver en YouTube
+      </a>
+    </div>
   </div>
 </div>
 
@@ -2402,20 +2410,8 @@ function buildCard(m, i) {
           else b.classList.add("no-trailer");
         });
         if (!key) {
-          const ytBtn = document.createElement("a");
-          ytBtn.className = "trailer-btn yt-fallback visible";
-          const t = m.title || m.name || "";
-          ytBtn.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(t + ' trailer')}`;
-          ytBtn.target = "_blank";
-          ytBtn.rel = "noopener noreferrer";
-          ytBtn.innerHTML = `<svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg> Ver Trailer`;
-          ytBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const f = document.getElementById("movie-frame");
-            if (f && f.src && f.src !== location.href) { f.dataset.ytPausedSrc = f.src; f.src = ""; }
-          });
-          ytBtn.addEventListener("touchend", (e) => e.stopPropagation());
-          card.appendChild(ytBtn);
+          // Sin key TMDB: mostrar igual el botón, openHeroTrailer maneja el fallback interno
+          trailerBtns.forEach(b => b.classList.add("visible"));
         }
       }).catch(()=>{});
     trailerBtns.forEach(b => {
@@ -2640,13 +2636,9 @@ async function openModal(item) {
         _mTrailerBtn.style.display = "";
         _mTrailerBtn.onclick = () => openHeroTrailer(item);
       } else {
-        const t = item.title || item.name || "";
-        _mTrailerYtBtn.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(t + ' trailer')}`;
-        _mTrailerYtBtn.style.display = "";
-        _mTrailerYtBtn.onclick = () => {
-          const f = document.getElementById("movie-frame");
-          if (f && f.src && f.src !== location.href) { f.dataset.ytPausedSrc = f.src; f.src = ""; }
-        };
+        // Sin key TMDB: mostrar igual el botón trailer, openHeroTrailer maneja fallback interno
+        _mTrailerBtn.style.display = "";
+        _mTrailerBtn.onclick = () => openHeroTrailer(item);
       }
     }).catch(() => {});
 
@@ -3043,16 +3035,41 @@ async function openHeroTrailer(item) {
   const type = item._type || "movie";
   try {
     const key = await getTrailerKey(type, item.id);
-    if (!key) { showToast("Trailer no disponible"); return; }
-    document.getElementById("trailer-title").textContent = item.title || item.name || "";
-    document.getElementById("trailer-iframe").src = `https://www.youtube.com/embed/${key}?autoplay=1`;
+    const title = item.title || item.name || "";
+    document.getElementById("trailer-title").textContent = title;
+
+    const iframe = document.getElementById("trailer-iframe");
+    const fallback = document.getElementById("trailer-embed-fallback");
+    const fallbackBtn = document.getElementById("trailer-yt-fallback-btn");
+
+    // Reset estado
+    iframe.style.display = "";
+    fallback.style.display = "none";
+
+    if (key) {
+      // Tenemos key de TMDB — intentar embed
+      const ytUrl = `https://www.youtube.com/watch?v=${key}`;
+      fallbackBtn.href = ytUrl;
+      iframe.src = `https://www.youtube-nocookie.com/embed/${key}?autoplay=1&rel=0&origin=${encodeURIComponent(location.origin)}`;
+      // Si el embed falla (error 153 u otro), YouTube dispara un error en el iframe
+      iframe.onerror = () => {
+        iframe.style.display = "none";
+        fallback.style.display = "flex";
+      };
+    } else {
+      // Sin key — mostrar directamente el fallback con búsqueda en YouTube
+      const ytSearchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(title + ' trailer oficial')}`;
+      fallbackBtn.href = ytSearchUrl;
+      iframe.style.display = "none";
+      fallback.style.display = "flex";
+    }
+
     const movieFrame = document.getElementById("movie-frame");
     if (movieFrame && movieFrame.src && movieFrame.src !== location.href) {
       movieFrame.dataset.pausedSrc = movieFrame.src;
       movieFrame.src = "";
     }
-    const modal = document.getElementById("trailer-modal");
-    modal.style.display = "flex";
+    document.getElementById("trailer-modal").style.display = "flex";
     document.body.style.overflow = "hidden";
   } catch(e) {
     showToast("Error al cargar el trailer");
@@ -3061,7 +3078,12 @@ async function openHeroTrailer(item) {
 
 function closeTrailer() {
   document.getElementById("trailer-modal").style.display = "none";
-  document.getElementById("trailer-iframe").src = "";
+  const iframe = document.getElementById("trailer-iframe");
+  iframe.src = "";
+  iframe.onerror = null;
+  iframe.style.display = "";
+  const fallback = document.getElementById("trailer-embed-fallback");
+  if (fallback) fallback.style.display = "none";
   document.body.style.overflow = "";
   const movieFrame = document.getElementById("movie-frame");
   if (movieFrame && movieFrame.dataset.pausedSrc) {
@@ -4362,10 +4384,8 @@ function buildHeroCard(m) {
       if (key) {
         trailerBtn.addEventListener("click", e => { e.stopPropagation(); openHeroTrailer(m); });
       } else {
-        trailerBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>`;
-        trailerBtn.title = "Buscar en YouTube";
-        const q = encodeURIComponent((m.title||m.name||"")+" trailer");
-        trailerBtn.addEventListener("click", e => { e.stopPropagation(); window.open(`https://www.youtube.com/results?search_query=${q}`,"_blank","noopener"); });
+        // Sin key: igual abrir modal con fallback interno
+        trailerBtn.addEventListener("click", e => { e.stopPropagation(); openHeroTrailer(m); });
       }
     }).catch(()=>{ trailerBtn.classList.add("no-trailer"); });
 
@@ -6094,21 +6114,11 @@ function _proxRenderAll(){
         if(key){
           if(nb){ nb.innerHTML=`${ICON_TMDB} Trailer`; nb.onclick=e=>{e.stopPropagation();openHeroTrailer(m);}; }
         } else {
-          const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent((m.title||m.name||"")+" trailer")}`;
-          if(nb){
-            nb.innerHTML=`${ICON_YT} YouTube`;
-            nb.style.background="rgba(255,0,0,.75)";
-            nb.style.border="none";
-            nb.onclick=e=>{e.stopPropagation();window.open(ytUrl,"_blank","noopener");};
-          }
+          // Sin key: igual abrir modal con fallback interno
+          if(nb){ nb.innerHTML=`${ICON_TMDB} Trailer`; nb.onclick=e=>{e.stopPropagation();openHeroTrailer(m);}; }
         }
       }).catch(()=>{
-        const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent((m.title||m.name||"")+" trailer")}`;
-        if(nb){
-          nb.innerHTML=`${ICON_YT} YouTube`;
-          nb.style.background="rgba(255,0,0,.75)";
-          nb.onclick=e=>{e.stopPropagation();window.open(ytUrl,"_blank","noopener");};
-        }
+        if(nb){ nb.innerHTML=`${ICON_TMDB} Trailer`; nb.onclick=e=>{e.stopPropagation();openHeroTrailer(m);}; }
       });
 
     if(fb){
