@@ -1399,6 +1399,16 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 <div class="creator-panel" id="creator-panel">
   <div class="creator-panel-title" style="font-size:13px;letter-spacing:1px;color:var(--text2);font-family:'Outfit',sans-serif;font-weight:600;-webkit-text-fill-color:unset;background:none;animation:none;text-align:center;padding-bottom:0px">Personalización</div>
 
+  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:11px;color:#a78bfa;letter-spacing:.5px;text-transform:uppercase;text-align:center;display:block;width:100%">Versiones distintas de Interfaz</span>
+    <div style="display:flex;background:rgba(0,0,0,.3);border-radius:8px;padding:3px;gap:3px">
+      <button onclick="switchSkin('compacta')" id="skin-btn-compacta" style="flex:1;padding:7px 8px;border-radius:6px;border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:transparent;color:var(--text3)">Moderna</button>
+      <button onclick="switchSkin('avanzada')" id="skin-btn-avanzada" style="flex:1;padding:7px 8px;border-radius:6px;border:none;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:var(--accent);color:#fff">Tradicional</button>
+    </div>
+  </div>
+
+  <div style="height:1px;background:rgba(255,255,255,.07);margin:2px 0"></div>
+
   <span style="font-size:11px;color:var(--text3);letter-spacing:.5px;text-transform:uppercase">Colores</span>
   <div class="tp-selector">
     <div class="tp-option" onclick="selectThemeTarget('accent')" id="tp-opt-accent">
@@ -2387,19 +2397,12 @@ function buildCard(m, i) {
           else b.classList.add("no-trailer");
         });
         if (!has) {
-          const ytBtn = document.createElement("a");
+          const ytBtn = document.createElement("button");
           ytBtn.className = "trailer-btn yt-fallback visible";
-          const t = m.title || m.name || "";
-          ytBtn.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(t + ' trailer')}`;
-          ytBtn.target = "_blank";
-          ytBtn.rel = "noopener noreferrer";
           ytBtn.innerHTML = `<svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg> Ver Trailer`;
-          ytBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const f = document.getElementById("movie-frame");
-            if (f && f.src && f.src !== location.href) { f.dataset.ytPausedSrc = f.src; f.src = ""; }
-          });
-          ytBtn.addEventListener("touchend", (e) => e.stopPropagation());
+          const _ytHandler = (e) => { e.stopPropagation(); e.preventDefault(); openHeroTrailer(m); };
+          ytBtn.addEventListener("click", _ytHandler);
+          ytBtn.addEventListener("touchend", _ytHandler, { passive: false });
           card.appendChild(ytBtn);
         }
       }).catch(()=>{});
@@ -4349,7 +4352,7 @@ function buildHeroCard(m) {
         trailerBtn.innerHTML = `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31 31 0 0 0 0 12a31 31 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31 31 0 0 0 24 12a31 31 0 0 0-.5-5.8zM9.75 15.5v-7l6.5 3.5-6.5 3.5z"/></svg>`;
         trailerBtn.title = "Buscar en YouTube";
         const q = encodeURIComponent((m.title||m.name||"")+" trailer");
-        trailerBtn.addEventListener("click", e => { e.stopPropagation(); window.open(`https://www.youtube.com/results?search_query=${q}`,"_blank","noopener"); });
+        trailerBtn.addEventListener("click", e => { e.stopPropagation(); openHeroTrailer(m); });
       }
     }).catch(()=>{ trailerBtn.classList.add("no-trailer"); });
 
@@ -5259,6 +5262,32 @@ function resetTheme() {
   highlightActiveColor();
 }
 
+function switchSkin(skin) {
+  if (skin === 'avanzada') {
+    window.location.href = 'indexz.html';
+  } else {
+    window.location.href = 'index.html';
+  }
+}
+
+function _initSkinSwitcher() {
+  const isAvanzada = window.location.pathname.includes('indexz');
+  const btnC = document.getElementById('skin-btn-compacta');
+  const btnA = document.getElementById('skin-btn-avanzada');
+  if (!btnC || !btnA) return;
+  if (isAvanzada) {
+    btnA.style.background = 'var(--accent)';
+    btnA.style.color = '#fff';
+    btnC.style.background = 'transparent';
+    btnC.style.color = 'var(--text3)';
+  } else {
+    btnC.style.background = 'var(--accent)';
+    btnC.style.color = '#fff';
+    btnA.style.background = 'transparent';
+    btnA.style.color = 'var(--text3)';
+  }
+}
+
 function toggleCreatorPanel(e) {
   e.stopPropagation();
   const panel = document.getElementById("creator-panel");
@@ -5288,6 +5317,7 @@ function toggleCreatorPanel(e) {
     }
   }
   highlightActiveColor();
+  _initSkinSwitcher();
 }
 
 function initThemePicker() {
@@ -5994,20 +6024,18 @@ function _proxRenderAll(){
         if(trailer){
           if(nb){ nb.innerHTML=`${ICON_TMDB} Trailer`; nb.onclick=e=>{e.stopPropagation();openHeroTrailer(m);}; }
         } else {
-          const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent((m.title||m.name||"")+" trailer")}`;
           if(nb){
             nb.innerHTML=`${ICON_YT} YouTube`;
             nb.style.background="rgba(255,0,0,.75)";
             nb.style.border="none";
-            nb.onclick=e=>{e.stopPropagation();window.open(ytUrl,"_blank","noopener");};
+            nb.onclick=e=>{e.stopPropagation();openHeroTrailer(m);};
           }
         }
       }).catch(()=>{
-        const ytUrl=`https://www.youtube.com/results?search_query=${encodeURIComponent((m.title||m.name||"")+" trailer")}`;
         if(nb){
           nb.innerHTML=`${ICON_YT} YouTube`;
           nb.style.background="rgba(255,0,0,.75)";
-          nb.onclick=e=>{e.stopPropagation();window.open(ytUrl,"_blank","noopener");};
+          nb.onclick=e=>{e.stopPropagation();openHeroTrailer(m);};
         }
       });
 
