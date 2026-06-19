@@ -2947,6 +2947,7 @@ function loadHeroFeatured() { initHero(); }
 
 /* ─── MODAL ─── */
 async function openModal(item) {
+  if (window.setWeatherVisible) window.setWeatherVisible(false);
   activeProvider = "streamimdb"; // Reset al servidor principal en cada película
   currentItem = item;
   currentType = item._type || "movie";
@@ -3280,6 +3281,7 @@ function _doCloseModal() {
     document.getElementById("search-overlay").classList.add("open");
   }
   setTimeout(() => { _doCloseModal._running = false; }, 100);
+  if (window.setWeatherVisible) window.setWeatherVisible(true);
 }
 
 function getFrame() {
@@ -3410,6 +3412,7 @@ async function openHeroTrailer(item) {
     document.getElementById("search-overlay").classList.remove("open");
     modal.style.display = "flex";
     document.body.style.overflow = "hidden";
+    if (window.setWeatherVisible) window.setWeatherVisible(false);
   } catch(e) {
     showToast("Error al cargar el trailer");
   }
@@ -3431,6 +3434,10 @@ function closeTrailer() {
     _trailerJustClosed = true;
     setTimeout(() => { _trailerJustClosed = false; }, 50);
     document.getElementById("search-overlay").classList.add("open");
+  }
+  // Solo restaurar clima si no hay modal de reproductor abierto
+  if (!document.getElementById("modal-overlay").classList.contains("open")) {
+    if (window.setWeatherVisible) window.setWeatherVisible(true);
   }
 }
 
@@ -3496,7 +3503,10 @@ async function doSearch(query) {
   } catch {}
 }
 document.getElementById("search-input").addEventListener("keydown", e => {
-  if (e.key === "Escape") { clearSearch(); }
+  if (e.key === "Escape") {
+    if (document.getElementById("trailer-modal").style.display === "flex") return;
+    clearSearch();
+  }
 });
 document.addEventListener("click", e => {
   const overlay = document.getElementById("search-overlay");
@@ -5560,7 +5570,10 @@ window.addEventListener("appinstalled", () => { installBtn.style.display = "none
 /* ─── KEYBOARD TV BOX ─── */
 document.addEventListener("keydown", e => {
   if (e.key === "Escape" || e.key === "Backspace") {
-    if (document.getElementById("trailer-modal").style.display === "flex") { closeTrailer(); return; }
+    if (document.getElementById("trailer-modal").style.display === "flex") {
+      closeTrailer();
+      return;
+    }
     if (_trailerJustClosed) return;
     if (document.getElementById("modal-overlay").classList.contains("open")) { e.preventDefault(); closeModal(); }
     else if (document.getElementById("search-overlay").classList.contains("open")) { clearSearch(); }
@@ -7224,6 +7237,7 @@ initThemePicker();
 (function() {
 
   const cv = document.createElement('canvas');
+  cv.id = 'weather-canvas';
   cv.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:9996;';
   document.body.appendChild(cv);
   const ctx = cv.getContext('2d');
@@ -7638,6 +7652,7 @@ initThemePicker();
 
     stormFlash = document.createElement('div');
     stormFlash.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9997;opacity:0;will-change:opacity;background:radial-gradient(ellipse at var(--lx,50%) var(--ly,30%),rgba(200,210,255,0.22) 0%,rgba(160,170,255,0.10) 40%,transparent 75%)';
+    stormFlash.dataset.weatherFx = '1';
     document.body.appendChild(stormFlash);
     (function stormFlashLoop() {
       const t = setTimeout(() => {
@@ -7691,6 +7706,7 @@ initThemePicker();
 
   function spawnSunFlash() {
     const d = document.createElement('div');
+    d.dataset.weatherFx = '1';
     d.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9994;opacity:0;transition:opacity 600ms ease;background:radial-gradient(ellipse at '+(30+Math.random()*40)+'% '+(5+Math.random()*25)+'%,rgba(255,220,120,0.08) 0%,transparent 60%)';
     document.body.appendChild(d);
     d.getBoundingClientRect();
@@ -7728,7 +7744,7 @@ initThemePicker();
         }
       }
       // Also remove any orphaned sunFlash DOM overlays (CSS-only, not in particles[])
-      document.querySelectorAll('[style*="z-index:9994"]').forEach(el => el.remove());
+      document.querySelectorAll('[data-weather-fx]').forEach(el => { if (!el.id) el.remove(); });
     } else {
       // Tab going hidden: clear stale timestamp
       lastTs = 0;
@@ -8253,6 +8269,13 @@ initThemePicker();
     if (mode === 'soleado')  startSoleado();
     if (mode === 'tormenta') startTormenta();
     if (mode === 'nieve')    startNieve();
+  };
+
+  window.setWeatherVisible = function(visible) {
+    const v = visible ? '' : 'none';
+    const canvas = document.getElementById('weather-canvas');
+    if (canvas) canvas.style.display = v;
+    document.querySelectorAll('[data-weather-fx]').forEach(el => el.style.display = v);
   };
 
   const saved = localStorage.getItem('vtv_weather_mode');
