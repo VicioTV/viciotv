@@ -525,6 +525,11 @@ body::before{
   .search-exit-btn:hover{color:#fff;border-color:rgba(255,255,255,.4)}
   #pwa-install-btn{background:var(--accent-subtle);border:1px solid var(--accent);color:var(--accent);padding:6px 14px;border-radius:6px;font-size:0.8rem;font-weight:500;cursor:pointer;display:none;margin-left:8px;transition:background .2s;font-family:'Outfit',sans-serif}
   #pwa-install-btn:hover{background:var(--accent);color:#fff}
+  /* En PC: agrupar Buscar/Personalizar/Perfil pegados a la derecha de los
+     tabs (junto a "Próximamente"), en vez de empujarlos al extremo derecho. */
+  @media (min-width:641px){
+    #nav-spacer{flex:0 0 auto !important;min-width:24px;width:24px}
+  }
 
   /* ===== SIDEBAR IZQUIERDO (colapsable, hover para expandir) ===== */
   /* ── SIDEBAR ── */
@@ -1849,7 +1854,7 @@ body::before{
     <button class="nav-tab focusable" data-tab="canales" onclick="window.open('https://creador100k.github.io/ViceandoTV/','_blank')">TV en Vivo</button>
     <button class="nav-tab focusable" data-tab="proximamente" onclick="openSidebarSection('proximamente')">Próximamente</button>
   </div>
-  <div style="flex:1;min-width:32px"></div>
+  <div id="nav-spacer" style="flex:1;min-width:32px"></div>
   <div class="nav-search" id="nav-search-box">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3);flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
     <input id="search-input" type="text" placeholder="Buscar..." oninput="onSearch(this.value)" onfocus="openSearchOverlay()" />
@@ -1908,7 +1913,7 @@ body::before{
   </div>
 
   <div style="padding-top:5px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600">
-    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 3.6.9</div>
+    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 3.7.1</div>
   </div>
 </div>
 
