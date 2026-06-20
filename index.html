@@ -1312,6 +1312,15 @@ body::before{
   .tv-select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(99,102,241,.15)}
   #tv-load-btn{background:var(--accent);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:background var(--transition)}
   #tv-load-btn:hover{background:var(--accent-dark)}
+  #tv-next-ep-btn{
+    background:var(--glass);color:var(--text);border:1px solid var(--border-bright);
+    border-radius:8px;padding:8px 18px;font-family:'Outfit',sans-serif;font-size:14px;
+    font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;
+    transition:background var(--transition), border-color var(--transition), transform var(--transition);
+  }
+  #tv-next-ep-btn:hover{background:var(--glass-hi);border-color:rgba(255,255,255,.25);transform:translateY(-1px)}
+  #tv-next-ep-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+  #tv-next-ep-btn svg{width:14px;height:14px;flex-shrink:0}
 
   /* Episodes panel */
   #episodes-panel{display:none;padding:0 24px 20px}
@@ -1913,7 +1922,7 @@ body::before{
   </div>
 
   <div style="padding-top:5px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600">
-    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 3.7.1</div>
+    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 3.7.9</div>
   </div>
 </div>
 
@@ -2361,6 +2370,10 @@ body::before{
       <select class="tv-select focusable" id="sel-season"></select>
       <select class="tv-select focusable" id="sel-episode"></select>
       <button id="tv-load-btn" class="focusable">▶ Reproducir</button>
+      <button id="tv-next-ep-btn" class="focusable" title="Ver próximo episodio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+        Próximo Episodio
+      </button>
     </div>
 
     <div class="modal-body">
@@ -3317,6 +3330,7 @@ document.getElementById("sel-season").addEventListener("change", async () => {
   } catch { buildEpisodeOptions(20); }
 });
 document.getElementById("tv-load-btn").addEventListener("click", () => { if (currentImdbId) loadTVEpisode(); });
+document.getElementById("tv-next-ep-btn").addEventListener("click", () => { if (currentImdbId) goToNextEpisode(); });
 
 function loadTVEpisode(forceSeason, forceEpisode) {
   const s = Number(forceSeason ?? document.getElementById("sel-season").value ?? 1) || 1;
@@ -3378,18 +3392,36 @@ document.getElementById("next-episode-overlay").addEventListener("click", e => {
   if (e.target.id === "next-episode-overlay") dismissNextEpisodeOverlay();
 });
 document.getElementById("play-next-btn").addEventListener("click", () => {
-  let s = Number(document.getElementById("sel-season").value);
-  let e = Number(document.getElementById("sel-episode").value);
-  e++;
-  if (e > document.getElementById("sel-episode").options.length) { s++; e = 1; }
-  if (s > document.getElementById("sel-season").options.length) { document.getElementById("next-episode-overlay").style.display = "none"; return; }
-  document.getElementById("sel-season").value = s;
-  setTimeout(() => {
-    document.getElementById("sel-episode").value = e;
-    loadTVEpisode();
-    document.getElementById("next-episode-overlay").style.display = "none";
-  }, 150);
+  goToNextEpisode();
+  document.getElementById("next-episode-overlay").style.display = "none";
 });
+
+/* ─── AVANZAR AL SIGUIENTE EPISODIO (reutilizable) ───
+   Usada tanto por el botón "Próximo Episodio" junto al reproductor
+   como por el aviso automático de "Siguiente episodio". */
+async function goToNextEpisode() {
+  const seasonSel = document.getElementById("sel-season");
+  const episodeSel = document.getElementById("sel-episode");
+  let s = Number(seasonSel.value);
+  let e = Number(episodeSel.value);
+  e++;
+  if (e > episodeSel.options.length) {
+    s++;
+    if (s > seasonSel.options.length) return; // ya es el último episodio disponible
+    seasonSel.value = s;
+    // Disparar el cambio de temporada para repoblar el select de episodios
+    // y esperar a que termine antes de fijar el episodio 1.
+    try {
+      const data = await tmdb(`/tv/${currentItem.id}/season/${s}`);
+      buildEpisodeOptions((data.episodes||[]).length || 20);
+    } catch { buildEpisodeOptions(20); }
+    const panelSel = document.getElementById("ep-panel-season");
+    if (panelSel) panelSel.value = s;
+    e = 1;
+  }
+  episodeSel.value = e;
+  loadTVEpisode();
+}
 
 /* ─── CERRAR MODAL ─── */
 function closeSubTip() {
