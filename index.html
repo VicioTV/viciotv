@@ -4965,16 +4965,7 @@ function buildHeroCard(m) {
 
 function hrowNav(key, dir) {
   const row = document.getElementById(`hrow-${key}`);
-  const sec = document.getElementById(`sec-${key}`);
   if (!row) return;
-
-  if (sec) {
-    const navH = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--nav-h")) || 68;
-    const rect = sec.getBoundingClientRect();
-    if (rect.top < navH - 4 || rect.top > 130) {
-      window.scrollTo({ top: window.scrollY + rect.top - navH - 8, behavior: "smooth" });
-    }
-  }
 
   scrollRowByCards(row, dir, () => _hrowRender(key));
 }
@@ -5936,13 +5927,27 @@ function _sbSidebarHoverInit(){
   if(!s || s._hoverReady) return;
   s._hoverReady = true;
   const desktop = () => window.innerWidth > 640;
+
+  const closePinnedMenus = () => {
+    if(typeof _closePlatformMenu === "function") _closePlatformMenu();
+    if(typeof _closeLiveMenu === "function") _closeLiveMenu();
+  };
+
   s.addEventListener("mouseenter", () => {
     if(!desktop()) return;
     s.classList.add("sb-open");
   });
-  s.addEventListener("mouseleave", () => {
+  s.addEventListener("mouseleave", (e) => {
     if(!desktop()) return;
-    if(s.classList.contains("sb-pinned")) return; // hay un submenu abierto, no cerrar
+    if(s.classList.contains("sb-pinned")){
+      // Si el mouse se fue hacia el submenu abierto, dejarlo — el submenu
+      // tiene su propio listener que cierra todo cuando también lo abandone.
+      const related = e.relatedTarget;
+      const openMenu = document.querySelector(".sb-submenu.open");
+      if(openMenu && related && openMenu.contains(related)) return;
+      // Si no, el mouse se fue para cualquier otro lado: cerrar submenu y barra.
+      closePinnedMenus();
+    }
     s.classList.remove("sb-open");
   });
 }
@@ -6093,12 +6098,25 @@ function togglePlatformMenu(e){
 function setupSubmenuHover({ btnId, menuId, open, close }){
   let leaveTimer = null;
   const cancelLeave = () => { if(leaveTimer){ clearTimeout(leaveTimer); leaveTimer=null; } };
-  const scheduleClose = () => { cancelLeave(); leaveTimer = setTimeout(close, 120); };
+  const scheduleClose = () => {
+    cancelLeave();
+    leaveTimer = setTimeout(() => {
+      close();
+      // Si el mouse no quedó sobre el sidebar (p.ej. se fue afuera de todo),
+      // contraerlo también — evita que quede "pegado" abierto.
+      const sidebar = document.getElementById("sidebar");
+      if(sidebar && !sidebar.matches(":hover")) sidebar.classList.remove("sb-open");
+    }, 120);
+  };
 
   document.addEventListener("click", e => {
     const menu = document.getElementById(menuId);
     const btn  = document.getElementById(btnId);
-    if(menu && btn && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)) close();
+    if(menu && btn && !menu.contains(e.target) && e.target !== btn && !btn.contains(e.target)){
+      close();
+      const sidebar = document.getElementById("sidebar");
+      if(sidebar && !sidebar.contains(e.target)) sidebar.classList.remove("sb-open");
+    }
   });
 
   return function(){
