@@ -635,6 +635,17 @@ body::before{
     box-shadow:12px 0 40px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.03);
     z-index:1500;
   }
+  /* Puente invisible que cubre el gap entre el sidebar y el submenu,
+     para que mover el mouse en diagonal/lento no dispare el mouseleave
+     del botón antes de llegar al submenu. */
+  .sb-submenu::before{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-14px;
+    width:14px;
+    height:100%;
+  }
   .sb-submenu::-webkit-scrollbar{width:3px}
   .sb-submenu::-webkit-scrollbar-thumb{background:var(--accent);border-radius:2px}
   .sb-submenu.open{display:flex}
@@ -942,40 +953,6 @@ body::before{
   background:linear-gradient(90deg,var(--border),transparent);
   margin-left:20px;
 }
-.row-header--scrub::after{ content:none; }
-/* Track con bolita arrastrable para scrollear el carrusel */
-.row-scrub{
-  flex:1;height:24px;margin-left:20px;
-  position:relative;display:flex;align-items:center;
-  cursor:pointer;
-  touch-action:none;
-}
-.row-scrub-track{
-  position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);
-  height:2px;border-radius:2px;
-  background:linear-gradient(90deg,var(--border),transparent);
-  pointer-events:none;
-}
-.row-scrub-fill{
-  position:absolute;left:0;top:50%;transform:translateY(-50%);
-  height:2px;border-radius:2px;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  opacity:.55;
-  pointer-events:none;
-  transition:width .12s ease;
-}
-.row-scrub.dragging .row-scrub-fill{transition:none}
-.row-scrub-thumb{
-  position:absolute;top:50%;
-  width:13px;height:13px;border-radius:50%;
-  transform:translate(-50%,-50%);
-  background:var(--accent);
-  box-shadow:0 0 0 3px rgba(8,8,18,.9), 0 0 10px var(--accent-glow);
-  transition:left .12s ease, transform .15s ease;
-  pointer-events:none;
-}
-.row-scrub.dragging .row-scrub-thumb{ transition:none; transform:translate(-50%,-50%) scale(1.25); }
-.row-scrub:hover .row-scrub-thumb{ transform:translate(-50%,-50%) scale(1.15); }
 /* Row navigation buttons (prev/next) */
 .row-nav{display:flex;gap:8px;align-items:center;flex-shrink:0;z-index:1}
 .row-nav-btn{
@@ -1753,13 +1730,8 @@ body::before{
     .prox-filter-btn{flex:1!important;text-align:center!important;padding:8px 4px!important;font-size:12px!important;white-space:nowrap!important}
     /* Próximamente: cards centradas */
     .prox-grid{padding:8px 12px 16px!important;justify-content:center!important}
-    /* Inicio: ocultar flechas y track scrub en secciones con scroll táctil */
+    /* Inicio: ocultar flechas en secciones con scroll táctil */
     #sec-popular .row-nav,#sec-nowplaying .row-nav,#sec-tvtrending .row-nav{display:none!important}
-    #sec-popular .row-scrub,#sec-nowplaying .row-scrub,#sec-tvtrending .row-scrub{display:none!important}
-    /* Como el scrub se oculta en mobile, restauramos la línea decorativa */
-    #sec-popular .row-header--scrub::after,#sec-nowplaying .row-header--scrub::after,#sec-tvtrending .row-header--scrub::after{
-      content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);margin-left:20px;
-    }
     .hero-row{overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;scroll-snap-type:x mandatory!important}
     .hcard{scroll-snap-align:start!important}
 
@@ -1936,7 +1908,7 @@ body::before{
   </div>
 
   <div style="padding-top:5px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600">
-    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 3.1.0</div>
+    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 2.6.3</div>
   </div>
 </div>
 
@@ -2170,13 +2142,8 @@ body::before{
     <div class="hero-row hero-row-wrap" id="carousel-favs"></div>
   </div>
   <div id="sec-popular" class="row-section">
-    <div class="row-header row-header--scrub">
+    <div class="row-header">
       <span class="row-title">Películas Populares</span>
-      <div class="row-scrub" data-row-key="popular">
-        <div class="row-scrub-track"></div>
-        <div class="row-scrub-fill"></div>
-        <div class="row-scrub-thumb"></div>
-      </div>
       <div class="row-nav">
         <button class="row-nav-btn" id="nav-prev-popular" onclick="hrowNav('popular',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
         <button class="row-nav-btn" id="nav-next-popular" onclick="hrowNav('popular',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
@@ -2185,13 +2152,8 @@ body::before{
     <div class="hero-row hero-row-wrap" id="hrow-popular"></div>
   </div>
   <div id="sec-nowplaying" class="row-section">
-    <div class="row-header row-header--scrub">
+    <div class="row-header">
       <span class="row-title">Lo Más Nuevo</span>
-      <div class="row-scrub" data-row-key="nowplaying">
-        <div class="row-scrub-track"></div>
-        <div class="row-scrub-fill"></div>
-        <div class="row-scrub-thumb"></div>
-      </div>
       <div class="row-nav">
         <button class="row-nav-btn" id="nav-prev-nowplaying" onclick="hrowNav('nowplaying',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
         <button class="row-nav-btn" id="nav-next-nowplaying" onclick="hrowNav('nowplaying',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
@@ -2200,13 +2162,8 @@ body::before{
     <div class="hero-row hero-row-wrap" id="hrow-nowplaying"></div>
   </div>
   <div id="sec-tvtrending" class="row-section">
-    <div class="row-header row-header--scrub">
+    <div class="row-header">
       <span class="row-title">Series en Tendencia</span>
-      <div class="row-scrub" data-row-key="tvtrending">
-        <div class="row-scrub-track"></div>
-        <div class="row-scrub-fill"></div>
-        <div class="row-scrub-thumb"></div>
-      </div>
       <div class="row-nav">
         <button class="row-nav-btn" id="nav-prev-tvtrending" onclick="hrowNav('tvtrending',-1)" aria-label="Anterior"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
         <button class="row-nav-btn" id="nav-next-tvtrending" onclick="hrowNav('tvtrending',1)" aria-label="Siguiente"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></button>
@@ -5037,87 +4994,6 @@ function bindRowScrollPreload(row, onNearEnd) {
 
 function _initHrowTouchScroll(key) {
   bindRowScrollPreload(document.getElementById(`hrow-${key}`), () => _hrowRender(key));
-  _initRowScrub(key);
-}
-
-/* Track con bolita arrastrable al lado del título de cada fila.
-   El thumb se mueve proporcional a row.scrollLeft / maxScroll, y como
-   maxScroll crece a medida que se cargan más cards (lazy load), el thumb
-   siempre refleja fielmente la posición real dentro de lo ya cargado —
-   nunca "miente" aunque el contenido siga creciendo. */
-function _initRowScrub(key) {
-  const row   = document.getElementById(`hrow-${key}`);
-  const scrub = document.querySelector(`.row-scrub[data-row-key="${key}"]`);
-  if (!row || !scrub || scrub._scrubBound) return;
-  scrub._scrubBound = true;
-
-  const fill  = scrub.querySelector(".row-scrub-fill");
-  const thumb = scrub.querySelector(".row-scrub-thumb");
-
-  function maxScroll() { return Math.max(1, row.scrollWidth - row.clientWidth); }
-
-  function paint() {
-    const ratio = Math.min(1, Math.max(0, row.scrollLeft / maxScroll()));
-    const trackW = scrub.clientWidth;
-    const pad = 7; // mitad del thumb, para que no se salga del track
-    const x = pad + ratio * (trackW - pad * 2);
-    thumb.style.left = x + "px";
-    fill.style.width = x + "px";
-  }
-
-  function ratioFromClientX(clientX) {
-    const rect = scrub.getBoundingClientRect();
-    const pad = 7;
-    const usable = Math.max(1, rect.width - pad * 2);
-    return Math.min(1, Math.max(0, (clientX - rect.left - pad) / usable));
-  }
-
-  row.addEventListener("scroll", () => { if (!scrub.classList.contains("dragging")) paint(); }, { passive: true });
-  window.addEventListener("resize", paint);
-
-  let dragging = false;
-  let cardW = 280;
-
-  function start(clientX) {
-    dragging = true;
-    scrub.classList.add("dragging");
-    cardW = row.querySelector(".hcard")?.offsetWidth || 280;
-    move(clientX);
-  }
-  function move(clientX) {
-    if (!dragging) return;
-    const ratio = ratioFromClientX(clientX);
-    row.scrollLeft = ratio * maxScroll();
-    paint();
-    if (row.scrollWidth - row.scrollLeft - row.clientWidth < cardW * HROW_PRELOAD) {
-      _hrowRender(key);
-    }
-  }
-  function end() {
-    if (!dragging) return;
-    dragging = false;
-    scrub.classList.remove("dragging");
-  }
-
-  scrub.addEventListener("mousedown", e => { e.preventDefault(); start(e.clientX); });
-  window.addEventListener("mousemove", e => { if (dragging) move(e.clientX); });
-  window.addEventListener("mouseup", end);
-
-  scrub.addEventListener("touchstart", e => start(e.touches[0].clientX), { passive: true });
-  scrub.addEventListener("touchmove", e => { move(e.touches[0].clientX); }, { passive: true });
-  scrub.addEventListener("touchend", end);
-  scrub.addEventListener("touchcancel", end);
-
-  // Click directo sobre el track (sin arrastrar) también mueve el carrusel.
-  scrub.addEventListener("click", e => {
-    if (e.target === thumb) return;
-    const ratio = ratioFromClientX(e.clientX);
-    row.scrollTo({ left: ratio * maxScroll(), behavior: "smooth" });
-  });
-
-  paint();
-  // Repintar cuando se agregan cards (cambia scrollWidth) — observamos el DOM.
-  new MutationObserver(paint).observe(row, { childList: true });
 }
 
 function _initDragScroll(row, onScrollNearEnd) {
@@ -6056,9 +5932,7 @@ function showSidebar(){
   if(window._sbLiveHoverSetup) window._sbLiveHoverSetup();
 }
 
-/* Apertura/cierre instantáneo del sidebar al pasar el mouse (sin delay),
-   salvo cuando hay un submenu pineado: ahí le damos tolerancia para que
-   el usuario pueda cruzar lento desde el botón hasta las opciones. */
+/* Apertura/cierre instantáneo del sidebar al pasar el mouse (sin delay). */
 function _sbSidebarHoverInit(){
   const s = document.getElementById("sidebar");
   if(!s || s._hoverReady) return;
@@ -6070,30 +5944,30 @@ function _sbSidebarHoverInit(){
     if(typeof _closeLiveMenu === "function") _closeLiveMenu();
   };
 
-  let pinnedLeaveTimer = null;
-
   s.addEventListener("mouseenter", () => {
     if(!desktop()) return;
-    if(pinnedLeaveTimer){ clearTimeout(pinnedLeaveTimer); pinnedLeaveTimer = null; }
+    if(s._leaveTimer){ clearTimeout(s._leaveTimer); s._leaveTimer = null; }
     s.classList.add("sb-open");
   });
-  s.addEventListener("mouseleave", () => {
+  s.addEventListener("mouseleave", (e) => {
     if(!desktop()) return;
     if(s.classList.contains("sb-pinned")){
-      // Le damos margen: si el mouse llega al submenu antes de que se cumpla
-      // el timeout, ese submenu cancela su propio cierre y acá no hacemos nada.
-      // Si en cambio el mouse se aleja de todo (ni sidebar ni submenu), cerramos.
-      if(pinnedLeaveTimer) clearTimeout(pinnedLeaveTimer);
-      pinnedLeaveTimer = setTimeout(() => {
-        const openMenu = document.querySelector(".sb-submenu.open");
-        const overMenu = openMenu && openMenu.matches(":hover");
-        const overSidebar = s.matches(":hover");
-        if(!overMenu && !overSidebar){
-          closePinnedMenus();
-          s.classList.remove("sb-open");
-        }
-        pinnedLeaveTimer = null;
-      }, 500);
+      // Si el mouse se fue hacia el submenu abierto (o está en camino, p.ej.
+      // moviéndose lento por el pequeño gap entre la barra y el submenu),
+      // no cerrar todavía. Se da un pequeño margen y se revisa de nuevo
+      // si efectivamente el cursor terminó dentro del submenu o la barra.
+      const openMenu = document.querySelector(".sb-submenu.open");
+      const related = e.relatedTarget;
+      if(openMenu && related && openMenu.contains(related)) return;
+      if(s._leaveTimer) clearTimeout(s._leaveTimer);
+      s._leaveTimer = setTimeout(() => {
+        const menuNow = document.querySelector(".sb-submenu.open");
+        const stillOnMenu = menuNow && menuNow.matches(":hover");
+        const stillOnSidebar = s.matches(":hover");
+        if(stillOnMenu || stillOnSidebar) return;
+        closePinnedMenus();
+        s.classList.remove("sb-open");
+      }, 250);
       return;
     }
     s.classList.remove("sb-open");
@@ -6218,7 +6092,7 @@ function _openPlatformMenu(){
   menu.style.top  = rect.top + "px";
   const isMobile = window.innerWidth <= 640;
   const sidebarRight = isMobile ? sRect.left + sRect.width : sRect.left + 180;
-  menu.style.left = (sidebarRight + 6) + "px";
+  menu.style.left = (sidebarRight + 1) + "px";
   menu.classList.add("open");
   btn.classList.add("active");
   btn.classList.add("sb-top10-open");
@@ -6245,37 +6119,17 @@ function togglePlatformMenu(e){
    button exists; the outside-click listener is bound immediately. */
 function setupSubmenuHover({ btnId, menuId, open, close }){
   let leaveTimer = null;
-  let lastMouseX = 0, lastMouseY = 0;
-  let watchingTriangle = false;
   const cancelLeave = () => { if(leaveTimer){ clearTimeout(leaveTimer); leaveTimer=null; } };
-
-  function trackMouse(e){ lastMouseX = e.clientX; lastMouseY = e.clientY; }
-
-  // Mientras el mouse viaja desde el botón hacia el menú, lo dejamos pasar
-  // aunque tarde — solo cerramos si claramente se aleja del menú.
-  function isHeadingTowardMenu(menu){
-    const r = menu.getBoundingClientRect();
-    return lastMouseX >= r.left - 40 && lastMouseX <= r.right + 40 &&
-           lastMouseY >= r.top - 40 && lastMouseY <= r.bottom + 40;
-  }
-
-  const scheduleClose = (menu) => {
+  const scheduleClose = () => {
     cancelLeave();
     leaveTimer = setTimeout(() => {
-      if(menu && isHeadingTowardMenu(menu)){
-        // El mouse sigue yendo hacia el menú (se está moviendo lento) — darle más tiempo.
-        scheduleClose(menu);
-        return;
-      }
       close();
       // Si el mouse no quedó sobre el sidebar (p.ej. se fue afuera de todo),
       // contraerlo también — evita que quede "pegado" abierto.
       const sidebar = document.getElementById("sidebar");
       if(sidebar && !sidebar.matches(":hover")) sidebar.classList.remove("sb-open");
-    }, 450);
+    }, 350);
   };
-
-  document.addEventListener("mousemove", trackMouse, { passive:true });
 
   document.addEventListener("click", e => {
     const menu = document.getElementById(menuId);
@@ -6293,10 +6147,14 @@ function setupSubmenuHover({ btnId, menuId, open, close }){
     if(!btn || !menu || btn._hoverReady) return;
     btn._hoverReady = true;
     const desktop = () => window.innerWidth > 640;
-    btn.addEventListener("mouseenter", () => { if(desktop()){ cancelLeave(); setTimeout(open, 80); } });
-    btn.addEventListener("mouseleave", () => { if(desktop()) scheduleClose(menu); });
-    menu.addEventListener("mouseenter", () => { if(desktop()) cancelLeave(); });
-    menu.addEventListener("mouseleave", () => { if(desktop()) scheduleClose(menu); });
+    const cancelSidebarLeave = () => {
+      const sidebar = document.getElementById("sidebar");
+      if(sidebar && sidebar._leaveTimer){ clearTimeout(sidebar._leaveTimer); sidebar._leaveTimer = null; }
+    };
+    btn.addEventListener("mouseenter", () => { if(desktop()){ cancelLeave(); cancelSidebarLeave(); setTimeout(open, 80); } });
+    btn.addEventListener("mouseleave", () => { if(desktop()) scheduleClose(); });
+    menu.addEventListener("mouseenter", () => { if(desktop()){ cancelLeave(); cancelSidebarLeave(); } });
+    menu.addEventListener("mouseleave", () => { if(desktop()) scheduleClose(); });
   };
 }
 
