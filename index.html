@@ -2622,7 +2622,7 @@ function scrollRowByCards(row, dir, onNearEnd) {
   if (!row) return;
   const gap   = 16;
   const cardW = row.querySelector(".hcard")?.offsetWidth || 280;
-  const step  = (cardW + gap) * 4;
+  const step  = (cardW + gap) * 2;
   if (dir === 1 && onNearEnd) {
     const remaining = row.scrollWidth - (row.scrollLeft + row.clientWidth);
     if (remaining < cardW * HROW_PRELOAD + gap) onNearEnd();
