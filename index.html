@@ -531,8 +531,7 @@ body::before{
     background:rgba(8,8,18,.72);
     -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
     border:1px solid var(--border);
-    border-left:none;
-    border-radius:0 14px 14px 0;
+    border-radius:14px;
     overflow:visible;
     transition:width .25s cubic-bezier(.4,0,.2,1), box-shadow .25s ease, background .3s;
   }
@@ -1221,11 +1220,27 @@ body::before{
     -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
     border:1px solid var(--border-bright);border-radius:20px;max-width:320px;
     box-shadow:0 24px 64px rgba(0,0,0,.7);
+    position:relative;
   }
+  #next-episode-dismiss{
+    position:absolute;top:10px;right:10px;
+    width:28px;height:28px;border-radius:50%;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);
+    color:var(--text2);font-size:14px;line-height:1;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .2s,color .2s;
+  }
+  #next-episode-dismiss:hover{background:rgba(255,255,255,.18);color:#fff}
   .next-box h3{font-size:18px;font-weight:600;margin-bottom:8px}
   .next-box p{font-size:13px;color:var(--text2);margin-bottom:20px}
   #play-next-btn{background:var(--accent);color:#fff;border:none;padding:12px 28px;border-radius:8px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background var(--transition)}
   #play-next-btn:hover{background:var(--accent-dark)}
+  #next-episode-keep-btn{
+    display:block;margin:10px auto 0;background:transparent;border:none;
+    color:var(--text3);font-family:'Outfit',sans-serif;font-size:12px;
+    cursor:pointer;text-decoration:underline;transition:color .2s;
+  }
+  #next-episode-keep-btn:hover{color:var(--text)}
   .player-note{text-align:center;font-size:.75rem;color:var(--text3);padding:8px 24px}
   .modal-body{padding:24px}
   .modal-title{font-family:'Bebas Neue',cursive;font-size:36px;letter-spacing:1px;margin-bottom:8px}
@@ -2298,9 +2313,11 @@ body::before{
         referrerpolicy="origin"></iframe>
       <div id="next-episode-overlay">
         <div class="next-box">
+          <button id="next-episode-dismiss" title="Cerrar">✕</button>
           <h3>Siguiente episodio</h3>
           <p id="next-episode-text">¿Continuar?</p>
           <button id="play-next-btn">▶ Ver ahora</button>
+          <button id="next-episode-keep-btn">Seguir viendo este episodio</button>
         </div>
       </div>
     </div>
@@ -2498,6 +2515,11 @@ let currentType    = null;
 let currentSeasons = 1;
 let heroItem       = null;
 let nextEpisodeTimer = null;
+let nextEpisodeToken = 0;
+function cancelNextEpisodeCountdown() {
+  clearTimeout(nextEpisodeTimer);
+  nextEpisodeToken++; // invalida cualquier fetch de duración pendiente
+}
 let activeTab      = "inicio";
 let profileEditMode = false;
 
@@ -3046,7 +3068,7 @@ async function openModal(item) {
   window._similarMorePage = 1;
   document.getElementById("movie-frame").src = "";
   document.getElementById("tv-selectors").classList.remove("visible");
-  clearTimeout(nextEpisodeTimer);
+  cancelNextEpisodeCountdown();
   document.getElementById("next-episode-overlay").style.display = "none";
   currentImdbId = null; currentSeasons = 1;
   updateFavBtn(item);
@@ -3276,17 +3298,55 @@ function loadTVEpisode(forceSeason, forceEpisode) {
     if (url && getFrame()) getFrame().src = url;
     if (currentItem) saveProgress(currentItem, s, e, 0);
   }, 120);
-  startNextEpisodeCountdown();
+  startNextEpisodeCountdown(currentItem?.id, s, e);
 }
 
-/* ─── AUTO NEXT EPISODE ─── */
-function startNextEpisodeCountdown() {
+/* ─── AUTO NEXT EPISODE ───
+   El aviso de "siguiente episodio" se programa según la duración REAL
+   del episodio (no un tiempo fijo), para que no aparezca de golpe a
+   mitad de un episodio largo. Se muestra unos minutos antes del final
+   (MARGIN_MIN) en vez de a un tiempo arbitrario. */
+const NEXT_EP_MARGIN_MIN = 2;       // minutos antes del final en que aparece el aviso
+const NEXT_EP_DEFAULT_RUNTIME = 24; // fallback conservador si no hay datos de duración
+
+async function startNextEpisodeCountdown(tvId, season, episode) {
   if (currentType !== "tv") return;
   clearTimeout(nextEpisodeTimer);
+  document.getElementById("next-episode-overlay").style.display = "none";
+  if (!tvId) return;
+
+  // Token global: si se cierra el modal o se cambia de episodio mientras
+  // esperamos la respuesta de duración, esto evita que el aviso aparezca
+  // sobre un episodio/sesión que ya no es la actual.
+  const myToken = ++nextEpisodeToken;
+
+  let runtimeMin = null;
+  try {
+    const epData = await tmdb(`/tv/${tvId}/season/${season}/episode/${episode}`);
+    if (epData && epData.runtime) runtimeMin = epData.runtime;
+  } catch {}
+  if (!runtimeMin) {
+    try {
+      const showData = await tmdb(`/tv/${tvId}`);
+      const arr = showData?.episode_run_time;
+      if (Array.isArray(arr) && arr.length) runtimeMin = arr[0];
+    } catch {}
+  }
+  if (myToken !== nextEpisodeToken) return; // se canceló/reemplazó mientras esperábamos
+
+  const effectiveMin = Math.max((runtimeMin || NEXT_EP_DEFAULT_RUNTIME) - NEXT_EP_MARGIN_MIN, 1);
   nextEpisodeTimer = setTimeout(() => {
     document.getElementById("next-episode-overlay").style.display = "flex";
-  }, 1000 * 60 * 40);
+  }, 1000 * 60 * effectiveMin);
 }
+function dismissNextEpisodeOverlay() {
+  document.getElementById("next-episode-overlay").style.display = "none";
+}
+document.getElementById("next-episode-dismiss").addEventListener("click", dismissNextEpisodeOverlay);
+document.getElementById("next-episode-keep-btn").addEventListener("click", dismissNextEpisodeOverlay);
+document.getElementById("next-episode-overlay").addEventListener("click", e => {
+  if (e.target.id === "next-episode-overlay") dismissNextEpisodeOverlay();
+});
 document.getElementById("play-next-btn").addEventListener("click", () => {
   let s = Number(document.getElementById("sel-season").value);
   let e = Number(document.getElementById("sel-episode").value);
@@ -3330,7 +3390,7 @@ function _doCloseModal() {
     frame.replaceWith(blank);
   }
   document.body.style.overflow = "";
-  clearTimeout(nextEpisodeTimer);
+  cancelNextEpisodeCountdown();
   history.replaceState(null, "", window.location.pathname + window.location.search);
   try { if (screen.orientation?.unlock) screen.orientation.unlock(); } catch {}
   // Si habia una busqueda activa, volver a mostrar el overlay del buscador
