@@ -392,6 +392,14 @@ body::before{
     filter:drop-shadow(0 0 8px var(--accent));
   }
   @keyframes logo-shimmer{to{background-position:300% center}}
+  .logo-tv{position:relative;display:inline-block}
+  .logo-visit-count{
+    position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+    font-family:'Outfit',sans-serif;font-size:9px;font-weight:600;letter-spacing:.3px;
+    background:none;-webkit-text-fill-color:var(--text2);color:var(--text2);
+    filter:none;white-space:nowrap;pointer-events:none;line-height:1;
+  }
+  .logo-visit-count:empty{display:none}
 
   /* ── THEME PICKER ── */
   .theme-picker-btn{width:28px;height:28px;border-radius:6px;border:2px solid rgba(255,255,255,.15);cursor:pointer;position:relative;flex-shrink:0;background:conic-gradient(var(--accent) 0deg 180deg,var(--bg) 180deg 360deg);transition:border-color .2s}
@@ -521,34 +529,36 @@ body::before{
   /* ===== SIDEBAR IZQUIERDO (colapsable, hover para expandir) ===== */
   /* ── SIDEBAR ── */
   #sidebar{
-    position:fixed;left:0;top:50%;transform:translateY(-50%);
-    width:38px;
+    position:fixed;left:6px;top:50%;transform:translateY(-50%);
+    width:40px;
     z-index:600;
     display:none;
     flex-direction:column;
-    padding:6px 4px;
+    align-items:center;
+    padding:6px 0;
     gap:2px;
     background:rgba(8,8,18,.72);
     -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
     border:1px solid var(--border);
-    border-radius:14px;
+    border-radius:9px;
     overflow:visible;
-    transition:width .25s cubic-bezier(.4,0,.2,1), box-shadow .25s ease, background .3s;
   }
   #sidebar.visible{display:flex}
-  #sidebar:hover{
-    width:210px;
+  #sidebar.sb-open{
+    width:180px;
     background:rgba(8,8,18,.88);
     box-shadow:8px 0 40px rgba(0,0,0,.7), 0 0 0 1px rgba(99,102,241,.08);
   }
   /* Separador visual dentro del sidebar */
   .sb-divider{
     height:1px;background:rgba(255,255,255,.07);
-    margin:4px 2px;flex-shrink:0;
+    margin:4px 0;flex-shrink:0;
+    width:24px;
   }
+  #sidebar.sb-open .sb-divider{ width:calc(100% - 12px); }
   /* Botón base */
   .sidebar-btn{
-    display:flex;align-items:center;
+    display:flex;align-items:center;justify-content:center;
     background:transparent;
     border:none;
     border-radius:6px;
@@ -557,24 +567,25 @@ body::before{
     font-family:'Outfit',sans-serif;font-size:13px;font-weight:500;
     cursor:pointer;
     transition:background .18s, color .18s;
-    text-align:left;width:100%;
+    text-align:left;width:32px;
     white-space:nowrap;overflow:hidden;
     flex-shrink:0;
   }
+  #sidebar.sb-open .sidebar-btn{ width:100%;justify-content:flex-start; }
   .sidebar-btn:hover{ background:rgba(255,255,255,.08); color:var(--text); }
   .sidebar-btn.active{ background:var(--accent-subtle); color:var(--accent); box-shadow:inset 0 0 12px rgba(99,102,241,.15); }
-  /* Ícono compacto — visible siempre, ocupa 38px de ancho */
+  /* Ícono compacto — visible siempre, ocupa el ancho colapsado del botón */
   .sidebar-btn .sb-icon{
     flex-shrink:0;
-    width:38px;height:36px;
+    width:32px;height:32px;
     display:flex;align-items:center;justify-content:center;
   }
   /* SVG icons en el ícono */
-  .sidebar-btn .sb-icon svg{ width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round; }
+  .sidebar-btn .sb-icon svg{ width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round; }
   /* Badge TOP10 reemplaza el texto cuando está colapsado */
   .sb-top10-badge{
     display:flex;align-items:center;justify-content:center;
-    width:38px;height:36px;
+    width:32px;height:32px;
     flex-shrink:0;
   }
   .sb-top10-badge span{
@@ -583,15 +594,14 @@ body::before{
     padding:2px 5px;border-radius:4px;
     line-height:1.3;text-align:center;
   }
-  /* Texto expandido — solo visible con hover */
+  /* Texto expandido — solo visible cuando está abierto */
   .sidebar-btn .sb-text{
-    display:flex;align-items:center;gap:8px;flex:1;
-    opacity:0;overflow:hidden;max-width:0;
-    transition:opacity .12s ease, max-width .25s cubic-bezier(.4,0,.2,1);
+    display:none;align-items:center;gap:8px;flex:1;
+    opacity:0;overflow:hidden;
     padding-right:8px;
   }
-  #sidebar:hover .sidebar-btn .sb-text{
-    opacity:1;max-width:200px;
+  #sidebar.sb-open .sidebar-btn .sb-text{
+    display:flex;opacity:1;
   }
   .sidebar-btn .sb-label{
     flex:1;line-height:1.2;display:flex;flex-direction:column;gap:1px;
@@ -601,12 +611,12 @@ body::before{
   /* Chevron para Top10 */
   .sb-chevron{
     flex-shrink:0;margin-left:auto;margin-right:4px;
-    opacity:0;transition:opacity .12s ease, transform .2s ease;
+    display:none;opacity:0;
   }
-  .sb-chevron svg{width:12px;height:12px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;}
-  #sidebar:hover .sb-chevron{opacity:1;}
-  #sidebar:hover .sb-top10-open .sb-chevron{transform:rotate(90deg);}
-  #sidebar:hover .sb-live-open .sb-chevron{transform:rotate(90deg);}
+  .sb-chevron svg{width:12px;height:12px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;flex-shrink:0;}
+  #sidebar.sb-open .sb-chevron{display:flex;opacity:1;}
+  #sidebar.sb-open .sb-top10-open .sb-chevron{transform:rotate(90deg);}
+  #sidebar.sb-open .sb-live-open .sb-chevron{transform:rotate(90deg);}
   #sidebar.sb-pinned .sb-live-open .sb-chevron{transform:rotate(90deg);}
   /* Submenu plataformas */
   .sb-submenu{
@@ -648,19 +658,25 @@ body::before{
   }
   /* Sidebar anclado (submenu de plataformas abierto) */
   #sidebar.sb-pinned{
-    width:210px;
+    width:180px;
     box-shadow:6px 0 28px rgba(0,0,0,.65);
+  }
+  #sidebar.sb-pinned .sidebar-btn{
+    width:100%;justify-content:flex-start;
+  }
+  #sidebar.sb-pinned .sb-divider{
+    width:calc(100% - 12px);
   }
   #sidebar.sb-pinned .sidebar-btn .sb-text{
     opacity:1;max-width:200px;
   }
-  #sidebar.sb-pinned .sb-chevron{opacity:1;}
+  #sidebar.sb-pinned .sb-chevron{display:flex;opacity:1;}
   #sidebar.sb-pinned .sb-top10-open .sb-chevron{transform:rotate(90deg);}
 
   /* ===== SIDEBAR EN MOBILE: igual que desktop, siempre visible ===== */
   /* Sidebar oculto en mobile: solo muestra el botón X */
   #sidebar.sb-hidden {
-    width: 38px !important;
+    width: 40px !important;
     box-shadow: none !important;
   }
   #sidebar.sb-hidden > *:not(#sb-x-btn) {
@@ -680,36 +696,37 @@ body::before{
     /* Cuando expandido, la X cambia a aspecto de "cerrar" */
     #sidebar.mob-expanded .sb-x-btn .sb-icon { color: var(--accent); }
 
-    /* En mobile el hover NO expande — anulamos todo hover del sidebar */
-    #sidebar:hover{ width:38px; box-shadow:none; }
-    #sidebar:hover .sidebar-btn .sb-text{ opacity:0 !important; max-width:0 !important; }
-    #sidebar:hover .sb-chevron{ opacity:0 !important; }
-    /* Cuando está expandido por tap — tiene prioridad sobre :hover */
-    #sidebar.mob-expanded,
-    #sidebar.mob-expanded:hover {
-      width:210px;
+    /* En mobile no debe expandirse por hover/sb-open — anulamos, solo manda mob-expanded (tap) */
+    #sidebar.sb-open:not(.mob-expanded){ width:40px; box-shadow:none; }
+    #sidebar.sb-open:not(.mob-expanded) .sidebar-btn{ width:32px !important; justify-content:center !important; }
+    #sidebar.sb-open:not(.mob-expanded) .sidebar-btn .sb-text{ display:none !important; opacity:0 !important; }
+    #sidebar.sb-open:not(.mob-expanded) .sb-chevron{ display:none !important; opacity:0 !important; }
+    /* Cuando está expandido por tap — tiene prioridad */
+    #sidebar.mob-expanded {
+      width:180px;
       box-shadow:6px 0 28px rgba(0,0,0,.65);
     }
-    #sidebar.mob-expanded .sidebar-btn .sb-text,
-    #sidebar.mob-expanded:hover .sidebar-btn .sb-text {
-      opacity:1 !important; max-width:200px !important;
+    #sidebar.mob-expanded .sidebar-btn {
+      width:100% !important; justify-content:flex-start !important;
     }
-    #sidebar.mob-expanded .sb-chevron,
-    #sidebar.mob-expanded:hover .sb-chevron { opacity:1 !important; }
+    #sidebar.mob-expanded .sidebar-btn .sb-text {
+      display:flex !important; opacity:1 !important;
+    }
+    #sidebar.mob-expanded .sb-chevron { display:flex !important; opacity:1 !important; }
     #sidebar.mob-expanded .sb-top10-open .sb-chevron { transform:rotate(90deg); }
   }
 
   /* Margen para el contenido cuando el sidebar está visible */
-  body.sidebar-open #main { margin-left:44px; transition:margin-left .25s ease; }
+  body.sidebar-open #main { margin-left:52px; transition:margin-left .25s ease; }
   .sb-x-btn { display:flex !important; }
   .sb-x-btn .sb-icon { color: var(--text2); }
   .sb-x-btn:hover .sb-icon { color: #fff; }
 
   @media(max-width:640px){
     /* En mobile el sidebar siempre está visible cuando hay sesión → siempre corremos el contenido */
-    body.sidebar-open #main { margin-left:48px; }
+    body.sidebar-open #main { margin-left:56px; }
     /* Cuando está expandido, el contenido se corre más */
-    body.sidebar-mob-expanded #main { margin-left:128px; transition:margin-left .25s cubic-bezier(.4,0,.2,1); }
+    body.sidebar-mob-expanded #main { margin-left:134px; transition:margin-left .25s cubic-bezier(.4,0,.2,1); }
   }
 
   /* Secciones especiales del sidebar */
@@ -1812,7 +1829,7 @@ body::before{
 </div>
 
 <nav id="nav" style="display:none">
-  <div class="logo focusable" tabindex="0" onclick="showHome()">VicioTV</div>
+  <div class="logo focusable" tabindex="0" onclick="showHome()">Vicio<span class="logo-tv">TV<span id="visit-count" class="logo-visit-count" title="Visitas totales"></span></span></div>
   <div class="nav-tabs">
     <button class="nav-tab focusable active" data-tab="inicio" onclick="switchTab('inicio')">Inicio</button>
     <button class="nav-tab focusable" data-tab="peliculas" onclick="switchTab('peliculas')">Películas</button>
@@ -1880,7 +1897,7 @@ body::before{
   </div>
 
   <div style="padding-top:5px;text-align:center;font-family:'Outfit',sans-serif;font-weight:600">
-    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 3.0.1</div>
+    <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:#c8960c">VICIOTV Versión 2.6.3</div>
   </div>
 </div>
 
@@ -5908,8 +5925,26 @@ function showSidebar(){
   const s = document.getElementById("sidebar");
   if(s){ s.classList.add("visible"); document.body.classList.add("sidebar-open"); }
   _sbMobileInit();
+  _sbSidebarHoverInit();
   if(window._sbHoverSetup) window._sbHoverSetup();
   if(window._sbLiveHoverSetup) window._sbLiveHoverSetup();
+}
+
+/* Apertura/cierre instantáneo del sidebar al pasar el mouse (sin delay). */
+function _sbSidebarHoverInit(){
+  const s = document.getElementById("sidebar");
+  if(!s || s._hoverReady) return;
+  s._hoverReady = true;
+  const desktop = () => window.innerWidth > 640;
+  s.addEventListener("mouseenter", () => {
+    if(!desktop()) return;
+    s.classList.add("sb-open");
+  });
+  s.addEventListener("mouseleave", () => {
+    if(!desktop()) return;
+    if(s.classList.contains("sb-pinned")) return; // hay un submenu abierto, no cerrar
+    s.classList.remove("sb-open");
+  });
 }
 
 function _sbMobileInit(){
@@ -6029,7 +6064,7 @@ function _openPlatformMenu(){
   const sRect = sidebar.getBoundingClientRect();
   menu.style.top  = rect.top + "px";
   const isMobile = window.innerWidth <= 640;
-  const sidebarRight = isMobile ? sRect.left + sRect.width : sRect.left + 210;
+  const sidebarRight = isMobile ? sRect.left + sRect.width : sRect.left + 180;
   menu.style.left = (sidebarRight + 6) + "px";
   menu.classList.add("open");
   btn.classList.add("active");
@@ -6096,7 +6131,7 @@ function _openLiveMenu(){
   const sRect = sidebar.getBoundingClientRect();
   menu.style.top  = rect.top + "px";
   const isMobile = window.innerWidth <= 640;
-  const sidebarRight = isMobile ? sRect.left + sRect.width : sRect.left + 210;
+  const sidebarRight = isMobile ? sRect.left + sRect.width : sRect.left + 180;
   menu.style.left = (sidebarRight + 6) + "px";
   menu.classList.add("open");
   btn.classList.add("active");
