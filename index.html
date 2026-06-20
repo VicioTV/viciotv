@@ -368,12 +368,20 @@ body::before{
     background:rgba(4,4,10,.5);
     -webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);
     border-bottom:1px solid var(--border);
-    transition:background .4s ease, border-color .4s ease;
+    transition:background .4s ease, border-color .4s ease, transform .35s cubic-bezier(.4,0,.2,1), opacity .3s ease;
   }
   #nav.scrolled{
     background:rgba(4,4,10,.82);
     border-bottom-color:var(--border-bright);
     box-shadow:0 4px 32px rgba(0,0,0,.4);
+  }
+  /* ── Look "cine": ocultamos la barra superior mientras el reproductor
+     está abierto, para que no tape la "X" de cerrar y dejar la pantalla
+     más limpia. Se restaura sola al cerrar el reproductor. ── */
+  body.player-open #nav{
+    transform:translateY(-100%);
+    opacity:0;
+    pointer-events:none;
   }
   .logo{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:3px;
     background:linear-gradient(90deg,var(--accent),var(--accent2),#cccef9,var(--accent2),var(--accent));background:linear-gradient(90deg,var(--accent),var(--accent2),color-mix(in srgb,var(--accent) 20%,#fff),var(--accent2),var(--accent));
@@ -3367,6 +3375,21 @@ document.getElementById("modal-overlay").addEventListener("click", e => {
   const modal = document.getElementById("modal");
   if (!modal.contains(e.target)) closeModal();
 });
+
+/* ─── Look "cine": ocultar la barra superior mientras el modal del
+   reproductor está abierto, sin importar desde dónde se haya abierto.
+   Usamos un observer sobre la clase "open" de #modal-overlay en vez
+   de tocar cada función que lo abre/cierra. ─── */
+(function () {
+  const overlay = document.getElementById("modal-overlay");
+  if (!overlay) return;
+  const syncPlayerOpen = () => {
+    document.body.classList.toggle("player-open", overlay.classList.contains("open"));
+  };
+  new MutationObserver(syncPlayerOpen).observe(overlay, { attributes: true, attributeFilter: ["class"] });
+  syncPlayerOpen();
+})();
+
 window.addEventListener("popstate", e => {
   const actorOverlay = document.getElementById("actor-overlay");
   if (actorOverlay && actorOverlay.classList.contains("open")) {
