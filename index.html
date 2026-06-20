@@ -700,7 +700,6 @@ body::before{
   }
 
   /* Margen para el contenido cuando el sidebar está visible */
-  body.sidebar-open #hero,
   body.sidebar-open #main { margin-left:44px; transition:margin-left .25s ease; }
   .sb-x-btn { display:flex !important; }
   .sb-x-btn .sb-icon { color: var(--text2); }
@@ -708,10 +707,8 @@ body::before{
 
   @media(max-width:640px){
     /* En mobile el sidebar siempre está visible cuando hay sesión → siempre corremos el contenido */
-    body.sidebar-open #hero,
     body.sidebar-open #main { margin-left:48px; }
     /* Cuando está expandido, el contenido se corre más */
-    body.sidebar-mob-expanded #hero,
     body.sidebar-mob-expanded #main { margin-left:128px; transition:margin-left .25s cubic-bezier(.4,0,.2,1); }
   }
 
